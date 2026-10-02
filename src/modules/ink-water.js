@@ -64,7 +64,11 @@ const FRAG = {
       vec3 col=mix(vec3(.012,.043,.173),vec3(.012,.067,.286),1.-depth);
       col+=palD*.12*(1.-smoothstep(0.,1.1,length(vec2(cuv.x*.8,cuv.y+.1))));
       // the designed inks, pushed by the water and recoloured into the palette
-      vec2 v=texture2D(uVel,vUv).xy*velTexel; float t=time*.05;
+      // the push follows a softened copy of the velocity: the raw field is grid-sized and turns edges into steps
+      vec2 v=texture2D(uVel,vUv).xy*.16;
+      for(int i=0;i<6;i++){ float an=float(i)*1.0472+.35; vec2 o=vec2(cos(an),sin(an));
+        v+=texture2D(uVel,vUv+o*velTexel*2.2).xy*.09+texture2D(uVel,vUv+vec2(o.y,-o.x)*velTexel*5.).xy*.05; }
+      v*=velTexel; float t=time*.05;
       vec2 flow=.006*vec2(sin(vUv.y*5.+t*3.),cos(vUv.x*4.-t*2.4))+.003*vec2(sin((vUv.x+vUv.y)*11.-t*4.),cos((vUv.x-vUv.y)*9.+t*3.));
       vec4 art=texture2D(uArt,vUv-v*push+flow);
       float lum=dot(art.rgb,vec3(.299,.587,.114));
