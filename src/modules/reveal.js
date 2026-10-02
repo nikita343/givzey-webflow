@@ -4,8 +4,8 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 
-const HEADINGS = '.heading-style-h1, .heading-style-h2, .home-press_heading, .home-story_title, .home-story_subheading, .veo-meet_heading, .veo-cap_heading, .veo-trust_heading, .veo-proof_heading, .product-faq_heading';
-const COPY = '.home-product_text, .home-hero_text, .home-story_text, .home-story_label, .cta_text, .home-journey_text, .footer_tagline, .veo-meet_text, .veo-cap_intro, .veo-trust_text, .veo-proof_sub, .product-faq_sub';
+const HEADINGS = '.heading-style-h1, .heading-style-h2, .home-press_heading, .home-story_title, .home-story_subheading, .veo-meet_heading, .veo-cap_heading, .veo-trust_heading, .veo-proof_heading, .product-faq_heading, .vpgo-pipeline_heading, .vpgo-cap_heading, .vpgo-story_title';
+const COPY = '.home-product_text, .home-hero_text, .home-story_text, .home-story_label, .cta_text, .home-journey_text, .footer_tagline, .veo-meet_text, .veo-cap_intro, .veo-trust_text, .veo-proof_sub, .product-faq_sub, .vpgo-pipeline_text, .vpgo-stats_note, .vpgo-story_text';
 const TAGS = '.tag, .home-logos_label, .home-stats_chip, .veo-trust_tag';
 
 export function headingBleed(el, { delay = 0, trigger = el, start = 'top 85%', light = false } = {}) {
@@ -47,7 +47,7 @@ export function unrollTag(el, { delay = 0, trigger = el, start = 'top 90%' } = {
 }
 
 export function initReveals(skip = new Set()) {
-  document.querySelectorAll(HEADINGS).forEach(el => { if (!skip.has(el) && !el.closest('.section_home-hero, .section_product-hero, .home-journey_scene')) headingBleed(el, { light: !!el.closest('.home-story_inner, .veo-trust_component') }); });
+  document.querySelectorAll(HEADINGS).forEach(el => { if (!skip.has(el) && !el.closest('.section_home-hero, .section_product-hero, .home-journey_scene')) headingBleed(el, { light: !!el.closest('.home-story_inner, .veo-trust_component, .vpgo-story_card') }); });
   document.querySelectorAll(COPY).forEach(el => { if (!skip.has(el) && !el.closest('.section_home-hero, .section_product-hero, .home-journey_scene')) fadeCopy(el); });
   document.querySelectorAll(TAGS).forEach(el => { if (!skip.has(el) && !el.closest('.section_home-hero, .section_product-hero, .home-journey_scene')) unrollTag(el); });
 

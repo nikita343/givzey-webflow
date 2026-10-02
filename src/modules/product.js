@@ -4,12 +4,10 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
-import { Flip } from 'gsap/Flip';
 import { inkLayer } from './ink-layer.js';
 import { headingBleed, fadeCopy, unrollTag } from './reveal.js';
 import { REDUCED } from '../base.js';
 
-gsap.registerPlugin(Flip);
 const FINE = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const MOBILE = matchMedia('(max-width: 767px)');
 
@@ -53,7 +51,10 @@ function hero() {
     if (layer) { const o = { r: 0 }; tl.to(o, { r: 1, duration: 2.8, ease: 'power2.out', onUpdate: () => layer.setReveal(o.r) }, .25); }
     const label = visual.querySelector('.product-hero_label'), arrow = visual.querySelector('.product-hero_label-arrow');
     if (label) tl.from(label, { opacity: 0, scale: .9, filter: 'blur(8px)', transformOrigin: '0% 50%', duration: .9, ease: 'back.out(1.6)', clearProps: 'filter,scale' }, .55);
-    if (arrow) tl.from(arrow, { opacity: 0, scale: .6, rotate: -90, duration: .9, ease: 'back.out(1.8)' }, .7);
+    // explicit end values + no CSS transition while GSAP drives it: the hover transition on transform would
+    // otherwise let the intro capture a half-rotated arrow as its resting state
+    if (arrow) tl.fromTo(arrow, { opacity: 0, scale: .6, rotate: -90 }, { opacity: 1, scale: 1, rotate: 0, duration: .9, ease: 'back.out(1.8)',
+      onStart: () => { arrow.style.transition = 'none'; }, onComplete: () => { gsap.set(arrow, { clearProps: 'transform,rotate,scale,opacity' }); arrow.style.transition = ''; } }, .7);
     const front = order[0];
     order.forEach((c, i) => {
       const s = gsap.getProperty(c, 'scale'), op = parseFloat(getComputedStyle(c).opacity) || 1;
@@ -190,20 +191,19 @@ function proof() {
   };
   apply();
   let busy = false;
+  const parts = () => slides[active].querySelectorAll('.veo-proof_logo, .veo-proof_context, .veo-proof_quote, .veo-proof_author, .veo-proof_side');
   function go(i) {
     i = (i + n) % n; if (busy || i === active) return;
     const dir = i === (active + 1) % n ? 1 : -1;
-    const wrapper = n > 2 ? slides[(active - dir + n) % n] : null;   // the slide that wraps round the edge
-    const state = Flip.getState(slides);
-    active = i; apply();
-    const card = slides[active].querySelector('.veo-proof_card');
-    const parts = card ? card.querySelectorAll('.veo-proof_logo, .veo-proof_context, .veo-proof_quote, .veo-proof_author, .veo-proof_side') : [];
-    if (REDUCED) return;
-    if (MOBILE.matches) { gsap.fromTo(parts, { opacity: 0, filter: 'blur(8px)' }, { opacity: 1, filter: 'blur(0px)', duration: .6, stagger: .05, ease: 'power2.out', clearProps: 'filter' }); return; }
+    if (REDUCED) { active = i; apply(); return; }
+    // a clean page turn: the row drifts out and softens, the order changes while it is out of sight,
+    // then the new story drifts in from the other side and its content develops line by line
     busy = true;
-    Flip.from(state, { targets: slides.filter(s => s !== wrapper), duration: .95, ease: 'expo.inOut', scale: false, simple: true, onComplete: () => { busy = false; } });
-    if (wrapper) gsap.fromTo(wrapper, { opacity: 0, x: dir * 80 }, { opacity: 1, x: 0, duration: .8, delay: .3, ease: 'power3.out', clearProps: 'x' });
-    gsap.fromTo(parts, { opacity: 0, filter: 'blur(8px)' }, { opacity: 1, filter: 'blur(0px)', duration: .8, delay: .4, stagger: .06, ease: 'power2.out', clearProps: 'filter' });
+    gsap.timeline({ onComplete: () => { busy = false; } })
+      .to(track, { opacity: 0, x: -dir * 48, filter: 'blur(8px)', duration: .32, ease: 'power2.in' })
+      .add(() => { slider.classList.add('is-swapping'); active = i; apply(); void track.offsetWidth; slider.classList.remove('is-swapping'); })
+      .fromTo(track, { x: dir * 48 }, { opacity: 1, x: 0, filter: 'blur(0px)', duration: .75, ease: 'expo.out', clearProps: 'filter,transform' })
+      .fromTo(parts(), { opacity: 0, filter: 'blur(8px)' }, { opacity: 1, filter: 'blur(0px)', duration: .7, stagger: .06, ease: 'power2.out', clearProps: 'filter,opacity' }, '<.1');
   }
   prev?.addEventListener('click', e => { e.preventDefault(); go(active - 1); });
   next?.addEventListener('click', e => { e.preventDefault(); go(active + 1); });

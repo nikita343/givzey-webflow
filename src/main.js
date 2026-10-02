@@ -16,6 +16,7 @@ import { initHovers } from './modules/hovers.js';
 import { initTestimonials } from './modules/testimonials.js';
 import { initNav } from './modules/nav.js';
 import { initProduct } from './modules/product.js';
+import { initVpgo } from './modules/vpgo.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 const root = document.documentElement;
@@ -78,7 +79,7 @@ async function boot() {
   } else if (heroTl) heroTl.play();
 
   // each module is independent: one failing must not stop the rest
-  for (const [name, fn] of Object.entries({ initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initHovers })) {
+  for (const [name, fn] of Object.entries({ initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initVpgo, initHovers })) {
     try { fn(); } catch (e) { console.error('[givzey]', name, e); }
   }
 
