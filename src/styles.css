@@ -313,6 +313,11 @@ a:hover>.gz-underline,a:focus-visible>.gz-underline{transform:scaleX(1);transfor
 /* ================= product accents: VEO orange by default, VPGO green ================= */
 body{--gz-acc:242,140,40}
 body:has(.product-hero_visual.is-vpgo){--gz-acc:46,158,94}
+body:has(.product-hero_visual.is-vso){--gz-acc:107,63,209}
+body:has(.product-hero_visual.is-vso) .product-faq_item.is-open .product-faq_trigger{color:#3c1f80}
+body:has(.product-hero_visual.is-vso) .product-faq_item.is-open .product-faq_icon{background-color:#6b3fd1}
+body:has(.product-hero_visual.is-vso) .product-faq_item.is-open .product-faq_icon-bar{background-color:#fff}
+.product-hero_visual.is-vso:hover .product-hero_label-arrow{box-shadow:0 .75em 1.875em rgba(40,16,90,.22),0 0 0 .4em rgba(107,63,209,.16)}
 body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_trigger{color:#1f6b3e}
 body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_icon{background-color:#2e9e5e}
 body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_icon-bar{background-color:#fff}
@@ -327,7 +332,7 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
 @keyframes gzTyping{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-.2em);opacity:1}}
 .product-chat_status-icon svg{width:1.125em;height:1.125em;color:#fff;overflow:visible}
 .product-chat_status-icon.is-ping,.vpgo-stats_dot.is-ping,.vpgo-cap_seal.is-ping,.vpgo-cap_qcd-date.is-ping{position:relative}
-.product-chat_status-icon.is-ping::after,.vpgo-stats_dot.is-ping::after,.vpgo-cap_seal.is-ping::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid rgba(46,158,94,.55);animation:gzPing 2.4s cubic-bezier(.2,.7,.3,1) infinite;pointer-events:none}
+.product-chat_status-icon.is-ping::after,.vpgo-stats_dot.is-ping::after,.vpgo-cap_seal.is-ping::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid rgba(var(--gz-acc),.55);animation:gzPing 2.4s cubic-bezier(.2,.7,.3,1) infinite;pointer-events:none}
 @keyframes gzPing{0%{transform:scale(1);opacity:.9}70%,100%{transform:scale(2.1);opacity:0}}
 .vpgo-cap_seal.is-ping::after{inset:-.39rem;animation-duration:3s}
 
@@ -362,6 +367,20 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
 
 @media (prefers-reduced-motion:reduce){ .product-chat_status-icon::after,.vpgo-stats_dot::after,.vpgo-cap_seal::after{animation:none!important} }
 
+/* VSO */
+.vso-timeline_svg{overflow:visible}
+.vso-timeline_renewed.is-ping{box-shadow:0 0 0 .4em rgba(107,63,209,.14),0 .75em 2em rgba(107,63,209,.28);transition:box-shadow .8s ease}
+.vso-cap_donor{transition:box-shadow .6s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+.vso-cap_donor.is-sent{box-shadow:0 8px 20px rgba(51,20,102,.12),0 0 0 2px rgba(107,63,209,.32),0 10px 30px rgba(107,63,209,.22)}
+.vso-cap_segment{transition:background-color .6s ease,color .6s ease}
+.vso-cap_donor.is-sent .vso-cap_segment{background-color:#6b3fd1;color:#fff}
+.vso-cap_update-media::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.28) 50%,transparent 70%);transform:translateX(-100%);animation:gzSheen 4.5s ease-in-out 1.5s infinite}
+@keyframes gzSheen{0%,55%{transform:translateX(-100%)}85%,100%{transform:translateX(100%)}}
+.vso-cap_offer-btn.is-primary{animation:gzRenew 2.6s ease-in-out infinite}
+@keyframes gzRenew{0%,100%{box-shadow:0 0 0 0 rgba(155,115,240,0)}50%{box-shadow:0 0 0 .35rem rgba(155,115,240,.22),0 0 1.4rem rgba(155,115,240,.55)}}
+.vso-risk_ring{transform-box:fill-box;transform-origin:50% 50%}
+@media (prefers-reduced-motion:reduce){ .vso-cap_update-media::after,.vso-cap_offer-btn.is-primary{animation:none!important} }
+
 /* tablet / phone */
 @media (max-width:991px){
   .product-intro_head{flex-direction:column;row-gap:1.5rem}
@@ -374,6 +393,14 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
   .vpgo-story_quote{max-width:40rem}
   .vpgo-story_link{align-self:flex-start;width:auto;order:3}
   .vpgo-story_photo{height:100%;top:0}
+  .vso-timeline_card{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+  .vso-timeline_card::-webkit-scrollbar{display:none}
+  .vso-timeline_stage{width:58rem;font-size:calc(58rem / 84)}
+  .vso-risk_card{flex-direction:column;align-items:stretch;row-gap:3rem;padding:3.5rem 2.5rem}
+  .vso-risk_ink{left:0;top:auto;bottom:0;width:100%;height:65%}
+  .vso-risk_shade{background-image:linear-gradient(180deg,#140a30 0%,#140a30 40%,rgba(20,10,48,0) 80%)}
+  .vso-risk_copy{width:100%;max-width:40rem}
+  .vso-risk_glass{width:100%;max-width:32.5rem}
 }
 @media (max-width:767px){
   .product-intro_heading,.product-cap_heading{font-size:2.25rem}
@@ -389,8 +416,14 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
   .vpgo-story_quote{padding:1.5rem}
   .vpgo-story_quote-text{font-size:1.125rem}
   .product-stats_row.is-inline{padding:1.5rem;flex-direction:column;align-items:flex-start;row-gap:.25rem}
+  .vso-risk_card{padding:2.5rem 1.5rem}
+  .vso-risk_title{font-size:2.125rem}
+  .vso-risk_glass{padding:1.5rem}
+  .vso-risk_number{font-size:5rem}
 }
 @media (max-width:479px){
   .product-cap_scene{transform:scale(.68)}
   .vpgo-story_number{font-size:3.5rem}
+  .vso-risk_title{font-size:1.875rem}
+  .vso-risk_number{font-size:4rem}
 }

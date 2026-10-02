@@ -52,9 +52,11 @@ const GLOW = [
   ['.veo-meet_pyramid', '242,140,40'],
   ['.product-stats_feature', 'accent'],
   ['.product-stats_row', 'accent'],
-  ['.product-cap_card', '46,158,94'],
+  ['.product-cap_card', 'accent'],
   ['.vpgo-pipeline_card', '46,158,94'],
   ['.vpgo-story_quote', '171,230,190'],
+  ['.vso-timeline_card', '107,63,209'],
+  ['.vso-risk_glass', '201,182,244'],
   ['.veo-trust_pillar', '242,140,40'],
   ['.veo-proof_peek', '242,140,40'],
 ];
