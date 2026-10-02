@@ -62,11 +62,14 @@ async function boot() {
   root.classList.add('gz-ready');   // content may show now; GSAP holds the initial states
 
   const ink = hero ? initHeroInk(hero, { intro }) : null;
+  let inkReady = false;
+  ink?.ready?.then(() => { inkReady = true; });
   if (intro && loader) {
     await Promise.race([Promise.all([loader.done, ink?.ready]), new Promise(r => setTimeout(r, 2600))]);
     loader.leave();
     if (lenis) setTimeout(() => lenis.start(), 3500);   // never hold the scroll longer than this, even on slow GPUs
-    if (ink && ink.ok) ink.playIntro(() => heroTl && heroTl.play()).then(() => lenis && lenis.start());
+    // the ink bleed only leads the reveal when it is actually running; otherwise the copy comes in straight away
+    if (ink && ink.ok && inkReady) ink.playIntro(() => heroTl && heroTl.play()).then(() => lenis && lenis.start());
     else { heroTl && heroTl.play(); lenis && lenis.start(); }
   } else if (heroTl) heroTl.play();
 

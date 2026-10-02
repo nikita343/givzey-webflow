@@ -7,7 +7,8 @@
 html.gz-loader-on{overflow:hidden}
 
 /* --- hero live ink --- */
-.gz-hero-ink{position:absolute;inset:0;width:100%;height:100%;display:block}
+.gz-hero-ink{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .6s ease}
+.section_home-hero.is-ink-live .gz-hero-ink{opacity:1}   /* never show an empty canvas over the static inks */
 .section_home-hero.is-ink-live .home-hero_ink{visibility:hidden}
 
 /* --- living ink layers (product, story, CTA) --- */

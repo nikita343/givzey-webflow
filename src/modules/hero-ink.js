@@ -73,7 +73,10 @@ const corsCopy = img => new Promise(res => {
   c.src = img.currentSrc || img.src;
 });
 async function composite(hero, imgs, w, h) {
-  await Promise.all(imgs.map(i => (i.complete && i.naturalWidth) ? null : new Promise(r => { i.onload = i.onerror = r; })));
+  // inks positioned off-screen on phones are lazy and would never load: force them, and never wait forever
+  imgs.forEach(i => { i.loading = 'eager'; });
+  const loaded = Promise.all(imgs.map(i => (i.complete && i.naturalWidth) ? null : new Promise(r => { i.addEventListener('load', r, { once: true }); i.addEventListener('error', r, { once: true }); })));
+  await Promise.race([loaded, new Promise(r => setTimeout(r, 4000))]);
   const copies = await Promise.all(imgs.map(corsCopy));
   const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
   const hr = hero.getBoundingClientRect(), sx = w / hr.width, sy = h / hr.height;
