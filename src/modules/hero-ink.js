@@ -102,7 +102,7 @@ export function initHeroInk(hero, { intro = false } = {}) {
 //   inkSel / wrapSel / calmSel — the artwork, where the canvas goes, the copy the ink keeps clear of
 //   top / bot — background gradient behind the art, bleedBase — colour the bleed reveal opens from
 //   armed — start hidden (bleed 0) and wait for playIntro(), e.g. when the block scrolls into view
-export function initInkSim(hero, { intro = false, inkSel, wrapSel, calmSel, top = '#030B2C', bot = '#031149', bleedBase = '#01061a', armed = false, prepend = false } = {}) {
+export function initInkSim(hero, { intro = false, inkSel, wrapSel, calmSel, top = '#030B2C', bot = '#031149', bleedBase = '#01061a', armed = false, prepend = false, feel = {} } = {}) {
   const imgs = [...hero.querySelectorAll(inkSel)];
   const wrap = (wrapSel && hero.querySelector(wrapSel)) || hero;
   const copy = (calmSel && hero.querySelector(calmSel)) || hero;
@@ -190,7 +190,7 @@ export function initInkSim(hero, { intro = false, inkSel, wrapSel, calmSel, top 
   }
 
   const S = { velDiss: .35, dyeDiss: .9, dyeFade: .07, dyeSpread: .14, curl: 4, calm: 1, bleed: armed ? 0 : 1, push: 1.4 };
-  const FEEL = { simSpeed: .55, trailForce: 820, trailPush: 1, trailInk: .3, trailRadius: .7, swirlEvery: .11, swirlOffset: .055, swirlSize: .085, swirlSpeed: 220 };
+  const FEEL = { simSpeed: .55, trailForce: 820, trailPush: 1, trailInk: .3, trailRadius: .7, swirlEvery: .11, swirlOffset: .055, swirlSize: .085, swirlSpeed: 220, ...feel };
   const INKS = [[1, .12], [.15, 1], [.85, .35], [.3, .9]];
   const glow = (i, s) => { const c = INKS[i % INKS.length]; return [c[0] * s, c[1] * s, 0]; };
   function splat(x, y, vx, vy, color, radius, dyeRadius = radius) {

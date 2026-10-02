@@ -42,7 +42,7 @@ export function initStory() {
   // the card's two inks become one live fluid (same engine as the hero, on the card's navy):
   // they bleed in when the card arrives, the cursor stirs them and leaves a blue trail, drops fall now and then
   const NAVY = '#010B29';
-  const sim = initInkSim(inner, { inkSel: '.home-story_ink', calmSel: '.home-story_intro', top: NAVY, bot: NAVY, bleedBase: NAVY, armed: !REDUCED, prepend: true });
+  const sim = initInkSim(inner, { inkSel: '.home-story_ink', calmSel: '.home-story_intro', top: NAVY, bot: NAVY, bleedBase: NAVY, armed: !REDUCED, prepend: true, feel: { trailInk: .17, trailRadius: .55 } });   // a quieter trail than the hero: text sits on top
   if (REDUCED) return;
   const num = inner.querySelector('.home-story_number'); if (num) countUp(num, { duration: 2.2 });
   ScrollTrigger.create({ trigger: inner, start: 'top 75%', once: true, onEnter: () => {
