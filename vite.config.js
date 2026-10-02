@@ -9,7 +9,7 @@ export default defineConfig({
       input: 'src/main.js',
       output: {
         entryFileNames: 'givzey.js',
-        chunkFileNames: 'chunks/[name]-[hash].js',
+        chunkFileNames: 'chunks/[name].js',
         assetFileNames: a => a.name && a.name.endsWith('.css') ? 'givzey.css' : 'assets/[name]-[hash][extname]'
       }
     }

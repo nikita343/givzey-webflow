@@ -66,7 +66,7 @@ canvas.gz-ink-canvas{display:block;height:auto}
 .home-logos_marquee:hover .home-logos_logo{opacity:.55}
 .home-logos_marquee .home-logos_logo:hover{opacity:1;filter:drop-shadow(0 0 14px rgba(88,165,251,.55))}
 .home-logos_logo.is-mono:hover{filter:brightness(0) saturate(100%) drop-shadow(0 0 14px rgba(88,165,251,.55))}
-.home-press_logo{transition:opacity .5s,filter .5s}
+.home-press_logo.is-in{transition:opacity .5s,filter .5s}
 .home-press_logo:hover{opacity:1;filter:drop-shadow(0 0 18px rgba(88,165,251,.45))}
 
 /* --- journey (pinned 3D story) --- */

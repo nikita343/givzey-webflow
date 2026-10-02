@@ -48,7 +48,9 @@ export function initReveals(skip = new Set()) {
 
   // press logos: they develop like ink on paper
   const press = gsap.utils.toArray('.home-press_logo');
-  if (press.length) gsap.from(press, { opacity: 0, filter: 'blur(12px) grayscale(1)', duration: 1.2, ease: 'power2.out', stagger: .12, scrollTrigger: { trigger: '.home-press_list', start: 'top 88%', once: true } });
+  if (press.length) gsap.fromTo(press, { opacity: 0, filter: 'blur(12px) grayscale(1)' }, { opacity: 1, filter: 'blur(0px) grayscale(0)', duration: 1.2, ease: 'power2.out', stagger: .12, clearProps: 'opacity,filter',
+    onComplete: () => press.forEach(e => e.classList.add('is-in')),   // hover transitions only after the reveal, so CSS never fights GSAP
+    scrollTrigger: { trigger: '.home-press_list', start: 'top 88%', once: true } });
 
   // footer
   const foot = gsap.utils.toArray('.footer_col, .footer_brand');
