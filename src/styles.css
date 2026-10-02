@@ -108,7 +108,7 @@ a:hover>.gz-underline,a:focus-visible>.gz-underline{transform:scaleX(1);transfor
 
 /* --- testimonials (Swiper) --- */
 /* one row that always fits: active card 43.5rem, the two others share what is left (2rem gaps) */
-.home-testimonials_slide{width:calc((100% - 47.5rem)/2)}
+.home-testimonials_slide{width:calc((100% - 47.5rem)/2);grid-template-columns:minmax(0,1fr)}   /* the grid track must follow the slide, not the wide card inside it */
 .home-testimonials_slider:not(.is-swiper) .home-testimonials_slide:first-child{width:43.5rem}
 .home-testimonials_slider:not(.is-swiper) .home-testimonials_slide:first-child .home-testimonials_logo-card,
 .home-testimonials_slider:not(.is-swiper) .home-testimonials_slide:not(:first-child) .home-testimonials_card{display:none}
