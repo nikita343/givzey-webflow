@@ -19,7 +19,8 @@ export function initTestimonials() {
     spaceBetween: 32,
     speed: REDUCED ? 0 : 750,
     rewind: true,
-    watchOverflow: false,      // all three slides fit in one row, which would otherwise lock navigation
+    watchOverflow: false,        // all three slides fit in one row, which would otherwise lock navigation
+    normalizeSlideIndex: false,  // ...and would snap every slideTo() back to the first card
     watchSlidesProgress: true,
     a11y: { slideLabelMessage: '{{index}} of {{slidesLength}}' },
     on: {
