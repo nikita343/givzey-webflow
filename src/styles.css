@@ -377,10 +377,10 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
 }
 @media (max-width:767px){
   .vpgo-pipeline_heading,.vpgo-cap_heading{font-size:2.25rem}
-  .vpgo-pipeline_card{aspect-ratio:auto;height:24rem}
-  .vpgo-pipeline_stage{inset:0 auto 0 50%;width:52rem;transform:translateX(-50%);font-size:calc(52rem / 84)}
+  .vpgo-pipeline_card{aspect-ratio:auto;height:28rem}
+  .vpgo-pipeline_stage{inset:0 auto auto 50%;width:52rem;height:24rem;transform:translateX(-50%);font-size:calc(52rem / 84)}
   .vpgo-pipeline_legend,.vpgo-pipeline_waterlabel{display:none}
-  .vpgo-pipeline_proof{left:0;right:0;top:auto;bottom:1.5em;margin-left:auto;margin-right:auto;width:max-content;font-size:1.35em}
+  .vpgo-pipeline_proof{left:0;right:0;top:auto;bottom:-3.4rem;margin-left:auto;margin-right:auto;width:max-content;font-size:1.3em}
   .vpgo-cap_visual{height:15rem}
   .vpgo-cap_scene{transform:scale(.8)}
   .vpgo-cap_text{padding-left:.75rem;padding-right:.75rem}

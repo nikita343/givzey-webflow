@@ -91,7 +91,6 @@ function pipeline() {
   const sea = card.querySelector('.vpgo-pipeline_sea'), label = card.querySelector('.vpgo-pipeline_waterlabel');
   const proofTitle = proof?.querySelector('.vpgo-pipeline_proof-title');
 
-  gsap.set([trails, nodes, tops], { transformBox: 'fill-box' });
   gsap.set(trails, { transformOrigin: '50% 0%', scaleY: 0 });
   gsap.set(nodes, { transformOrigin: '50% 50%', scale: 0 });
   gsap.set(tops, { transformOrigin: '50% 50%', scale: 0 });
