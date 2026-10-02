@@ -1,7 +1,7 @@
 // Testimonials carousel (Swiper). The active slide opens into the full quote card with the ink border;
-// the others sit as compact logo cards. Arrows, keyboard, drag and click-to-open all work.
+// the others sit as compact logo cards. Arrows, keyboard and click-to-open all work.
 import Swiper from 'swiper';
-import { Navigation, Keyboard, A11y } from 'swiper/modules';
+import { A11y } from 'swiper/modules';
 import { gsap } from 'gsap';
 import { REDUCED } from '../base.js';
 
@@ -12,7 +12,7 @@ export function initTestimonials() {
   const next = document.querySelector('.home-testimonials_arrow:not(.is-prev)');
   el.classList.add('is-swiper');
   const swiper = new Swiper(el, {
-    modules: [Navigation, Keyboard, A11y],
+    modules: [A11y],
     wrapperClass: 'home-testimonials_track',
     slideClass: 'home-testimonials_slide',
     slidesPerView: 'auto',
@@ -20,12 +20,8 @@ export function initTestimonials() {
     speed: REDUCED ? 0 : 750,
     rewind: true,
     watchOverflow: false,      // all three slides fit in one row, which would otherwise lock navigation
-    slideToClickedSlide: true,
     watchSlidesProgress: true,
-    grabCursor: true,
-    keyboard: { enabled: true, onlyInViewport: true },
-    navigation: { prevEl: prev, nextEl: next },
-    a11y: { prevSlideMessage: 'Previous testimonial', nextSlideMessage: 'Next testimonial' },
+    a11y: { slideLabelMessage: '{{index}} of {{slidesLength}}' },
     on: {
       // widths change with the active state, so Swiper re-measures once the CSS transition settles
       slideChangeTransitionStart(s) { clearTimeout(s._gzT); s._gzT = setTimeout(() => s.update(), 760); },
@@ -36,6 +32,22 @@ export function initTestimonials() {
       }
     }
   });
-  [prev, next].forEach(a => a && a.addEventListener('click', e => e.preventDefault()));
+  // Navigation is ours, not Swiper's: on desktop all three cards fit in one row, so Swiper sees
+  // "already at the end" and slideNext would rewind to the first card. slideTo(index) always works.
+  const n = swiper.slides.length;
+  const go = i => swiper.slideTo(((i % n) + n) % n);
+  prev && prev.addEventListener('click', e => { e.preventDefault(); go(swiper.activeIndex - 1); });
+  next && next.addEventListener('click', e => { e.preventDefault(); go(swiper.activeIndex + 1); });
+  el.addEventListener('click', e => {
+    const slide = e.target.closest('.home-testimonials_slide');
+    if (slide && !slide.classList.contains('swiper-slide-active')) go(swiper.slides.indexOf(slide));
+  });
+  let inView = false;
+  new IntersectionObserver(es => { inView = es[0].isIntersecting; }, { threshold: .4 }).observe(el);
+  addEventListener('keydown', e => {
+    if (!inView || e.target.closest?.('input,textarea,select,[contenteditable]')) return;
+    if (e.key === 'ArrowRight') go(swiper.activeIndex + 1);
+    else if (e.key === 'ArrowLeft') go(swiper.activeIndex - 1);
+  });
   return swiper;
 }

@@ -45,6 +45,9 @@ function heroSequence(hero) {
 }
 
 async function boot() {
+  // reserve the journey's pinned scroll length before any ScrollTrigger measures the page
+  document.querySelector('.section_home-journey')?.classList.add('is-pinned');
+  addEventListener('load', () => ScrollTrigger.refresh());
   const intro = shouldIntro();
   const loader = intro ? playLoader() : null;
   const hero = document.querySelector('.section_home-hero');
@@ -72,7 +75,6 @@ async function boot() {
   // the 3D journey (three.js + 1 MB figure) only loads when its section is near
   const journey = document.querySelector('.section_home-journey');
   if (journey) {
-    journey.classList.add('is-pinned');   // reserve the scroll length now so nothing below jumps when the 3D loads
     const io = new IntersectionObserver(async es => {
       if (!es[0].isIntersecting) return; io.disconnect();
       const { initJourney } = await import('./modules/journey/index.js');
@@ -80,7 +82,7 @@ async function boot() {
     }, { rootMargin: '150% 0px' });
     io.observe(journey);
   }
-  addEventListener('load', () => ScrollTrigger.refresh());
+  ScrollTrigger.refresh();
   log('motion ready');
 }
 
