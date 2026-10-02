@@ -278,6 +278,9 @@ export function initHeroInk(hero, { intro = false } = {}) {
     if (!ok) { onReveal && onReveal(); return res(); }
     resolveIntro = res; S.bleed = 0; S.calm = 0; revealed = false;
     introState = { t: 0, fired: 0, revealed: false, onReveal };
+    // safety nets: the copy appears and the intro ends on time even if frames are scarce (background tab, weak GPU)
+    setTimeout(() => { const I = introState; if (I && !I.revealed) { I.revealed = true; revealed = true; onReveal && onReveal(); } }, 1400);
+    setTimeout(() => { if (introState) { const I = introState; if (!I.revealed) { I.revealed = true; onReveal && onReveal(); } introState = null; S.bleed = 1; S.calm = 1; revealed = true; res(); } }, 3500);
   });
   function runIntro(dt) {
     const I = introState; I.t += dt; const t = I.t;
@@ -295,7 +298,7 @@ export function initHeroInk(hero, { intro = false } = {}) {
     const raw = now - prev, dt = Math.min(raw / 1000, 1 / 30); prev = now;
     if (!introState && raw < 200) { perf.sum += raw; if (++perf.n === 90) { const avg = perf.sum / perf.n; perf.n = perf.sum = 0;
       if (avg > 20 && quality > .75) setQuality(quality > 1 ? 1 : .75); } }
-    if (introState) runIntro(dt);
+    if (introState) runIntro(Math.min(raw / 1000, .1));   // the intro follows the clock, so a slow GPU can't stretch it
     ambient(now / 1000); trail();
     step(dt * FEEL.simSpeed); render(now);
   }
