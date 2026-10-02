@@ -55,9 +55,13 @@ function decodeSculpt(buf) {
 export async function loadFigure(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error('figure ' + res.status);
-  let buf;
-  if ('DecompressionStream' in window) buf = await new Response(res.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
-  else throw new Error('no DecompressionStream');
+  let buf = await res.arrayBuffer();
+  // some CDNs serve .gz with Content-Encoding and the browser has already inflated it
+  const b = new Uint8Array(buf, 0, 2);
+  if (b[0] === 0x1f && b[1] === 0x8b) {
+    if (!('DecompressionStream' in window)) throw new Error('no DecompressionStream');
+    buf = await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  }
   return decodeSculpt(buf);
 }
 
