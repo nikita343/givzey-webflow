@@ -59,6 +59,7 @@ async function boot() {
   if (intro && loader) {
     await Promise.race([Promise.all([loader.done, ink?.ready]), new Promise(r => setTimeout(r, 2600))]);
     loader.leave();
+    if (lenis) setTimeout(() => lenis.start(), 3500);   // never hold the scroll longer than this, even on slow GPUs
     if (ink && ink.ok) ink.playIntro(() => heroTl && heroTl.play()).then(() => lenis && lenis.start());
     else { heroTl && heroTl.play(); lenis && lenis.start(); }
   } else if (heroTl) heroTl.play();
@@ -71,6 +72,7 @@ async function boot() {
   // the 3D journey (three.js + 1 MB figure) only loads when its section is near
   const journey = document.querySelector('.section_home-journey');
   if (journey) {
+    journey.classList.add('is-pinned');   // reserve the scroll length now so nothing below jumps when the 3D loads
     const io = new IntersectionObserver(async es => {
       if (!es[0].isIntersecting) return; io.disconnect();
       const { initJourney } = await import('./modules/journey/index.js');
