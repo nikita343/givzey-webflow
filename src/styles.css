@@ -8,8 +8,9 @@ html.gz-loader-on{overflow:hidden}
 
 /* --- hero live ink --- */
 .gz-hero-ink{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .6s ease}
-.section_home-hero.is-ink-live .gz-hero-ink{opacity:1}   /* never show an empty canvas over the static inks */
-.section_home-hero.is-ink-live .home-hero_ink{visibility:hidden}
+.is-ink-live>.gz-hero-ink,.is-ink-live .home-hero_ink-wrapper>.gz-hero-ink{opacity:1}   /* never show an empty canvas over the static inks */
+.section_home-hero.is-ink-live .home-hero_ink,.home-story_inner.is-ink-live .home-story_ink{visibility:hidden}
+.home-story_inner>.gz-hero-ink{z-index:0;pointer-events:none}
 
 /* --- living ink layers (product, story, CTA) --- */
 .gz-ink-src{visibility:hidden!important}
@@ -55,7 +56,6 @@ a:hover>.gz-underline,a:focus-visible>.gz-underline{transform:scaleX(1);transfor
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
 .gz-glow::after{background:radial-gradient(28rem circle at var(--mx,50%) var(--my,50%),rgba(var(--glow),.10),transparent 55%);mix-blend-mode:normal}
 .gz-glow:hover::before,.gz-glow:hover::after{opacity:1}
-.home-story_inner.gz-glow::after{background:radial-gradient(30rem circle at var(--mx,50%) var(--my,50%),rgba(var(--glow),.12),transparent 55%)}
 .home-testimonials_logo-card,.home-stats_card,.cta_component{position:relative}
 .home-testimonials_logo-card img,.home-testimonials_compact img{transition:filter .5s,opacity .5s}
 .home-testimonials_logo-card:hover img{filter:drop-shadow(0 0 16px rgba(88,165,251,.45))}

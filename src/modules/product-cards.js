@@ -12,21 +12,27 @@ function typingDots() {
   return t;
 }
 
+// Every message keeps its final place from the start (only opacity animates), so the card never
+// changes height or re-centres while the conversation plays. Typing dots float in the slot of the
+// message that is about to arrive instead of pushing the layout around.
 function chatSequence(list) {
   const tl = gsap.timeline();
-  const kids = [...list.children];
-  kids.forEach((el, i) => {
+  if (getComputedStyle(list).position === 'static') list.style.position = 'relative';
+  list.querySelectorAll(':scope > .gz-typing').forEach(d => d.remove());
+  [...list.children].forEach(el => {
     if (el.classList.contains('mock-time')) { tl.from(el, { opacity: 0, duration: .5 }, 0); return; }
     const donor = el.classList.contains('is-donor');
     if (!donor) {
-      const dots = typingDots(); el.before(dots);
-      gsap.set(dots, { display: 'none' });
-      tl.set(dots, { display: 'flex' }, '+=.15').from(dots, { opacity: 0, scale: .6, transformOrigin: '0% 100%', duration: .25 }, '<')
-        .to(dots, { opacity: 0, duration: .15 }, '+=.75').set(dots, { display: 'none' });
+      const dots = typingDots(); list.appendChild(dots);
+      gsap.set(dots, { position: 'absolute', margin: 0, autoAlpha: 0 });
+      tl.call(() => gsap.set(dots, { left: el.offsetLeft, top: el.offsetTop }), null, '+=.15')
+        .fromTo(dots, { autoAlpha: 0, scale: .6, transformOrigin: '0% 100%' }, { autoAlpha: 1, scale: 1, duration: .25 }, '<')
+        .to(dots, { autoAlpha: 0, scale: .9, duration: .2 }, '+=.75');
     }
-    tl.from(el, { opacity: 0, scale: .92, filter: 'blur(6px)', transformOrigin: donor ? '100% 100%' : '0% 100%', duration: .55, ease: 'back.out(1.6)' }, donor ? '+=.45' : '>');
+    tl.fromTo(el, { opacity: 0, scale: .96, filter: 'blur(6px)', transformOrigin: donor ? '100% 100%' : '0% 100%' },
+      { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'power3.out', clearProps: 'filter,transform' }, donor ? '+=.45' : '-=.12');
     const inner = el.querySelector('.mock-linkcard, .mock-video');
-    if (inner) tl.from(inner, { opacity: 0, filter: 'blur(6px)', duration: .5, ease: 'power2.out' }, '-=.15');
+    if (inner) tl.from(inner, { opacity: 0, filter: 'blur(6px)', duration: .5, ease: 'power2.out', clearProps: 'filter' }, '-=.15');
   });
   return tl;
 }

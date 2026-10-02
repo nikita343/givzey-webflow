@@ -95,11 +95,19 @@ async function composite(hero, imgs, w, h) {
 }
 
 export function initHeroInk(hero, { intro = false } = {}) {
-  const imgs = [...hero.querySelectorAll('.home-hero_ink')];
-  const wrap = hero.querySelector('.home-hero_ink-wrapper') || hero;
-  const copy = hero.querySelector('.home-hero_content') || hero;
+  return initInkSim(hero, { intro, inkSel: '.home-hero_ink', wrapSel: '.home-hero_ink-wrapper', calmSel: '.home-hero_content' });
+}
+
+// Any block whose ink <img>s should become live fluid. Options:
+//   inkSel / wrapSel / calmSel — the artwork, where the canvas goes, the copy the ink keeps clear of
+//   top / bot — background gradient behind the art, bleedBase — colour the bleed reveal opens from
+//   armed — start hidden (bleed 0) and wait for playIntro(), e.g. when the block scrolls into view
+export function initInkSim(hero, { intro = false, inkSel, wrapSel, calmSel, top = '#030B2C', bot = '#031149', bleedBase = '#01061a', armed = false, prepend = false } = {}) {
+  const imgs = [...hero.querySelectorAll(inkSel)];
+  const wrap = (wrapSel && hero.querySelector(wrapSel)) || hero;
+  const copy = (calmSel && hero.querySelector(calmSel)) || hero;
   const canvas = document.createElement('canvas'); canvas.className = 'gz-hero-ink'; canvas.setAttribute('aria-hidden', 'true');
-  wrap.appendChild(canvas);
+  prepend ? wrap.prepend(canvas) : wrap.appendChild(canvas);
 
   const params = { alpha: false, depth: false, stencil: false, antialias: false, preserveDrawingBuffer: false };
   let gl = canvas.getContext('webgl2', params); const gl2 = !!gl;
@@ -181,7 +189,7 @@ export function initHeroInk(hero, { intro = false } = {}) {
     if (!vel.good || !dye.good) ok = false;
   }
 
-  const S = { velDiss: .35, dyeDiss: .9, dyeFade: .07, dyeSpread: .14, curl: 4, calm: 1, bleed: 1, push: 1.4 };
+  const S = { velDiss: .35, dyeDiss: .9, dyeFade: .07, dyeSpread: .14, curl: 4, calm: 1, bleed: armed ? 0 : 1, push: 1.4 };
   const FEEL = { simSpeed: .55, trailForce: 820, trailPush: 1, trailInk: .3, trailRadius: .7, swirlEvery: .11, swirlOffset: .055, swirlSize: .085, swirlSpeed: 220 };
   const INKS = [[1, .12], [.15, 1], [.85, .35], [.3, .9]];
   const glow = (i, s) => { const c = INKS[i % INKS.length]; return [c[0] * s, c[1] * s, 0]; };
@@ -220,7 +228,7 @@ export function initHeroInk(hero, { intro = false } = {}) {
     const r = copy.getBoundingClientRect(), c = canvas.getBoundingClientRect(); if (!c.width || !c.height) return;
     calmRect = [(r.left + r.width / 2 - c.left) / c.width, 1 - (r.top + r.height / 2 - c.top) / c.height, Math.max(.15, r.width / c.width * .45), Math.max(.15, r.height / c.height * .5)];
   }
-  const TOP = hex('#030B2C'), BOT = hex('#031149'), BLEED = hex('#01061a');
+  const TOP = hex(top), BOT = hex(bot), BLEED = hex(bleedBase);
   function render(now) {
     const u = use('display'); gl.uniform2f(u.texel, dye.tx, dye.ty);
     gl.uniform1i(u.uDye, dye.read.bind(0)); gl.uniform1i(u.uVel, vel.read.bind(1));
@@ -232,7 +240,7 @@ export function initHeroInk(hero, { intro = false } = {}) {
   }
 
   // pointer: ink laid along the whole path since last frame
-  let ptr = null, prevPtr = null, travelled = 0, swirlN = 0, revealed = !intro;
+  let ptr = null, prevPtr = null, travelled = 0, swirlN = 0, revealed = !intro && !armed;
   const onMove = e => {
     if (e.target.closest && e.target.closest('.navbar_component')) { ptr = prevPtr = null; return; }
     const c = canvas.getBoundingClientRect(); ptr = [(e.clientX - c.left) / c.width, 1 - (e.clientY - c.top) / c.height];

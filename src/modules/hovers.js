@@ -44,7 +44,6 @@ const GLOW = [
   ['.home-stats_card', '88,165,251'],
   ['.home-testimonials_logo-card', '88,165,251'],
   ['.cta_component', '88,165,251'],
-  ['.home-story_inner', '171,230,255'],
   ['.navbar_dropdown-feature', '171,230,255'],
 ];
 function glowCards() {

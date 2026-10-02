@@ -2,6 +2,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { inkLayer } from './ink-layer.js';
+import { initInkSim } from './hero-ink.js';
 import { REDUCED } from '../base.js';
 
 // "$20M+" / "4x" / "43%" / "$1M+": count the number part, keep prefix and suffix
@@ -38,11 +39,15 @@ export function initStats() {
 export function initStory() {
   const inner = document.querySelector('.home-story_inner');
   if (!inner) return;
-  const inks = [...inner.querySelectorAll('.home-story_ink')].map((img, i) => inkLayer(img, { host: inner, origin: i ? [.6, 1] : [.2, 0], seed: 5 + i * 2 }));
-  if (REDUCED) { inks.forEach(l => l.setReveal(1)); return; }
+  // the card's two inks become one live fluid (same engine as the hero, on the card's navy):
+  // they bleed in when the card arrives, the cursor stirs them and leaves a blue trail, drops fall now and then
+  const NAVY = '#010B29';
+  const sim = initInkSim(inner, { inkSel: '.home-story_ink', calmSel: '.home-story_intro', top: NAVY, bot: NAVY, bleedBase: NAVY, armed: !REDUCED, prepend: true });
+  if (REDUCED) return;
   const num = inner.querySelector('.home-story_number'); if (num) countUp(num, { duration: 2.2 });
-  const o = { r: 0 };
-  gsap.to(o, { r: 1, duration: 3, ease: 'power2.out', onUpdate: () => inks.forEach(l => l.setReveal(o.r)), scrollTrigger: { trigger: inner, start: 'top 75%', once: true } });
+  ScrollTrigger.create({ trigger: inner, start: 'top 75%', once: true, onEnter: () => {
+    if (sim.ok) Promise.race([sim.ready, new Promise(r => setTimeout(r, 2500))]).then(() => sim.ok && sim.playIntro());
+  } });
   const photo = inner.querySelector('.home-story_photo');
   if (photo) gsap.fromTo(photo, { scale: 1.12, yPercent: -3 }, { scale: 1, yPercent: 3, ease: 'none', scrollTrigger: { trigger: inner, start: 'top bottom', end: 'bottom top', scrub: true } });
   const logo = inner.querySelector('.home-story_logo');
