@@ -75,6 +75,53 @@ function hero() {
   });
 }
 
+/* ---------- hero conversation (VPGO, VSO): the officer writes, the donor types back, the outcome surfaces ---------- */
+const CHECK = '<svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M15 4.5L6.75 12.75L3 9" stroke="currentColor" stroke-width="1.95" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function chat() {
+  const stack = document.querySelector('.product-chat_stack'); if (!stack) return;
+  const visual = stack.closest('.product-hero_visual');
+  const email = stack.querySelector('.product-chat_card'), reply = stack.querySelector('.product-chat_reply');
+  const bubble = stack.querySelector('.product-chat_bubble'), surfaced = stack.querySelector('.product-chat_status');
+  const check = stack.querySelector('.product-chat_status-icon'), pill = stack.querySelector('.product-chat_pill');
+  if (check && !check.querySelector('svg')) check.innerHTML = CHECK;
+  const tick = check?.querySelector('path');   // the outcome icon draws itself (check, heart…)
+  if (REDUCED) return;
+
+  // typing dots live in the reply row until Richard's message lands
+  const dots = document.createElement('div'); dots.className = 'product-chat_typing'; dots.setAttribute('aria-hidden', 'true');
+  dots.innerHTML = '<span></span><span></span><span></span>';
+  reply?.prepend(dots);
+  const L = tick ? tick.getTotalLength() : 20;
+  if (tick) gsap.set(tick, { strokeDasharray: L, strokeDashoffset: L });
+  gsap.set([email, bubble, surfaced], { opacity: 0 });
+  gsap.set(dots, { opacity: 0, scale: .6, transformOrigin: '100% 100%' });
+
+  const tl = gsap.timeline({ delay: .75 });
+  tl.fromTo(email, { opacity: 0, filter: 'blur(12px)', scale: .97, transformOrigin: '50% 0%' }, { opacity: 1, filter: 'blur(0px)', scale: 1, duration: 1.1, ease: 'expo.out', clearProps: 'filter,scale' }, 0)
+    .from(email.children, { opacity: 0, filter: 'blur(6px)', duration: .7, ease: 'power2.out', stagger: .12, clearProps: 'filter' }, .15)
+    .to(dots, { opacity: 1, scale: 1, duration: .45, ease: 'back.out(2)' }, 1.15)
+    .to(dots, { opacity: 0, scale: .6, duration: .3, ease: 'power2.in' }, 2.15)
+    .fromTo(bubble, { opacity: 0, filter: 'blur(10px)', scale: .94, transformOrigin: '100% 100%' }, { opacity: 1, filter: 'blur(0px)', scale: 1, duration: .9, ease: 'expo.out', clearProps: 'filter,scale' }, 2.3)
+    .fromTo(surfaced, { opacity: 0, filter: 'blur(12px)' }, { opacity: 1, filter: 'blur(0px)', duration: 1, ease: 'power3.out', clearProps: 'filter' }, 3.05)
+    .from(check, { scale: 0, duration: .6, ease: 'back.out(2.2)' }, 3.2);
+  if (tick) tl.to(tick, { strokeDashoffset: 0, duration: .55, ease: 'power2.out' }, 3.45);
+  tl.add(() => check?.classList.add('is-ping'), 3.6)
+    .from(pill, { opacity: 0, scale: .7, filter: 'blur(6px)', duration: .7, ease: 'back.out(2)', clearProps: 'filter' }, 3.7)
+    .add(() => dots.remove());
+
+  if (!FINE || !visual) return;
+  // the conversation floats with the cursor; nearer cards travel further
+  const items = [surfaced, reply, email].filter(Boolean);
+  tl.then(() => {
+    const qs = items.map((c, i) => { const d = 1 - i * .22; return [gsap.quickTo(c, 'x', { duration: .9, ease: 'power3' }), gsap.quickTo(c, 'y', { duration: .9, ease: 'power3' }), d]; });
+    visual.addEventListener('pointermove', e => {
+      const r = visual.getBoundingClientRect(), nx = (e.clientX - r.left) / r.width - .5, ny = (e.clientY - r.top) / r.height - .5;
+      qs.forEach(([qx, qy, d]) => { qx(nx * 16 * d); qy(ny * 10 * d); });
+    });
+    visual.addEventListener('pointerleave', () => qs.forEach(([qx, qy]) => { qx(0); qy(0); }));
+  });
+}
+
 /* ---------- donor pyramid: built from the base up, the VEO tier glows, dots light up row by row ---------- */
 function pyramid() {
   const box = document.querySelector('.veo-meet_pyramid'); if (!box) return;
@@ -142,7 +189,7 @@ function stats() {
 
 /* ---------- capabilities: cards develop in as they arrive ---------- */
 function capabilities() {
-  const cards = gsap.utils.toArray('.veo-cap_card'); if (!cards.length || REDUCED) return;
+  const cards = gsap.utils.toArray('.veo-cap_card, .product-cap_card'); if (!cards.length || REDUCED) return;
   gsap.set(cards, { opacity: 0, filter: 'blur(10px)' });
   ScrollTrigger.batch(cards, { start: 'top 92%', once: true, interval: .12,
     onEnter: batch => gsap.to(batch, { opacity: 1, filter: 'blur(0px)', duration: .9, ease: 'power2.out', stagger: .07, clearProps: 'filter' }) });
@@ -252,7 +299,7 @@ function faq() {
 }
 
 export function initProduct() {
-  for (const [name, fn] of Object.entries({ hero, pyramid, stats, capabilities, trust, proof, faq })) {
+  for (const [name, fn] of Object.entries({ hero, chat, pyramid, stats, capabilities, trust, proof, faq })) {
     try { fn(); } catch (e) { console.error('[givzey] product', name, e); }
   }
 }

@@ -4,8 +4,8 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 
-const HEADINGS = '.heading-style-h1, .heading-style-h2, .home-press_heading, .home-story_title, .home-story_subheading, .veo-meet_heading, .veo-cap_heading, .veo-trust_heading, .veo-proof_heading, .product-faq_heading, .vpgo-pipeline_heading, .vpgo-cap_heading, .vpgo-story_title';
-const COPY = '.home-product_text, .home-hero_text, .home-story_text, .home-story_label, .cta_text, .home-journey_text, .footer_tagline, .veo-meet_text, .veo-cap_intro, .veo-trust_text, .veo-proof_sub, .product-faq_sub, .vpgo-pipeline_text, .vpgo-stats_note, .vpgo-story_text';
+const HEADINGS = '.heading-style-h1, .heading-style-h2, .home-press_heading, .home-story_title, .home-story_subheading, .veo-meet_heading, .veo-cap_heading, .veo-trust_heading, .veo-proof_heading, .product-faq_heading, .product-intro_heading, .product-cap_heading, .vpgo-story_title';
+const COPY = '.home-product_text, .home-hero_text, .home-story_text, .home-story_label, .cta_text, .home-journey_text, .footer_tagline, .veo-meet_text, .veo-cap_intro, .veo-trust_text, .veo-proof_sub, .product-faq_sub, .product-intro_text, .vpgo-stats_note, .vpgo-story_text';
 const TAGS = '.tag, .home-logos_label, .home-stats_chip, .veo-trust_tag';
 
 export function headingBleed(el, { delay = 0, trigger = el, start = 'top 85%', light = false } = {}) {

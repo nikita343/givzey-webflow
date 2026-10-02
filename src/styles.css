@@ -319,15 +319,15 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
 .product-hero_visual.is-vpgo:hover .product-hero_label-arrow{box-shadow:0 .75em 1.875em rgba(13,64,26,.2),0 0 0 .4em rgba(46,158,94,.16)}
 
 /* ================= VPGO ================= */
-.vpgo-hero_stack,.vpgo-hero_email,.vpgo-hero_reply,.vpgo-hero_surfaced{will-change:transform}
-.vpgo-hero_reply{position:relative}
-.vpgo-hero_typing{position:absolute;right:0;top:0;display:flex;align-items:center;gap:.3em;height:2.5em;padding:0 1em;border-radius:1.125em;background:#030b2c}
-.vpgo-hero_typing span{width:.375em;height:.375em;border-radius:50%;background:rgba(255,255,255,.75);animation:gzTyping 1s ease-in-out infinite}
-.vpgo-hero_typing span:nth-child(2){animation-delay:.15s}.vpgo-hero_typing span:nth-child(3){animation-delay:.3s}
+.product-chat_stack,.product-chat_card,.product-chat_reply,.product-chat_status{will-change:transform}
+.product-chat_reply{position:relative}
+.product-chat_typing{position:absolute;right:0;top:0;display:flex;align-items:center;gap:.3em;height:2.5em;padding:0 1em;border-radius:1.125em;background:#030b2c}
+.product-chat_typing span{width:.375em;height:.375em;border-radius:50%;background:rgba(255,255,255,.75);animation:gzTyping 1s ease-in-out infinite}
+.product-chat_typing span:nth-child(2){animation-delay:.15s}.product-chat_typing span:nth-child(3){animation-delay:.3s}
 @keyframes gzTyping{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-.2em);opacity:1}}
-.vpgo-hero_check svg{width:1.125em;height:1.125em;color:#fff;overflow:visible}
-.vpgo-hero_check.is-ping,.vpgo-stats_dot.is-ping,.vpgo-cap_seal.is-ping,.vpgo-cap_qcd-date.is-ping{position:relative}
-.vpgo-hero_check.is-ping::after,.vpgo-stats_dot.is-ping::after,.vpgo-cap_seal.is-ping::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid rgba(46,158,94,.55);animation:gzPing 2.4s cubic-bezier(.2,.7,.3,1) infinite;pointer-events:none}
+.product-chat_status-icon svg{width:1.125em;height:1.125em;color:#fff;overflow:visible}
+.product-chat_status-icon.is-ping,.vpgo-stats_dot.is-ping,.vpgo-cap_seal.is-ping,.vpgo-cap_qcd-date.is-ping{position:relative}
+.product-chat_status-icon.is-ping::after,.vpgo-stats_dot.is-ping::after,.vpgo-cap_seal.is-ping::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid rgba(46,158,94,.55);animation:gzPing 2.4s cubic-bezier(.2,.7,.3,1) infinite;pointer-events:none}
 @keyframes gzPing{0%{transform:scale(1);opacity:.9}70%,100%{transform:scale(2.1);opacity:0}}
 .vpgo-cap_seal.is-ping::after{inset:-.39rem;animation-duration:3s}
 
@@ -353,22 +353,22 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
 @keyframes gzBlink{0%,100%{text-shadow:none}50%{text-shadow:0 0 .8em rgba(46,158,94,.6)}}
 .vpgo-cap_handoff{position:relative}
 .vpgo-cap_spark{position:absolute;left:50%;width:.6rem;height:.6rem;margin-left:-.3rem;border-radius:50%;background:#6bd99a;box-shadow:0 0 1rem #2e9e5e,0 0 2rem rgba(46,158,94,.6);pointer-events:none;opacity:0}
-.vpgo-cap_ink{transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
-.vpgo-cap_card:hover .vpgo-cap_ink{transform:rotate(-8deg) scale(1.08)}
+.product-cap_ink{transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
+.product-cap_card:hover .product-cap_ink{transform:rotate(-8deg) scale(1.08)}
 
 /* story */
 .vpgo-story_link{transition:box-shadow .45s ease}
 .vpgo-story_link:hover{box-shadow:0 0 0 1px rgba(107,217,154,.5),0 0 28px rgba(107,217,154,.35)}
 
-@media (prefers-reduced-motion:reduce){ .vpgo-hero_check::after,.vpgo-stats_dot::after,.vpgo-cap_seal::after{animation:none!important} }
+@media (prefers-reduced-motion:reduce){ .product-chat_status-icon::after,.vpgo-stats_dot::after,.vpgo-cap_seal::after{animation:none!important} }
 
 /* tablet / phone */
 @media (max-width:991px){
-  .vpgo-pipeline_head{flex-direction:column;row-gap:1.5rem}
-  .vpgo-pipeline_lead{width:100%;max-width:40rem;padding-top:0}
-  .vpgo-pipeline_heading{font-size:3rem}
-  .vpgo-cap_row,.vpgo-cap_row.is-flip{grid-template-columns:minmax(0,1fr)}
-  .vpgo-cap_heading{font-size:2.75rem}
+  .product-intro_head{flex-direction:column;row-gap:1.5rem}
+  .product-intro_lead{width:100%;max-width:40rem;padding-top:0}
+  .product-intro_heading{font-size:3rem}
+  .product-cap_row,.product-cap_row.is-flip{grid-template-columns:minmax(0,1fr)}
+  .product-cap_heading{font-size:2.75rem}
   .vpgo-story_card{height:auto;display:flex;flex-direction:column;row-gap:2rem;padding:3rem 2rem}
   .vpgo-story_copy,.vpgo-story_quote,.vpgo-story_link{position:relative;left:auto;top:auto;bottom:auto;transform:none;width:100%}
   .vpgo-story_quote{max-width:40rem}
@@ -376,14 +376,14 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
   .vpgo-story_photo{height:100%;top:0}
 }
 @media (max-width:767px){
-  .vpgo-pipeline_heading,.vpgo-cap_heading{font-size:2.25rem}
+  .product-intro_heading,.product-cap_heading{font-size:2.25rem}
   .vpgo-pipeline_card{aspect-ratio:auto;height:28rem}
   .vpgo-pipeline_stage{inset:0 auto auto 50%;width:52rem;height:24rem;transform:translateX(-50%);font-size:calc(52rem / 84)}
   .vpgo-pipeline_legend,.vpgo-pipeline_waterlabel{display:none}
   .vpgo-pipeline_proof{left:0;right:0;top:auto;bottom:-3.4rem;margin-left:auto;margin-right:auto;width:max-content;font-size:1.3em}
-  .vpgo-cap_visual{height:15rem}
-  .vpgo-cap_scene{transform:scale(.8)}
-  .vpgo-cap_text{padding-left:.75rem;padding-right:.75rem}
+  .product-cap_visual{height:15rem}
+  .product-cap_scene{transform:scale(.8)}
+  .product-cap_text{padding-left:.75rem;padding-right:.75rem}
   .vpgo-story_number{font-size:4.5rem}
   .vpgo-story_card{padding:2.25rem 1.5rem}
   .vpgo-story_quote{padding:1.5rem}
@@ -391,6 +391,6 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
   .product-stats_row.is-inline{padding:1.5rem;flex-direction:column;align-items:flex-start;row-gap:.25rem}
 }
 @media (max-width:479px){
-  .vpgo-cap_scene{transform:scale(.68)}
+  .product-cap_scene{transform:scale(.68)}
   .vpgo-story_number{font-size:3.5rem}
 }
