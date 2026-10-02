@@ -13,6 +13,10 @@ const NOISE = `float hash(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45
 const FRAG = {
   splat: HEAD + `uniform sampler2D uTarget; uniform float aspect,radius; uniform vec3 color; uniform vec2 point;
     void main(){ vec2 p=vUv-point; p.x*=aspect; gl_FragColor=vec4(texture2D(uTarget,vUv).xyz+exp(-dot(p,p)/radius)*color,1.); }`,
+  // a whole pointer segment in one pass (was up to 32 separate splats per frame, each a full-res pass)
+  seg: HEAD + `uniform sampler2D uTarget; uniform float aspect,radius; uniform vec3 color; uniform vec2 a,b;
+    void main(){ vec2 pa=(vUv-a)*vec2(aspect,1.),ba=(b-a)*vec2(aspect,1.); float h=clamp(dot(pa,ba)/max(dot(ba,ba),1e-9),0.,1.);
+      vec2 d=pa-ba*h; gl_FragColor=vec4(texture2D(uTarget,vUv).xyz+exp(-dot(d,d)/radius)*color,1.); }`,
   advect: HEAD + `uniform sampler2D uVel,uSrc; uniform vec2 velTexel,srcTexel; uniform float dt,dissipation,fade,spread;
     void main(){ vec2 c=vUv-dt*texture2D(uVel,vUv).xy*velTexel; vec3 v=texture2D(uSrc,c).xyz;
       vec3 nb=.25*(texture2D(uSrc,c+vec2(srcTexel.x,0.)).xyz+texture2D(uSrc,c-vec2(srcTexel.x,0.)).xyz+texture2D(uSrc,c+vec2(0.,srcTexel.y)).xyz+texture2D(uSrc,c-vec2(0.,srcTexel.y)).xyz);
@@ -148,7 +152,7 @@ export function initHeroInk(hero, { intro = false } = {}) {
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
   let artReady = false;
   async function buildArt() {
-    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    const dpr = Math.min(devicePixelRatio || 1, 1.5);   // the artwork texture stays crisp; only the output canvas scales down
     const c = await composite(hero, imgs, Math.round(hero.clientWidth * dpr), Math.round(hero.clientHeight * dpr));
     gl.bindTexture(gl.TEXTURE_2D, art);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -158,12 +162,18 @@ export function initHeroInk(hero, { intro = false } = {}) {
   }
 
   let vel, dye, div, curlT, prs, aspect = 1;
+  // render scale: starts at 1.25x and steps down if the GPU can't hold ~50 fps (the ink is soft, nobody sees the difference)
+  let quality = innerWidth < 820 ? 1 : 1.25;
+  function setQuality(q) {
+    quality = q; const dpr = Math.min(devicePixelRatio || 1, q);
+    canvas.width = Math.max(2, Math.round(canvas.clientWidth * dpr)); canvas.height = Math.max(2, Math.round(canvas.clientHeight * dpr));
+  }
   function allocate() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const dpr = Math.min(window.devicePixelRatio || 1, quality);
     canvas.width = Math.max(2, Math.round(canvas.clientWidth * dpr)); canvas.height = Math.max(2, Math.round(canvas.clientHeight * dpr));
     aspect = canvas.width / canvas.height;
     const size = base => aspect >= 1 ? [Math.round(base * aspect), base] : [base, Math.round(base / aspect)];
-    const small = innerWidth < 820, [sw, sh] = size(small ? 80 : 110), [dw, dh] = size(small ? 384 : 640);
+    const small = innerWidth < 820, [sw, sh] = size(small ? 80 : 110), [dw, dh] = size(small ? 320 : 512);
     vel = dbl(sw, sh); dye = dbl(dw, dh); div = fbo(sw, sh); curlT = fbo(sw, sh); prs = dbl(sw, sh);
     if (!vel.good || !dye.good) ok = false;
   }
@@ -177,6 +187,11 @@ export function initHeroInk(hero, { intro = false } = {}) {
     gl.uniform1f(u.radius, radius * (aspect > 1 ? aspect : 1) / 100);
     gl.uniform1i(u.uTarget, vel.read.bind(0)); gl.uniform3f(u.color, vx, vy, 0); blit(vel.write); vel.swap();
     if (color) { gl.uniform1f(u.radius, dyeRadius * (aspect > 1 ? aspect : 1) / 100); gl.uniform1i(u.uTarget, dye.read.bind(0)); gl.uniform3f(u.color, color[0], color[1], color[2]); blit(dye.write); dye.swap(); }
+  }
+  function splatSeg(a, b, vx, vy, color, rV, rD) {
+    const u = use('seg'); gl.uniform1f(u.aspect, aspect); gl.uniform2f(u.a, a[0], a[1]); gl.uniform2f(u.b, b[0], b[1]);
+    gl.uniform1f(u.radius, rV); gl.uniform1i(u.uTarget, vel.read.bind(0)); gl.uniform3f(u.color, vx, vy, 0); blit(vel.write); vel.swap();
+    gl.uniform1f(u.radius, rD); gl.uniform1i(u.uTarget, dye.read.bind(0)); gl.uniform3f(u.color, color[0], color[1], color[2]); blit(dye.write); dye.swap();
   }
   let inkIndex = 0;
   function drop(x, y, big, inkScale = 1) {
@@ -230,8 +245,11 @@ export function initHeroInk(hero, { intro = false } = {}) {
     if (!prevPtr) { prevPtr = ptr.slice(); return; }
     const dx = ptr[0] - prevPtr[0], dy = ptr[1] - prevPtr[1], sp = Math.hypot(dx * aspect, dy);
     if (sp < 0.0005) return;
-    const n = Math.min(32, Math.ceil(sp / .008)), k = Math.min(1, sp * 40), ink = glow(Math.floor(performance.now() / 260), FEEL.trailInk * k / n);
-    for (let j = 1; j <= n; j++) { const t = j / n; splat(prevPtr[0] + dx * t, prevPtr[1] + dy * t, dx * FEEL.trailForce * aspect / n, dy * FEEL.trailForce / n, ink, FEEL.trailPush, FEEL.trailRadius); }
+    // same density the old dotted trail produced: amount * min(1, gaussian width / segment length)
+    const k = Math.min(1, sp * 40), rs = aspect > 1 ? aspect : 1;
+    const rV = FEEL.trailPush * rs / 100, rD = FEEL.trailRadius * rs / 100;
+    const fV = Math.min(1, Math.sqrt(Math.PI * rV) / sp), fD = Math.min(1, Math.sqrt(Math.PI * rD) / sp);
+    splatSeg(prevPtr, ptr, dx * FEEL.trailForce * aspect * fV, dy * FEEL.trailForce * fV, glow(Math.floor(performance.now() / 260), FEEL.trailInk * k * fD), rV, rD);
     travelled += sp;
     if (travelled > FEEL.swirlEvery) {
       travelled = 0; const side = swirlN++ % 2 ? 1 : -1, nx = -dy / sp, ny = dx * aspect / sp;
@@ -267,11 +285,13 @@ export function initHeroInk(hero, { intro = false } = {}) {
     if (t > 2.2) { introState = null; S.bleed = 1; S.calm = 1; resolveIntro && resolveIntro(); }
   }
 
-  let prev = performance.now(), visible = true, raf = 0;
+  let prev = performance.now(), visible = true, raf = 0; const perf = { n: 0, sum: 0 };
   function frame(now) {
     raf = requestAnimationFrame(frame);
     if (!visible || document.hidden || !ok) { prev = now; return; }
-    const dt = Math.min((now - prev) / 1000, 1 / 30); prev = now;
+    const raw = now - prev, dt = Math.min(raw / 1000, 1 / 30); prev = now;
+    if (!introState && raw < 200) { perf.sum += raw; if (++perf.n === 90) { const avg = perf.sum / perf.n; perf.n = perf.sum = 0;
+      if (avg > 20 && quality > .75) setQuality(quality > 1 ? 1 : .75); } }
     if (introState) runIntro(dt);
     ambient(now / 1000); trail();
     step(dt * FEEL.simSpeed); render(now);

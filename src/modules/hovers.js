@@ -1,6 +1,6 @@
 // Hovers: ink and light, never the usual "lift a few pixels".
 //  - buttons: an ink blot spreads from where the cursor enters (wobbly edge via SVG turbulence) and the glow deepens
-//  - text links: a brush-stroke underline writes itself in, and wipes out the way the cursor leaves
+//  - text links: a brush-stroke underline wipes in from the left and out to the right (pure CSS, see styles.css)
 //  - cards: a light follows the cursor along the border and pools softly inside, tinted per product
 //  - nav: one liquid highlight glides between items
 import { gsap } from 'gsap';
@@ -36,12 +36,6 @@ function links() {
   document.querySelectorAll('.home-product_link, .home-story_link, .footer_link, .footer_legal-link, .footer_email').forEach(a => {
     if (a.querySelector('.gz-underline')) return;
     const u = document.createElement('span'); u.className = 'gz-underline'; u.innerHTML = BRUSH; a.appendChild(u);
-    const path = u.querySelector('path');
-    gsap.set(path, { strokeDasharray: 1, strokeDashoffset: 1 });
-    a.addEventListener('pointerenter', () => gsap.fromTo(path, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: .55, ease: 'power2.out', overwrite: true }));
-    a.addEventListener('pointerleave', () => gsap.to(path, { strokeDashoffset: -1, duration: .45, ease: 'power2.in', overwrite: true }));
-    a.addEventListener('focus', () => gsap.to(path, { strokeDashoffset: 0, duration: .4 }));
-    a.addEventListener('blur', () => gsap.to(path, { strokeDashoffset: 1, duration: .3 }));
   });
 }
 

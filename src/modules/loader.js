@@ -1,5 +1,5 @@
-// First-visit loader: the Givzey mark assembles like ink drops landing, then the hero's WebGL
-// ink bleeds open from the centre (see hero-ink.js). Repeat visits in the same session skip it.
+// Loader: the Givzey mark assembles like ink drops landing, then the hero's WebGL ink bleeds open
+// from the centre (see hero-ink.js). Plays on every homepage load; skipped with reduced motion.
 import { gsap } from 'gsap';
 import { LOGO } from '../logo.js';
 import { REDUCED } from '../base.js';
@@ -16,7 +16,6 @@ export function playLoader() {
   document.body.appendChild(el);
   root.classList.add('gz-loader-on');
   root.classList.remove('gz-intro');   // the CSS placeholder hands over to the real loader
-  try { sessionStorage.setItem('gz-intro', '1'); } catch { }
 
   const svg = el.querySelector('svg');
   const [symbol, word] = svg.querySelectorAll(':scope > g');

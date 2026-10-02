@@ -22,6 +22,16 @@ export function headingBleed(el, { delay = 0, trigger = el, start = 'top 85%', l
   return tl;
 }
 
+// gradient words: the gradient sweeps in (-100% → 0%) with the reveal, then keeps drifting slowly
+export function liveGradient(el, { loop = true } = {}) {
+  const spans = el.querySelectorAll('.home-hero_heading-gradient');
+  if (!spans.length) return gsap.timeline();
+  const tl = gsap.timeline();
+  tl.fromTo(spans, { backgroundPosition: '100% 0%' }, { backgroundPosition: '0% 0%', duration: 2.4, ease: 'power3.out' });
+  if (loop) tl.to(spans, { backgroundPosition: '45% 0%', duration: 4.5, ease: 'sine.inOut', repeat: -1, yoyo: true });
+  return tl;
+}
+
 export function fadeCopy(el, { delay = 0, trigger = el, start = 'top 88%' } = {}) {
   const tl = gsap.timeline({ paused: !!trigger, delay });
   tl.from(el, { opacity: 0, filter: 'blur(10px)', y: 14, duration: 1.1, ease: 'power3.out' });

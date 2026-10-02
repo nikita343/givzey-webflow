@@ -9,7 +9,7 @@ import Lenis from 'lenis';
 import { REDUCED } from './base.js';
 import { shouldIntro, playLoader } from './modules/loader.js';
 import { initHeroInk } from './modules/hero-ink.js';
-import { headingBleed, fadeCopy, unrollTag, initReveals } from './modules/reveal.js';
+import { headingBleed, fadeCopy, unrollTag, liveGradient, initReveals } from './modules/reveal.js';
 import { initProductCards } from './modules/product-cards.js';
 import { initStats, initStory, initCta } from './modules/sections.js';
 import { initHovers } from './modules/hovers.js';
@@ -39,6 +39,7 @@ function heroSequence(hero) {
   if (nav) tl.from(nav, { opacity: 0, filter: 'blur(10px)', duration: 1, ease: 'power2.out' }, 0);
   if (tag) tl.add(unrollTag(tag, { trigger: null }).play(), .05);
   if (h1) tl.add(headingBleed(h1, { trigger: null, light: true }).play(), .15);
+  if (h1) tl.add(liveGradient(h1), .15);
   if (text) tl.add(fadeCopy(text, { trigger: null }).play(), .55);
   if (btn) tl.from(btn, { opacity: 0, filter: 'blur(10px)', duration: 1, ease: 'power2.out' }, .75);
   return tl;

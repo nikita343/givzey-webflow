@@ -14,6 +14,9 @@ html.gz-loader-on{overflow:hidden}
 .gz-ink-src{visibility:hidden!important}
 canvas.gz-ink-canvas{display:block;height:auto}
 
+/* --- hero gradient words: double-width gradient so it can slide (rest state = the Figma white → blue) --- */
+.home-hero_heading-gradient{background-image:linear-gradient(90deg,#FFFFFF 0%,#75A9FC 50%,#ABE6FF 75%,#FFFFFF 100%)!important;background-size:200% 100%;background-position:0% 0%}
+
 /* --- reveals: words keep their layout --- */
 .gz-word{will-change:opacity,filter}
 
@@ -28,15 +31,16 @@ canvas.gz-ink-canvas{display:block;height:auto}
 .button{position:relative;overflow:hidden;isolation:isolate;transition:box-shadow .6s cubic-bezier(.2,.7,.2,1)}
 .button .gz-btn-ink{position:absolute;left:var(--x,50%);top:var(--y,50%);width:var(--d,20rem);aspect-ratio:1;border-radius:50%;
   translate:-50% -50%;scale:0;z-index:0;pointer-events:none;filter:url(#gz-ink-edge);
-  background:radial-gradient(circle,#ABE6FF 0%,#58A5FB 26%,#1E63E9 52%,#045CE8 70%);transition:scale .75s cubic-bezier(.2,.7,.2,1)}
+  background:radial-gradient(circle,rgba(171,230,255,.42) 0%,rgba(88,165,251,.3) 30%,rgba(30,99,233,.18) 52%,rgba(4,92,232,0) 70%);transition:scale .9s cubic-bezier(.2,.7,.2,1)}
 .button:hover .gz-btn-ink,.button:focus-visible .gz-btn-ink{scale:1}
-.button:hover,.button:focus-visible{box-shadow:0 0 0 1px rgba(171,230,255,.35),0 10px 50px 0 rgba(88,165,251,.55),0 0 90px 10px rgba(4,92,232,.35)}
+.button:hover,.button:focus-visible{box-shadow:0 0 0 1px rgba(171,230,255,.22),0 8px 32px 0 rgba(88,165,251,.32)}
 .button .button_text{transition:text-shadow .6s}
-.button:hover .button_text{text-shadow:0 0 14px rgba(255,255,255,.55)}
+.button:hover .button_text{text-shadow:0 0 10px rgba(255,255,255,.25)}
 
 /* --- links: brush underline --- */
 .home-product_link,.home-story_link,.footer_link,.footer_legal-link,.footer_email{position:relative;transition:color .35s,text-shadow .35s}
-.gz-underline{position:absolute;left:0;right:0;bottom:-.45em;height:.5em;pointer-events:none}
+.gz-underline{position:absolute;left:0;right:0;bottom:-.45em;height:.5em;pointer-events:none;transform:scaleX(0);transform-origin:100% 50%;transition:transform .5s cubic-bezier(.65,0,.35,1)}
+a:hover>.gz-underline,a:focus-visible>.gz-underline{transform:scaleX(1);transform-origin:0 50%}
 .gz-underline svg{display:block;width:100%;height:100%;overflow:visible}
 .gz-underline path{fill:none;stroke:#045CE8;stroke-width:2.2;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .home-story_link .gz-underline path,.footer_component .gz-underline path{stroke:#58A5FB}
@@ -60,6 +64,13 @@ canvas.gz-ink-canvas{display:block;height:auto}
 .gz-nav-pill{position:absolute;left:0;top:0;z-index:0;border-radius:100vw;opacity:0;scale:.9;pointer-events:none;
   background:radial-gradient(120% 140% at 50% 120%,rgba(88,165,251,.45),rgba(255,255,255,.10) 60%);box-shadow:0 0 24px rgba(88,165,251,.35),inset 0 0 0 1px rgba(255,255,255,.14)}
 .navbar_menu-item{position:relative;z-index:1}
+.navbar_link-icon{align-self:center;align-items:center;justify-content:center;line-height:0;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.navbar_link-icon>*,.navbar_link-icon svg{display:block;width:100%;height:100%}
+.navbar_menu{position:relative;isolation:isolate;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.navbar_menu::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:100vw;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);clip-path:inset(0 round 100vw)}
+.navbar_menu{background-color:transparent!important}
+.navbar_menu::before{background-color:rgba(21,28,59,.5)}
 
 /* --- marquee / press logos --- */
 .home-logos_logo{transition:filter .5s,opacity .5s}
@@ -104,15 +115,26 @@ canvas.gz-ink-canvas{display:block;height:auto}
 .is-swiper .home-testimonials_slide{flex-shrink:0;cursor:pointer;transition:width .75s cubic-bezier(.65,0,.25,1)}
 .is-swiper .home-testimonials_slide.swiper-slide-active{width:43.5rem;cursor:auto}
 /* the full card grows with its slide like a window opening; content keeps its final width so nothing reflows */
-.is-swiper .home-testimonials_card{width:100%;overflow:hidden;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
-.is-swiper .home-testimonials_card-inner{min-width:calc(43.5rem - 6px)}
-.is-swiper .home-testimonials_logo-card{transition:opacity .45s ease .25s,transform .6s cubic-bezier(.2,.8,.2,1) .2s}
-.is-swiper .swiper-slide-active .home-testimonials_card{opacity:1;visibility:visible;transition:opacity .6s ease .15s,visibility 0s}
-.is-swiper .swiper-slide-active .home-testimonials_logo-card{opacity:0;transform:scale(.94);transition:opacity .25s ease,transform .4s ease;pointer-events:none}
+.is-swiper .home-testimonials_card{position:relative;width:100%;background-size:cover!important;background-position:50% 50%!important;
+  opacity:0;visibility:hidden;transition:opacity .3s ease,visibility 0s linear .3s}
+/* the frame (ink border + white) grows with the slide; only the content inside the white is clipped, so the border never gets cut */
+.is-swiper .home-testimonials_card-inner{min-width:0;overflow:hidden}
+.is-swiper .home-testimonials_card-top,.is-swiper .home-testimonials_author{min-width:calc(43.5rem - 6px - 3.625rem)}
+.is-swiper .swiper-slide-active .home-testimonials_card{opacity:1;visibility:visible;transition:opacity .35s ease .05s,visibility 0s}
+/* once open, a light runs once around the ink border */
+@property --gz-a{syntax:"<angle>";inherits:false;initial-value:0deg}
+.is-swiper .home-testimonials_card::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:3px;pointer-events:none;opacity:0;
+  background:conic-gradient(from var(--gz-a),transparent 0deg,transparent 250deg,rgba(171,230,255,.95) 330deg,#fff 352deg,transparent 360deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.is-swiper .swiper-slide-active .home-testimonials_card::after{animation:gzBorderRun 1.6s cubic-bezier(.45,.05,.25,1) .55s both}
+@keyframes gzBorderRun{0%{--gz-a:-40deg;opacity:0}12%{opacity:1}85%{opacity:1}100%{--gz-a:320deg;opacity:0}}
+.is-swiper .home-testimonials_logo-card{transition:opacity .45s ease .3s,transform .6s cubic-bezier(.2,.8,.2,1) .25s}
+.is-swiper .swiper-slide-active .home-testimonials_logo-card{opacity:0;transform:scale(.96);transition:opacity .2s ease,transform .4s ease;pointer-events:none}
 .is-swiper .home-testimonials_slide:not(.swiper-slide-active):hover .home-testimonials_logo-card{border-color:rgba(4,92,232,.25)}
 
 @media (prefers-reduced-motion:reduce){
   .button .gz-btn-ink,.home-journey_scene,.home-journey_paper,.is-swiper .home-testimonials_slide{transition:none!important}
+  .is-swiper .home-testimonials_card::after{animation:none!important}
 }
 
 /* --- navbar dropdowns --- */
