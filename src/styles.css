@@ -70,8 +70,15 @@ canvas.gz-ink-canvas{display:block;height:auto}
 .home-press_logo:hover{opacity:1;filter:drop-shadow(0 0 18px rgba(88,165,251,.45))}
 
 /* --- journey (pinned 3D story) --- */
-.section_home-journey.is-pinned{height:560vh}
+.section_home-journey.is-pinned{height:560vh;overflow:clip}   /* overflow:hidden would break position:sticky */
 .section_home-journey.is-pinned .home-journey_sticky{position:sticky;top:0;height:100vh;height:100svh}
+.section_home-journey.is-pinned .home-journey_component{height:100vh;height:100svh;padding-top:clamp(7rem,27svh,15.25rem)}
+.section_home-journey.is-pinned .home-journey_content{position:relative;min-height:18rem;width:min(34rem,44vw)}
+.section_home-journey.is-pinned .home-journey_scene{display:flex;width:100%}
+.home-journey_paper{font-family:Caveat,"Segoe Print","Bradley Hand",cursive;font-weight:500}
+.home-journey_paper .home-journey_paper-note{font-family:var(--font--body,Geist),system-ui,sans-serif}
+.home-journey_haze{background-image:radial-gradient(60% 55% at 22% 45%,var(--journey-hz,rgba(245,247,250,.9)) 0%,transparent 70%)!important}
+.home-journey_eyebrow{color:var(--journey-acc,#030B2C);transition:color .6s}
 .home-journey_gl{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1;opacity:0;transition:opacity 1.2s ease}
 .home-journey_gl.is-in{opacity:1}
 .section_home-journey.is-3d .home-journey_visual{opacity:0;transition:opacity 1.2s}
@@ -86,10 +93,22 @@ canvas.gz-ink-canvas{display:block;height:auto}
 .home-journey_paper.is-active{opacity:1;transform:translateY(0) rotate(-6deg)}
 
 /* --- testimonials (Swiper) --- */
+/* one row that always fits: active card 43.5rem, the two others share what is left (2rem gaps) */
+.home-testimonials_slide{width:calc((100% - 47.5rem)/2)}
+.home-testimonials_slider:not(.is-swiper) .home-testimonials_slide:first-child{width:43.5rem}
+.home-testimonials_slider:not(.is-swiper) .home-testimonials_slide:first-child .home-testimonials_logo-card,
+.home-testimonials_slider:not(.is-swiper) .home-testimonials_slide:not(:first-child) .home-testimonials_card{display:none}
 .home-testimonials_slider.is-swiper{overflow:visible}
-.is-swiper .home-testimonials_track{display:flex;align-items:center;transition-property:transform;will-change:transform;box-sizing:content-box}
-.is-swiper .home-testimonials_slide{flex-shrink:0;width:18.25rem;transition:width .75s cubic-bezier(.6,0,.2,1)}
-.is-swiper .home-testimonials_slide.swiper-slide-active{width:43.5rem}
+.is-swiper .home-testimonials_track{display:flex;align-items:center;transition-property:transform;box-sizing:content-box}
+.is-swiper .home-testimonials_slide{flex-shrink:0;cursor:pointer;transition:width .75s cubic-bezier(.65,0,.25,1)}
+.is-swiper .home-testimonials_slide.swiper-slide-active{width:43.5rem;cursor:auto}
+/* the full card grows with its slide like a window opening; content keeps its final width so nothing reflows */
+.is-swiper .home-testimonials_card{width:100%;overflow:hidden;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
+.is-swiper .home-testimonials_card-inner{min-width:calc(43.5rem - 6px)}
+.is-swiper .home-testimonials_logo-card{transition:opacity .45s ease .25s,transform .6s cubic-bezier(.2,.8,.2,1) .2s}
+.is-swiper .swiper-slide-active .home-testimonials_card{opacity:1;visibility:visible;transition:opacity .6s ease .15s,visibility 0s}
+.is-swiper .swiper-slide-active .home-testimonials_logo-card{opacity:0;transform:scale(.94);transition:opacity .25s ease,transform .4s ease;pointer-events:none}
+.is-swiper .home-testimonials_slide:not(.swiper-slide-active):hover .home-testimonials_logo-card{border-color:rgba(4,92,232,.25)}
 
 @media (prefers-reduced-motion:reduce){
   .button .gz-btn-ink,.home-journey_scene,.home-journey_paper,.is-swiper .home-testimonials_slide{transition:none!important}

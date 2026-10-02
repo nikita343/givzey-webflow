@@ -19,6 +19,7 @@ export function initTestimonials() {
     spaceBetween: 32,
     speed: REDUCED ? 0 : 750,
     rewind: true,
+    watchOverflow: false,      // all three slides fit in one row, which would otherwise lock navigation
     slideToClickedSlide: true,
     watchSlidesProgress: true,
     grabCursor: true,
@@ -29,7 +30,7 @@ export function initTestimonials() {
       // widths change with the active state, so Swiper re-measures once the CSS transition settles
       slideChangeTransitionStart(s) { clearTimeout(s._gzT); s._gzT = setTimeout(() => s.update(), 760); },
       slideChange(s) {
-        const full = s.slides[s.activeIndex]?.querySelector('.home-testimonials_full');
+        const full = s.slides[s.activeIndex]?.querySelector('.home-testimonials_card');
         if (full && !REDUCED) gsap.fromTo(full.querySelectorAll('.home-testimonials_logo-wrap, .home-testimonials_quote, .home-testimonials_author'),
           { opacity: 0, filter: 'blur(10px)' }, { opacity: 1, filter: 'blur(0px)', duration: .8, ease: 'power2.out', stagger: .1, delay: .25 });
       }
