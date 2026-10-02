@@ -57,7 +57,13 @@ export function initStory() {
 export function initCta() {
   const box = document.querySelector('.cta_component');
   if (!box) return;
-  const inks = [...box.querySelectorAll('.cta_ink')].map((img, i) => inkLayer(img, { host: box, origin: i ? [1, 0] : [0, 1], seed: 9 + i }));
+  // the blue pair (home) or the orange trio (VEO variant): only the inks the active variant shows come alive
+  const shown = img => getComputedStyle(img).display !== 'none' && getComputedStyle(img.parentElement).display !== 'none';
+  const ORIGINS = { 'is-bl': [0, 0], 'is-tr': [1, 1], 'is-wisp': [.3, .7] };
+  const inks = [...box.querySelectorAll('.cta_ink, .cta_ink-orange')].filter(shown).map((img, i) => {
+    const k = Object.keys(ORIGINS).find(c => img.classList.contains(c));
+    return inkLayer(img, { host: box, origin: k ? ORIGINS[k] : (i ? [1, 0] : [0, 1]), seed: 9 + i });
+  });
   if (REDUCED) { inks.forEach(l => l.setReveal(1)); return; }
   const o = { r: 0 };
   gsap.to(o, { r: 1, duration: 2.8, ease: 'power2.out', onUpdate: () => inks.forEach(l => l.setReveal(o.r)), scrollTrigger: { trigger: box, start: 'top 75%', once: true } });

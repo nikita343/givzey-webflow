@@ -45,6 +45,13 @@ const GLOW = [
   ['.home-testimonials_logo-card', '88,165,251'],
   ['.cta_component', '88,165,251'],
   ['.navbar_dropdown-feature', '171,230,255'],
+  ['.veo-cap_card', '242,140,40'],
+  ['.veo-meet_card', '242,140,40'],
+  ['.veo-meet_pyramid', '242,140,40'],
+  ['.product-stats_feature', '242,140,40'],
+  ['.product-stats_row', '242,140,40'],
+  ['.veo-trust_pillar', '242,140,40'],
+  ['.veo-proof_peek', '242,140,40'],
 ];
 function glowCards() {
   for (const [sel, rgb] of GLOW) document.querySelectorAll(sel).forEach(el => {

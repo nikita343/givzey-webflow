@@ -202,3 +202,102 @@ a:hover>.gz-underline,a:focus-visible>.gz-underline{transform:scaleX(1);transfor
   .section_home-product{overflow:clip}
   .home-product_visual,.home-product_visual.is-veo{width:135.14%!important;max-width:none!important;height:43rem!important;margin:0 0 -11.18rem 0!important;transform:scale(.74);transform-origin:0 0}
 }
+
+/* ===================== Product pages (VEO; shared product-* classes for VPGO / VSO) ===================== */
+/* light navbar variant (white pages): a frosted white pill, a soft blue highlight */
+.navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .gz-nav-pill{background:radial-gradient(120% 140% at 50% 120%,rgba(4,92,232,.16),rgba(3,11,44,.03) 60%);box-shadow:0 0 22px rgba(88,165,251,.22),inset 0 0 0 1px rgba(3,11,44,.07)}
+@media (min-width:992px){
+  .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be::before{background-color:rgba(255,255,255,.72);box-shadow:inset 0 0 0 1px rgba(3,11,44,.08),0 10px 30px rgba(3,11,44,.06)}
+}
+
+/* hero visual: 1em = 1/40 of its width, so the whole composition scales as one */
+.product-hero_visual{container-type:inline-size}
+.product-hero_stage{font-size:calc(100cqw / 40)}
+.product-hero_card{will-change:transform}
+.product-hero_visual.is-live .product-hero_label-bar{animation:gzEq 1.15s ease-in-out infinite;transform-origin:50% 50%}
+.product-hero_visual.is-live .product-hero_label-bar.is-2{animation-delay:-.4s}
+.product-hero_visual.is-live .product-hero_label-bar.is-3{animation-delay:-.8s}
+@keyframes gzEq{0%,100%{transform:scaleY(.55)}50%{transform:scaleY(1.2)}}
+.product-hero_label-arrow{transition:transform .7s cubic-bezier(.2,.8,.2,1),box-shadow .6s ease}
+.product-hero_visual:hover .product-hero_label-arrow{transform:rotate(-45deg);box-shadow:0 .75em 1.875em rgba(102,51,0,.15),0 0 0 .4em rgba(242,140,40,.12)}
+
+/* pyramid: the diagram and its labels scale together (container units) */
+.veo-meet_pyramid{container-type:inline-size}
+.veo-pyramid_svg{display:block;width:100%;height:100%}
+.veo-pyramid_caption{font-size:max(1.707cqw,11px)}
+.veo-pyramid_pill{font-size:max(1.585cqw,9px);padding:.385em .923em}
+.veo-pyramid_pill.is-veo{padding:.69em 1.385em}
+.veo-pyramid_pill-title{font-size:1.154em}
+.veo-pyramid_pill-sub{font-size:.923em}
+.veo-pyramid_note-title{font-size:max(1.585cqw,9px)}
+.veo-pyramid_note-sub{font-size:max(1.463cqw,8px)}
+.veo-meet_card,.product-stats_row{position:relative}
+@media (max-width:767px){
+  .veo-pyramid_note,.veo-pyramid_links,.veo-pyramid_nodes,.veo-pyramid_pill-sub{display:none}
+}
+
+/* featured stat meter: 60 ticks, 43% of them fill in orange */
+.product-stats_meter.is-js{background-image:none!important;display:flex;justify-content:space-between;align-items:flex-end}
+.gz-tick{display:block;flex:none;width:.1875rem;height:81.82%;border-radius:1px;background-color:rgba(3,11,44,.15);transition:height .55s cubic-bezier(.2,.8,.2,1),background-color .35s ease,box-shadow .35s ease}
+.gz-tick.is-edge{height:63.64%}
+.gz-tick.is-on{height:100%;background-color:#f28c28;box-shadow:0 0 10px rgba(242,140,40,.35)}
+@media (max-width:479px){ .gz-tick{width:.125rem} }
+
+/* capabilities */
+.veo-cap_image{transition:transform 1s cubic-bezier(.2,.8,.2,1)}
+.veo-cap_card:hover .veo-cap_image{transform:scale(1.05)}
+.veo-cap_group-head{position:relative;border-top-color:transparent!important}
+.veo-cap_group-head::before{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;background:rgba(3,11,44,.12);transform:scaleX(var(--gz-line,1));transform-origin:0 50%}
+@media (max-width:767px){
+  /* each group becomes a swipeable row */
+  .veo-cap_grid{grid-auto-flow:column;grid-template-columns:none!important;grid-auto-columns:72%;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;margin-left:-1.25rem;margin-right:-1.25rem;padding:0 1.25rem .5rem;scroll-padding:0 1.25rem}
+  .veo-cap_grid::-webkit-scrollbar{display:none}
+  .veo-cap_card{scroll-snap-align:start}
+}
+
+/* trust */
+.veo-trust_review-dot{box-shadow:0 0 0 0 rgba(74,222,128,.6);animation:gzPing 2.4s ease-out infinite}
+@keyframes gzPing{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55)}70%,100%{box-shadow:0 0 0 .5rem rgba(74,222,128,0)}}
+
+/* customer proof carousel */
+.veo-proof_card,.veo-proof_peek{transition:opacity .5s ease,visibility .5s,background-color .4s ease}
+.veo-proof_slide:not(.is-active)>.veo-proof_card{opacity:0;visibility:hidden}
+.veo-proof_slide.is-active>.veo-proof_peek{opacity:0;visibility:hidden}
+.veo-proof_peek:hover{background-color:#fff}
+.veo-proof_peek-logo{transition:filter .5s ease,opacity .5s ease}
+.veo-proof_peek:hover .veo-proof_peek-logo{opacity:1;filter:drop-shadow(0 0 16px rgba(242,140,40,.35))}
+.veo-proof_peek:focus-visible{outline:2px solid #045ce8;outline-offset:-4px}
+.veo-proof_slider.is-js .veo-proof_track{touch-action:pan-y;user-select:none}
+.veo-proof_arrow{transition:background-color .3s ease,box-shadow .45s ease}
+.veo-proof_arrow:hover{background-color:#fff;box-shadow:0 0 0 1px rgba(242,140,40,.35),0 10px 30px rgba(242,140,40,.18)}
+.veo-proof_link{transition:box-shadow .45s ease}
+.veo-proof_link:hover{box-shadow:0 12px 30px rgba(102,51,0,.15),0 0 0 1px rgba(242,140,40,.4),0 0 26px rgba(242,140,40,.28)}
+.veo-proof_link-arrow{transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.veo-proof_link:hover .veo-proof_link-arrow{transform:translateX(.25rem)}
+@media (max-width:991px){
+  .veo-proof_track{height:auto;column-gap:0}
+  .veo-proof_slide{display:none}
+  .veo-proof_slide.is-active{display:block;width:100%;height:auto}
+  .veo-proof_card{position:relative;width:100%;height:auto;grid-template-columns:minmax(0,1fr);row-gap:2rem;padding:2rem 1.75rem}
+  .veo-proof_author{margin-top:1.75rem}
+  .veo-proof_side{padding-top:0;row-gap:1.75rem;justify-content:flex-start}
+  .veo-proof_stats{flex-direction:row;flex-wrap:wrap;column-gap:2.5rem}
+  .veo-proof_link{margin-left:0;margin-right:0;align-self:flex-start}
+  .veo-proof_glow{left:auto;right:-22rem}
+}
+@media (max-width:479px){ .veo-proof_quote{font-size:1.375rem;line-height:1.3} .veo-proof_stat-number{font-size:2.5rem;line-height:1.1} }
+
+/* FAQ */
+.product-faq_trigger{transition:color .35s ease}
+.product-faq_list.is-js .product-faq_item:not(.is-open) .product-faq_trigger{color:rgba(3,11,44,.55)}
+.product-faq_list.is-js .product-faq_item:not(.is-open) .product-faq_trigger:hover{color:#030b2c}
+.product-faq_icon{transition:box-shadow .45s ease,background-color .35s ease}
+.product-faq_icon-bar{transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.product-faq_item.is-open .product-faq_icon-bar.is-vertical{transform:rotate(0deg)}
+.product-faq_trigger:hover .product-faq_icon{box-shadow:0 0 0 1px rgba(242,140,40,.4),0 0 22px rgba(242,140,40,.25)}
+.product-faq_trigger:focus-visible{outline:2px solid #045ce8;outline-offset:6px;border-radius:.5rem}
+
+@media (prefers-reduced-motion:reduce){
+  .product-hero_label-bar,.veo-trust_review-dot{animation:none!important}
+}
+@media (max-width:767px){ .cta_content h2 br{display:none} }
