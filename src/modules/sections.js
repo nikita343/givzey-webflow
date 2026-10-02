@@ -47,7 +47,6 @@ export function initStory() {
   if (photo) gsap.fromTo(photo, { scale: 1.12, yPercent: -3 }, { scale: 1, yPercent: 3, ease: 'none', scrollTrigger: { trigger: inner, start: 'top bottom', end: 'bottom top', scrub: true } });
   const logo = inner.querySelector('.home-story_logo');
   if (logo) gsap.from(logo, { opacity: 0, filter: 'blur(14px)', duration: 1.4, ease: 'power2.out', scrollTrigger: { trigger: logo, start: 'top 85%', once: true } });
-  gsap.from(inner.querySelector('.home-story_bottom'), { '--line': 0, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: inner, start: 'center 80%', once: true } });
 }
 
 export function initCta() {

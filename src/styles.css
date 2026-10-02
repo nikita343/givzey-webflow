@@ -1,0 +1,96 @@
+/* ===== Givzey motion layer — loaded from Vercel, sits on top of the Webflow styles ===== */
+
+/* --- loader --- */
+.gz-loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:#01061a;color:#fff;pointer-events:none}
+.gz-loader_mark{width:clamp(9rem,13vw,12rem)}
+.gz-loader_mark svg{display:block;width:100%;height:auto;overflow:visible}
+html.gz-loader-on{overflow:hidden}
+
+/* --- hero live ink --- */
+.gz-hero-ink{position:absolute;inset:0;width:100%;height:100%;display:block}
+.section_home-hero.is-ink-live .home-hero_ink{visibility:hidden}
+
+/* --- living ink layers (product, story, CTA) --- */
+.gz-ink-src{visibility:hidden!important}
+canvas.gz-ink-canvas{display:block;height:auto}
+
+/* --- reveals: words keep their layout --- */
+.gz-word{will-change:opacity,filter}
+
+/* --- mock chat typing dots --- */
+.gz-typing{display:flex;gap:.3rem;align-items:center;padding:.85rem 1rem;border-radius:1.125rem 1.125rem 1.125rem .375rem;background:#FFF3DC;align-self:flex-start}
+.mock-bubble.is-purple~.gz-typing,.mock-card_header.is-purple~.mock-messages .gz-typing{background:#F1E4F6}
+.gz-typing i{width:.4rem;height:.4rem;border-radius:50%;background:rgba(27,26,36,.45);animation:gzDot 1s infinite ease-in-out}
+.gz-typing i:nth-child(2){animation-delay:.15s}.gz-typing i:nth-child(3){animation-delay:.3s}
+@keyframes gzDot{0%,80%,100%{opacity:.3;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+/* --- buttons: ink blot + deeper glow --- */
+.button{position:relative;overflow:hidden;isolation:isolate;transition:box-shadow .6s cubic-bezier(.2,.7,.2,1)}
+.button .gz-btn-ink{position:absolute;left:var(--x,50%);top:var(--y,50%);width:var(--d,20rem);aspect-ratio:1;border-radius:50%;
+  translate:-50% -50%;scale:0;z-index:0;pointer-events:none;filter:url(#gz-ink-edge);
+  background:radial-gradient(circle,#ABE6FF 0%,#58A5FB 26%,#1E63E9 52%,#045CE8 70%);transition:scale .75s cubic-bezier(.2,.7,.2,1)}
+.button:hover .gz-btn-ink,.button:focus-visible .gz-btn-ink{scale:1}
+.button:hover,.button:focus-visible{box-shadow:0 0 0 1px rgba(171,230,255,.35),0 10px 50px 0 rgba(88,165,251,.55),0 0 90px 10px rgba(4,92,232,.35)}
+.button .button_text{transition:text-shadow .6s}
+.button:hover .button_text{text-shadow:0 0 14px rgba(255,255,255,.55)}
+
+/* --- links: brush underline --- */
+.home-product_link,.home-story_link,.footer_link,.footer_legal-link,.footer_email{position:relative;transition:color .35s,text-shadow .35s}
+.gz-underline{position:absolute;left:0;right:0;bottom:-.45em;height:.5em;pointer-events:none}
+.gz-underline svg{display:block;width:100%;height:100%;overflow:visible}
+.gz-underline path{fill:none;stroke:#045CE8;stroke-width:2.2;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.home-story_link .gz-underline path,.footer_component .gz-underline path{stroke:#58A5FB}
+.home-product_link:hover{color:#045CE8}
+.footer_link:hover,.footer_legal-link:hover,.footer_email:hover,.home-story_link:hover{color:#fff;text-shadow:0 0 18px rgba(88,165,251,.6)}
+
+/* --- cards: cursor light along the border + soft inner pool --- */
+.gz-glow{--glow:88,165,251}
+.gz-glow::before,.gz-glow::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .5s ease;z-index:4}
+.gz-glow::before{padding:1.5px;background:radial-gradient(22rem circle at var(--mx,50%) var(--my,50%),rgba(var(--glow),.95),rgba(var(--glow),.25) 35%,transparent 60%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.gz-glow::after{background:radial-gradient(28rem circle at var(--mx,50%) var(--my,50%),rgba(var(--glow),.10),transparent 55%);mix-blend-mode:normal}
+.gz-glow:hover::before,.gz-glow:hover::after{opacity:1}
+.home-story_inner.gz-glow::after{background:radial-gradient(30rem circle at var(--mx,50%) var(--my,50%),rgba(var(--glow),.12),transparent 55%)}
+.home-testimonials_logo-card,.home-stats_card,.cta_component{position:relative}
+.home-testimonials_logo-card img,.home-testimonials_compact img{transition:filter .5s,opacity .5s}
+.home-testimonials_logo-card:hover img{filter:drop-shadow(0 0 16px rgba(88,165,251,.45))}
+
+/* --- nav: one liquid highlight --- */
+.navbar_menu-list{position:relative}
+.gz-nav-pill{position:absolute;left:0;top:0;z-index:0;border-radius:100vw;opacity:0;scale:.9;pointer-events:none;
+  background:radial-gradient(120% 140% at 50% 120%,rgba(88,165,251,.45),rgba(255,255,255,.10) 60%);box-shadow:0 0 24px rgba(88,165,251,.35),inset 0 0 0 1px rgba(255,255,255,.14)}
+.navbar_menu-item{position:relative;z-index:1}
+
+/* --- marquee / press logos --- */
+.home-logos_logo{transition:filter .5s,opacity .5s}
+.home-logos_marquee:hover .home-logos_logo{opacity:.55}
+.home-logos_marquee .home-logos_logo:hover{opacity:1;filter:drop-shadow(0 0 14px rgba(88,165,251,.55))}
+.home-logos_logo.is-mono:hover{filter:brightness(0) saturate(100%) drop-shadow(0 0 14px rgba(88,165,251,.55))}
+.home-press_logo{transition:opacity .5s,filter .5s}
+.home-press_logo:hover{opacity:1;filter:drop-shadow(0 0 18px rgba(88,165,251,.45))}
+
+/* --- journey (pinned 3D story) --- */
+.section_home-journey.is-pinned{height:560vh}
+.section_home-journey.is-pinned .home-journey_sticky{position:sticky;top:0;height:100vh;height:100svh}
+.home-journey_gl{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1;opacity:0;transition:opacity 1.2s ease}
+.home-journey_gl.is-in{opacity:1}
+.section_home-journey.is-3d .home-journey_visual{opacity:0;transition:opacity 1.2s}
+.home-journey_bg{transition:background .6s}
+.section_home-journey.is-pinned .home-journey_scene{position:absolute;left:0;top:0;opacity:0;filter:blur(8px);transform:translateY(16px);transition:opacity .6s ease,filter .6s ease,transform .6s ease;pointer-events:none}
+.section_home-journey.is-pinned .home-journey_scene.is-active{opacity:1;filter:none;transform:none;pointer-events:auto}
+.home-journey_fill{position:absolute;left:0;top:-1px;height:3px;width:0;border-radius:3px;background:var(--journey-acc,#045CE8)}
+.section_home-journey.is-pinned .home-journey_dot{background:var(--journey-acc,#045CE8);box-shadow:0 0 0 4px rgba(255,255,255,.8);width:.6875rem;height:.6875rem}
+.home-journey_month{transition:color .3s}
+.home-journey_month.is-active{color:#030B2C}
+.home-journey_paper{opacity:0;transform:translateY(80px) rotate(-16deg);transition:opacity .5s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+.home-journey_paper.is-active{opacity:1;transform:translateY(0) rotate(-6deg)}
+
+/* --- testimonials (Swiper) --- */
+.home-testimonials_slider.is-swiper{overflow:visible}
+.is-swiper .home-testimonials_track{display:flex;align-items:center;transition-property:transform;will-change:transform;box-sizing:content-box}
+.is-swiper .home-testimonials_slide{flex-shrink:0;width:18.25rem;transition:width .75s cubic-bezier(.6,0,.2,1)}
+.is-swiper .home-testimonials_slide.swiper-slide-active{width:43.5rem}
+
+@media (prefers-reduced-motion:reduce){
+  .button .gz-btn-ink,.home-journey_scene,.home-journey_paper,.is-swiper .home-testimonials_slide{transition:none!important}
+}
