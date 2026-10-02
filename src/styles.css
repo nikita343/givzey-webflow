@@ -1,9 +1,16 @@
 /* ===== Givzey motion layer — loaded from Vercel, sits on top of the Webflow styles ===== */
 
 /* --- loader --- */
-.gz-loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:#01061a;color:#fff;pointer-events:none}
-.gz-loader_mark{width:clamp(9rem,13vw,12rem)}
+.gz-loader{position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;color:#fff;mix-blend-mode:difference;pointer-events:none}
+.gz-loader_mark{width:clamp(10rem,15vw,14rem)}
 .gz-loader_mark svg{display:block;width:100%;height:auto;overflow:visible}
+.gz-loader_tag{font-family:var(--font--body,Geist),Arial,sans-serif;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase}
+/* while the loader runs the page sits under a paper cover; once the ink canvas has drawn paper, the hero rises above it so the bleed is seen */
+html.gz-intro.gz-paper .section_home-hero{z-index:9999}
+.gz-hero-fx{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.gz-drip{position:absolute;top:0;width:var(--s);height:calc(var(--s)*1.25);margin-left:calc(var(--s)/-2);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;background:var(--c);box-shadow:0 0 14px var(--c);transform:translateY(-40px);animation:gzDrip var(--d) cubic-bezier(.5,0,.95,.45) forwards}
+@keyframes gzDrip{to{transform:translateY(var(--y))}}
+html.gz-intro .gz-hero-ink{transition:none}
 html.gz-loader-on{overflow:hidden}
 
 /* --- hero live ink --- */

@@ -8,7 +8,7 @@ import { SplitText } from 'gsap/SplitText';
 import Lenis from 'lenis';
 import { REDUCED } from './base.js';
 import { shouldIntro, playLoader } from './modules/loader.js';
-import { initHeroInk } from './modules/hero-ink.js';
+import { initWaterHero } from './modules/ink-water.js';
 import { headingBleed, fadeCopy, unrollTag, liveGradient, initReveals } from './modules/reveal.js';
 import { initProductCards } from './modules/product-cards.js';
 import { initStats, initStory, initCta } from './modules/sections.js';
@@ -62,16 +62,19 @@ async function boot() {
   if (hero && !REDUCED) heroTl = heroSequence(hero);
   root.classList.add('gz-ready');   // content may show now; GSAP holds the initial states
 
-  const ink = hero ? initHeroInk(hero, { intro }) : null;
+  const ink = hero ? initWaterHero(hero, { intro }) : null;
   let inkReady = false;
   ink?.ready?.then(() => { inkReady = true; });
   if (intro && loader) {
+    // the mark assembles on paper while the artwork loads; then the ink bleeds open from the centre
     await Promise.race([Promise.all([loader.done, ink?.ready]), new Promise(r => setTimeout(r, 2600))]);
-    loader.leave();
-    if (lenis) setTimeout(() => lenis.start(), 3500);   // never hold the scroll longer than this, even on slow GPUs
-    // the ink bleed only leads the reveal when it is actually running; otherwise the copy comes in straight away
-    if (ink && ink.ok && inkReady) ink.playIntro(() => heroTl && heroTl.play()).then(() => lenis && lenis.start());
-    else { heroTl && heroTl.play(); lenis && lenis.start(); }
+    if (lenis) setTimeout(() => lenis.start(), 4500);   // never hold the scroll longer than this
+    if (ink && ink.ok && inkReady) {
+      ink.playIntro({
+        onCover: () => loader.leave(),
+        onReveal: () => { root.classList.remove('gz-intro'); heroTl && heroTl.play(); }
+      }).then(() => lenis && lenis.start());
+    } else { loader.dissolve(); heroTl && heroTl.play(); lenis && lenis.start(); }
   } else if (heroTl) heroTl.play();
 
   // each module is independent: one failing must not stop the rest
