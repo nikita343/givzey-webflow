@@ -51,6 +51,7 @@ const GLOW = [
   ['.home-testimonials_logo-card', '88,165,251'],
   ['.cta_component', '88,165,251'],
   ['.home-story_inner', '171,230,255'],
+  ['.navbar_dropdown-feature', '171,230,255'],
 ];
 function glowCards() {
   for (const [sel, rgb] of GLOW) document.querySelectorAll(sel).forEach(el => {
