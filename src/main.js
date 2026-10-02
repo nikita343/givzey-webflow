@@ -36,7 +36,8 @@ function heroSequence(hero) {
   const text = hero.querySelector('.home-hero_text');
   const btn = hero.querySelector('.home-hero_button-wrapper');
   const tl = gsap.timeline({ paused: true });
-  if (nav) tl.from(nav, { opacity: 0, filter: 'blur(10px)', duration: 1, ease: 'power2.out' }, 0);
+  // clearProps: a leftover filter would turn the nav into a containing block and break the fixed mobile menu
+  if (nav) tl.from(nav, { opacity: 0, filter: 'blur(10px)', duration: 1, ease: 'power2.out', clearProps: 'filter,opacity' }, 0);
   if (tag) tl.add(unrollTag(tag, { trigger: null }).play(), .05);
   if (h1) tl.add(headingBleed(h1, { trigger: null, light: true }).play(), .15);
   if (h1) tl.add(liveGradient(h1), .15);
@@ -53,6 +54,7 @@ async function boot() {
   const loader = intro ? playLoader() : null;
   const hero = document.querySelector('.section_home-hero');
   const lenis = smoothScroll();
+  window.gzLenis = lenis;   // the mobile menu pauses smooth scroll while it is open
   if (lenis && intro) lenis.stop();
 
   let heroTl = null;

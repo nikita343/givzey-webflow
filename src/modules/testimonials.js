@@ -16,7 +16,8 @@ export function initTestimonials() {
     wrapperClass: 'home-testimonials_track',
     slideClass: 'home-testimonials_slide',
     slidesPerView: 'auto',
-    spaceBetween: 32,
+    spaceBetween: 16,
+    breakpoints: { 992: { spaceBetween: 32 } },
     speed: REDUCED ? 0 : 750,
     rewind: true,
     watchOverflow: false,        // all three slides fit in one row, which would otherwise lock navigation
