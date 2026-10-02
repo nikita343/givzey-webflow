@@ -117,7 +117,7 @@ canvas.gz-ink-canvas{display:block;height:auto}
 
 /* --- navbar dropdowns --- */
 .navbar_dropdown{transform:translateY(-8px) scale(.985);transform-origin:20% 0;filter:blur(6px);
-  -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  /* no backdrop-filter: the nav pill already has one, and a nested one lets the page bleed through */
   transition:opacity .28s ease,transform .45s cubic-bezier(.2,.8,.2,1),filter .35s ease,visibility 0s linear .45s}
 .navbar_menu-item.is-open>.navbar_dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:none;filter:none;transition:opacity .28s ease,transform .45s cubic-bezier(.2,.8,.2,1),filter .35s ease,visibility 0s}
 /* invisible bridge so the pointer can cross the gap between trigger and panel */
