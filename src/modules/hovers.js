@@ -33,7 +33,7 @@ function buttons() {
 
 const BRUSH = `<svg viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 6.2C24 4.4 41 7.6 63 5.6S104 3.9 127 5.4 171 7.3 198 4.6" pathLength="1"/></svg>`;
 function links() {
-  document.querySelectorAll('.home-product_link, .home-story_link, .footer_link, .footer_legal-link, .footer_email').forEach(a => {
+  document.querySelectorAll('.home-product_link, .home-story_link, .footer_link, .footer_legal-link, .footer_email, .v2-link').forEach(a => {
     if (a.querySelector('.gz-underline')) return;
     const u = document.createElement('span'); u.className = 'gz-underline'; u.innerHTML = BRUSH; a.appendChild(u);
   });
@@ -61,6 +61,11 @@ const GLOW = [
   ['.gap-use_card', '30,99,233'],
   ['.veo-trust_pillar', '242,140,40'],
   ['.veo-proof_peek', '242,140,40'],
+  ['.v2-lab_card.is-veo', '242,140,40'],
+  ['.v2-lab_card.is-vpgo', '46,158,94'],
+  ['.v2-lab_card.is-vso', '107,63,209'],
+  ['.v2-lab_card.is-mc', '88,165,251'],
+  ['.v2-stat', '88,165,251'],
 ];
 function glowCards() {
   for (const [sel, rgb] of GLOW) document.querySelectorAll(sel).forEach(el => {
