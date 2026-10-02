@@ -26,7 +26,7 @@ export function initNav() {
     trigger.setAttribute('aria-controls', panel.id);
     trigger.setAttribute('role', 'button');
     panel.querySelectorAll('.navbar_dropdown-item, .navbar_dropdown-feature').forEach((a, i) => a.style.setProperty('--i', i));
-    panel.querySelectorAll('.navbar_dropdown-label').forEach(l => l.setAttribute('aria-hidden', 'true'));
+    panel.querySelectorAll('.navbar_dropdown-label, .navbar_dropdown-arrow').forEach(l => l.setAttribute('aria-hidden', 'true'));
 
     trigger.addEventListener('click', e => { e.preventDefault(); open === li ? hide() : show(li); });
     trigger.addEventListener('keydown', e => {
