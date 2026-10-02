@@ -128,10 +128,10 @@ function capabilities() {
 
 /* ---------- retention: 71% counts up, the curve dips and turns when the VSO starts ---------- */
 function risk() {
-  const card = document.querySelector('.vso-risk_card'); if (!card || REDUCED) return;
-  const glass = card.querySelector('.vso-risk_glass'), num = card.querySelector('.vso-risk_number'), ink = card.querySelector('.vso-risk_ink');
-  const svg = card.querySelector('.vso-risk_svg'), line = svg?.querySelector('.vso-risk_line'), dot = svg?.querySelector('.vso-risk_dot');
-  const marker = card.querySelector('.vso-risk_marker');
+  const card = document.querySelector('.product-band_card'); if (!card || REDUCED) return;
+  const glass = card.querySelector('.product-band_glass'), num = card.querySelector('.product-band_number'), ink = card.querySelector('.product-band_ink');
+  const svg = card.querySelector('.product-band_svg'), line = svg?.querySelector('.vso-risk_line'), dot = svg?.querySelector('.vso-risk_dot');
+  const marker = card.querySelector('.product-band_marker');
   if (num) countTo(num, { duration: 2, trigger: card, start: 'top 65%' });
   if (ink) gsap.fromTo(ink, { scale: 1.12, yPercent: -4 }, { scale: 1, yPercent: 4, ease: 'none', scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: true } });
   const tl = gsap.timeline({ paused: true });

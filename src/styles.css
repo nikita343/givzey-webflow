@@ -314,6 +314,11 @@ a:hover>.gz-underline,a:focus-visible>.gz-underline{transform:scaleX(1);transfor
 body{--gz-acc:242,140,40}
 body:has(.product-hero_visual.is-vpgo){--gz-acc:46,158,94}
 body:has(.product-hero_visual.is-vso){--gz-acc:107,63,209}
+body:has(.product-hero_visual.is-gap){--gz-acc:30,99,233}
+body:has(.product-hero_visual.is-gap) .product-faq_item.is-open .product-faq_trigger{color:#123e8f}
+body:has(.product-hero_visual.is-gap) .product-faq_item.is-open .product-faq_icon{background-color:#1e63e9}
+body:has(.product-hero_visual.is-gap) .product-faq_item.is-open .product-faq_icon-bar{background-color:#fff}
+.product-hero_visual.is-gap:hover .product-hero_label-arrow{box-shadow:0 .75em 1.875em rgba(10,36,102,.24),0 0 0 .4em rgba(30,99,233,.16)}
 body:has(.product-hero_visual.is-vso) .product-faq_item.is-open .product-faq_trigger{color:#3c1f80}
 body:has(.product-hero_visual.is-vso) .product-faq_item.is-open .product-faq_icon{background-color:#6b3fd1}
 body:has(.product-hero_visual.is-vso) .product-faq_item.is-open .product-faq_icon-bar{background-color:#fff}
@@ -381,6 +386,16 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
 .vso-risk_ring{transform-box:fill-box;transform-origin:50% 50%}
 @media (prefers-reduced-motion:reduce){ .vso-cap_update-media::after,.vso-cap_offer-btn.is-primary{animation:none!important} }
 
+/* GAP */
+.product-hero_label-icon svg{width:.875em;height:1em}
+.product-chat_play svg{width:1.4em;height:1.4em}
+.product-chat_signature,.gap-life_signature,.gap-use_signature{font-family:Caveat,"Segoe Print","Bradley Hand",cursive;font-weight:400}
+.gap-life_doc-icon svg{width:1em;height:1.125em}
+.gap-life_chip-check svg{width:.75em;height:.75em}
+.gap-cap_filter,.gap-cap_hub-row{transition:background-color .4s ease,color .4s ease}
+.gap-use_ink{transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
+.gap-use_card:hover .gap-use_ink{transform:rotate(-8deg) scale(1.08)}
+
 /* tablet / phone */
 @media (max-width:991px){
   .product-intro_head{flex-direction:column;row-gap:1.5rem}
@@ -396,11 +411,22 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
   .vso-timeline_card{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
   .vso-timeline_card::-webkit-scrollbar{display:none}
   .vso-timeline_stage{width:58rem;font-size:calc(58rem / 84)}
-  .vso-risk_card{flex-direction:column;align-items:stretch;row-gap:3rem;padding:3.5rem 2.5rem}
-  .vso-risk_ink{left:0;top:auto;bottom:0;width:100%;height:65%}
-  .vso-risk_shade{background-image:linear-gradient(180deg,#140a30 0%,#140a30 40%,rgba(20,10,48,0) 80%)}
-  .vso-risk_copy{width:100%;max-width:40rem}
-  .vso-risk_glass{width:100%;max-width:32.5rem}
+  .product-band_card{flex-direction:column;align-items:stretch;row-gap:3rem;padding:3.5rem 2.5rem}
+  .product-band_ink{left:0;top:auto;bottom:0;width:100%;height:65%}
+  .product-band_shade{background-image:linear-gradient(180deg,#140a30 0%,#140a30 40%,rgba(20,10,48,0) 80%)}
+  .product-band_copy{width:100%;max-width:40rem}
+  .product-band_glass{width:100%;max-width:32.5rem}
+  .gap-life_card .gap-life_stage{height:auto;padding:1.75em 1.5em 2.25em;display:flex;flex-direction:column;row-gap:2.5em;font-size:.875rem}
+  .gap-life_card .gap-life_docs{position:relative;width:100%;max-width:27em;height:auto;margin-left:auto;margin-right:auto;padding:3.5em 0 3.5em}
+  .gap-life_card .gap-life_doc{position:relative;left:auto;top:auto;width:100%}
+  .gap-life_card .gap-life_sheet,.gap-life_card .gap-life_sheet.is-mid{left:0;top:3.5em;width:100%;height:calc(100% - 7em)}
+  .gap-life_card .gap-life_chip.is-drafted{left:auto;right:-.5em;top:.5em}
+  .gap-life_card .gap-life_chip.is-reviewed{left:auto;right:-1em;top:11.5em}
+  .gap-life_card .gap-life_chip.is-approved{left:auto;right:-1em;top:15.75em}
+  .gap-life_card .gap-life_chip.is-booked{left:auto;right:1em;top:auto;bottom:.5em}
+  .gap-life_card .gap-life_panel{position:relative;left:auto;top:auto;width:100%;max-width:35em;margin-left:auto;margin-right:auto}
+  .gap-life_card .gap-life_glow{left:-20em;top:auto;bottom:-12em}
+  .gap-use_grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:767px){
   .product-intro_heading,.product-cap_heading{font-size:2.25rem}
@@ -416,14 +442,24 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
   .vpgo-story_quote{padding:1.5rem}
   .vpgo-story_quote-text{font-size:1.125rem}
   .product-stats_row.is-inline{padding:1.5rem;flex-direction:column;align-items:flex-start;row-gap:.25rem}
-  .vso-risk_card{padding:2.5rem 1.5rem}
-  .vso-risk_title{font-size:2.125rem}
-  .vso-risk_glass{padding:1.5rem}
-  .vso-risk_number{font-size:5rem}
+  .product-band_card{padding:2.5rem 1.5rem}
+  .product-band_title{font-size:2.125rem}
+  .product-band_glass{padding:1.5rem}
+  .product-band_number{font-size:5rem}
+  .gap-life_card .gap-life_stage{font-size:.8125rem;padding:1.25em 1em 2em}
+  .gap-life_card .gap-life_dash{width:55%}
+  .gap-life_card .gap-life_speed.is-pdf .gap-life_pill{left:auto;right:0}
+  .gap-life_card .gap-life_stats{column-gap:1em}
+  .gap-life_card .gap-life_stat-num{font-size:2.5em}
+  .gap-life_card .gap-life_chip.is-reviewed,.gap-life_card .gap-life_chip.is-approved{display:none}
+  .product-band_person{flex-wrap:wrap;row-gap:.75rem}
+  .product-band_logo{width:10rem}
+  .gap-use_grid{grid-template-columns:minmax(0,1fr)}
+  .product-band_text.is-quote{font-size:1.0625rem}
 }
 @media (max-width:479px){
   .product-cap_scene{transform:scale(.68)}
   .vpgo-story_number{font-size:3.5rem}
-  .vso-risk_title{font-size:1.875rem}
-  .vso-risk_number{font-size:4rem}
+  .product-band_title{font-size:1.875rem}
+  .product-band_number{font-size:4rem}
 }

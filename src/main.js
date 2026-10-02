@@ -18,6 +18,7 @@ import { initNav } from './modules/nav.js';
 import { initProduct } from './modules/product.js';
 import { initVpgo } from './modules/vpgo.js';
 import { initVso } from './modules/vso.js';
+import { initGap } from './modules/gap.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 const root = document.documentElement;
@@ -80,7 +81,7 @@ async function boot() {
   } else if (heroTl) heroTl.play();
 
   // each module is independent: one failing must not stop the rest
-  for (const [name, fn] of Object.entries({ initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initVpgo, initVso, initHovers })) {
+  for (const [name, fn] of Object.entries({ initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initVpgo, initVso, initGap, initHovers })) {
     try { fn(); } catch (e) { console.error('[givzey]', name, e); }
   }
 

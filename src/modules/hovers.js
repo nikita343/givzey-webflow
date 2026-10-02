@@ -40,7 +40,7 @@ function links() {
 }
 
 // product pages carry their accent on the hero visual (VEO orange, VPGO green, VSO purple)
-const ACCENT = () => document.querySelector('.product-hero_visual.is-vpgo') ? '46,158,94' : document.querySelector('.product-hero_visual.is-vso') ? '107,63,209' : '242,140,40';
+const ACCENT = () => document.querySelector('.product-hero_visual.is-vpgo') ? '46,158,94' : document.querySelector('.product-hero_visual.is-vso') ? '107,63,209' : document.querySelector('.product-hero_visual.is-gap') ? '30,99,233' : '242,140,40';
 const GLOW = [
   ['.home-product_visual', null],
   ['.home-stats_card', '88,165,251'],
@@ -56,7 +56,9 @@ const GLOW = [
   ['.vpgo-pipeline_card', '46,158,94'],
   ['.vpgo-story_quote', '171,230,190'],
   ['.vso-timeline_card', '107,63,209'],
-  ['.vso-risk_glass', '201,182,244'],
+  ['.product-band_glass', 'accent'],
+  ['.gap-life_card', '30,99,233'],
+  ['.gap-use_card', '30,99,233'],
   ['.veo-trust_pillar', '242,140,40'],
   ['.veo-proof_peek', '242,140,40'],
 ];
@@ -64,7 +66,7 @@ function glowCards() {
   for (const [sel, rgb] of GLOW) document.querySelectorAll(sel).forEach(el => {
     el.classList.add('gz-glow');
     let c = rgb === 'accent' ? ACCENT() : rgb;
-    if (!c) { const ink = el.querySelector('.home-product_ink'); c = ink?.classList.contains('is-vpgo') ? '46,158,94' : ink?.classList.contains('is-vso') ? '107,63,209' : '242,140,40'; }
+    if (!c) { const ink = el.querySelector('.home-product_ink'); c = ink?.classList.contains('is-vpgo') ? '46,158,94' : ink?.classList.contains('is-vso') ? '107,63,209' : ink?.classList.contains('is-gap') ? '88,165,251' : '242,140,40'; }
     el.style.setProperty('--glow', c);
     el.addEventListener('pointermove', e => { const [x, y] = local(e, el); el.style.setProperty('--mx', x + 'px'); el.style.setProperty('--my', y + 'px'); });
   });

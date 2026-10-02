@@ -189,7 +189,7 @@ function stats() {
 
 /* ---------- capabilities: cards develop in as they arrive ---------- */
 function capabilities() {
-  const cards = gsap.utils.toArray('.veo-cap_card, .product-cap_card'); if (!cards.length || REDUCED) return;
+  const cards = gsap.utils.toArray('.veo-cap_card, .product-cap_card, .gap-use_card'); if (!cards.length || REDUCED) return;
   gsap.set(cards, { opacity: 0, filter: 'blur(10px)' });
   ScrollTrigger.batch(cards, { start: 'top 92%', once: true, interval: .12,
     onEnter: batch => gsap.to(batch, { opacity: 1, filter: 'blur(0px)', duration: .9, ease: 'power2.out', stagger: .07, clearProps: 'filter' }) });
