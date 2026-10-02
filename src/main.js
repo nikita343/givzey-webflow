@@ -63,14 +63,10 @@ async function boot() {
     else { heroTl && heroTl.play(); lenis && lenis.start(); }
   } else if (heroTl) heroTl.play();
 
-  initNav();
-  initReveals();
-  initProductCards();
-  initStats();
-  initStory();
-  initCta();
-  initTestimonials();
-  initHovers();
+  // each module is independent: one failing must not stop the rest
+  for (const [name, fn] of Object.entries({ initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initHovers })) {
+    try { fn(); } catch (e) { console.error('[givzey]', name, e); }
+  }
 
   // the 3D journey (three.js + 1 MB figure) only loads when its section is near
   const journey = document.querySelector('.section_home-journey');
@@ -86,5 +82,9 @@ async function boot() {
   log('motion ready');
 }
 
-const start = () => boot().catch(e => { console.error('[givzey]', e); root.classList.add('gz-ready'); root.classList.remove('gz-intro', 'gz-loader-on'); });
+const start = () => boot().catch(e => {
+  console.error('[givzey]', e);
+  document.querySelector('.gz-loader')?.remove();
+  root.classList.add('gz-ready'); root.classList.remove('gz-intro', 'gz-loader-on');
+});
 document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start) : start();

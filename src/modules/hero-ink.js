@@ -62,20 +62,27 @@ const FRAG = {
 const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
 
 // draw the hero's <img> inks (absolutely positioned + rotated in Webflow) into one canvas
+// the page's <img>s are not CORS-enabled, so WebGL needs fresh anonymous-CORS copies (Webflow's CDN allows it)
+const corsCopy = img => new Promise(res => {
+  const c = new Image(); c.crossOrigin = 'anonymous'; c.decoding = 'async';
+  c.onload = () => res(c); c.onerror = () => res(null);
+  c.src = img.currentSrc || img.src;
+});
 async function composite(hero, imgs, w, h) {
   await Promise.all(imgs.map(i => (i.complete && i.naturalWidth) ? null : new Promise(r => { i.onload = i.onerror = r; })));
+  const copies = await Promise.all(imgs.map(corsCopy));
   const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
   const hr = hero.getBoundingClientRect(), sx = w / hr.width, sy = h / hr.height;
   g.scale(sx, sy);
-  for (const img of imgs) {
-    const cs = getComputedStyle(img); if (!img.naturalWidth) continue;
+  for (const [k, img] of imgs.entries()) {
+    const src = copies[k]; const cs = getComputedStyle(img); if (!src || !img.naturalWidth) continue;
     const m = new DOMMatrix(cs.transform === 'none' ? undefined : cs.transform);
     const [ox, oy] = cs.transformOrigin.split(' ').map(parseFloat);
     // layout box relative to the hero (offset chain up to the hero)
     let x = 0, y = 0, el = img; while (el && el !== hero) { x += el.offsetLeft; y += el.offsetTop; el = el.offsetParent; }
     g.save(); g.globalAlpha = parseFloat(cs.opacity) || 1;
     g.translate(x + ox, y + oy); g.transform(m.a, m.b, m.c, m.d, m.e, m.f); g.translate(-ox, -oy);
-    g.drawImage(img, 0, 0, img.offsetWidth, img.offsetHeight); g.restore();
+    g.drawImage(src, 0, 0, img.offsetWidth, img.offsetHeight); g.restore();
   }
   return c;
 }
@@ -278,7 +285,11 @@ export function initHeroInk(hero, { intro = false } = {}) {
   if (!ok) { canvas.remove(); return api; }
   measureCalm();
   api.ok = true;
-  api.ready = buildArt().then(() => { if (REDUCED) { render(0); } else raf = requestAnimationFrame(frame); });
+  api.ready = buildArt().then(() => { if (REDUCED) { render(0); } else raf = requestAnimationFrame(frame); })
+    .catch(e => {   // never take the page down with it: fall back to the static <img> inks
+      console.warn('[givzey] hero ink disabled', e);
+      ok = false; api.ok = false; cancelAnimationFrame(raf); canvas.remove(); hero.classList.remove('is-ink-live');
+    });
   if (REDUCED) render(0);
   return api;
 }
