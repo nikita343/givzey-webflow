@@ -452,8 +452,9 @@ body:has(.product-hero_visual.is-vpgo) .product-faq_item.is-open .product-faq_ic
   .gap-life_card .gap-life_stats{column-gap:1em}
   .gap-life_card .gap-life_stat-num{font-size:2.5em}
   .gap-life_card .gap-life_chip.is-reviewed,.gap-life_card .gap-life_chip.is-approved{display:none}
-  .product-band_person{flex-wrap:wrap;row-gap:.75rem}
-  .product-band_logo{width:10rem}
+  .product-band_card .product-band_person{flex-wrap:wrap;row-gap:.75rem}
+  .product-band_card .product-band_who{flex:1 1 100%}
+  .product-band_card .product-band_logo{width:10rem}
   .gap-use_grid{grid-template-columns:minmax(0,1fr)}
   .product-band_text.is-quote{font-size:1.0625rem}
 }
