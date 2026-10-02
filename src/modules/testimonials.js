@@ -25,7 +25,14 @@ export function initTestimonials() {
     a11y: { slideLabelMessage: '{{index}} of {{slidesLength}}' },
     on: {
       // widths change with the active state, so Swiper re-measures once the CSS transition settles
-      slideChangeTransitionStart(s) { clearTimeout(s._gzT); s._gzT = setTimeout(() => s.update(), 760); },
+      // (not swiper.update(): with everything in one row it sees "isEnd" and jumps back to a different card)
+      slideChangeTransitionStart(s) {
+        clearTimeout(s._gzT);
+        s._gzT = setTimeout(() => {
+          s.updateSize(); s.updateSlides(); s.updateProgress(); s.updateSlidesClasses();
+          if (s.virtualSize > s.size + 1) s.slideTo(s.activeIndex, 400, false);   // only when the row overflows (narrow screens)
+        }, 760);
+      },
       slideChange(s) {
         const full = s.slides[s.activeIndex]?.querySelector('.home-testimonials_card');
         if (full && !REDUCED) gsap.fromTo(full.querySelectorAll('.home-testimonials_logo-wrap, .home-testimonials_quote, .home-testimonials_author'),
