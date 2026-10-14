@@ -479,3 +479,89 @@ html.gz-js .v2-belief{border-bottom-color:transparent}
 .v2-belief>*{position:relative}
 .v2-plate_card .gz-ink-canvas,.v2-lab_card .gz-ink-canvas{pointer-events:none}
 @media (max-width:767px){.v2-belief::before{inset:0 -.75rem}}
+
+/* ---------- HubSpot forms (raw HTML embed, css:'' — every rule here is ours) ---------- */
+.hs-embed{--f-ink:#030B2C;--f-line:rgba(3,11,44,.14);--f-line-hover:rgba(3,11,44,.26);--f-muted:rgba(3,11,44,.42);--f-acc:#045CE8;--f-err:#C2283A;position:relative;font-family:var(--font--body,Geist),system-ui,sans-serif;color:var(--f-ink)}
+.gz-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+/* loading: quiet field ghosts until the form arrives, so the card never jumps from empty to full */
+.hs-embed:not(.is-ready):not(.is-failed){min-height:36rem;background:
+  linear-gradient(#F3F5F9,#F3F5F9) 0 1.75rem/calc(50% - .5rem) 3.25rem no-repeat,linear-gradient(#F3F5F9,#F3F5F9) 100% 1.75rem/calc(50% - .5rem) 3.25rem no-repeat,
+  linear-gradient(#F3F5F9,#F3F5F9) 0 7.25rem/calc(50% - .5rem) 3.25rem no-repeat,linear-gradient(#F3F5F9,#F3F5F9) 100% 7.25rem/calc(50% - .5rem) 3.25rem no-repeat,
+  linear-gradient(#F3F5F9,#F3F5F9) 0 12.75rem/100% 3.25rem no-repeat,linear-gradient(#F3F5F9,#F3F5F9) 0 18.25rem/100% 3.25rem no-repeat,
+  linear-gradient(#F3F5F9,#F3F5F9) 0 23.75rem/70% 2.5rem no-repeat,linear-gradient(#E7EDF8,#E7EDF8) 0 31rem/100% 3.75rem no-repeat;border-radius:.75rem;animation:gzFormGhost 1.6s ease-in-out infinite}
+@keyframes gzFormGhost{50%{opacity:.55}}
+.hs-embed_fallback{display:none}
+.hs-embed.is-failed .hs-embed_fallback{display:block}
+.hs-embed.is-ready .hs-embed_fallback{display:none}
+
+.gz-form{margin:0}
+/* HubSpot still injects a small instance sheet (fieldset max-width 500px, floats, 95% widths) — hence the !important overrides */
+.gz-form fieldset{display:grid;grid-template-columns:minmax(0,1fr);gap:1.25rem 1rem;max-width:none!important;margin:0 0 1.25rem!important;padding:0!important;border:0!important;min-width:0}
+.gz-form fieldset.form-columns-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.gz-form fieldset.form-columns-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.gz-form fieldset>.hs-form-field,.gz-form .hs-form-field{float:none!important;width:auto!important;margin:0;padding:0;min-width:0}
+.gz-form>.hs-form-field{margin-bottom:1.25rem}
+/* a chip field takes the whole row, and so does whatever shares its row (no orphaned half-width input) */
+.gz-form fieldset .hs-form-field:has(.gz-chips),.gz-form fieldset:has(.gz-chips)>.hs-form-field{grid-column:1/-1}
+/* React re-renders the select's className on every change, so it is hidden by structure, not by a class */
+.gz-form .input:has(>.gz-chips)>select{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;border:0!important;opacity:0}
+.gz-form .input:has(>.gz-chips){position:relative}
+.gz-form .input{margin:0!important}
+.gz-form label.hs-hidden{display:none}
+.gz-form label:not(.hs-error-msg){display:block;margin:0 0 .5rem;font-size:.875rem;line-height:1.3;font-weight:500;letter-spacing:-.005em;color:var(--f-ink)}
+.gz-form .hs-form-required{display:none}
+.gz-form .hs-field-desc{margin:-.25rem 0 .5rem;font-size:.8125rem;color:var(--f-muted)}
+
+.gz-form .hs-input:not([type=checkbox]):not([type=radio]):not([type=file]){display:block;width:100%!important;max-width:none;height:3.25rem;margin:0;padding:0 1rem;box-sizing:border-box;border:1px solid var(--f-line);border-radius:.75rem;background-color:#fff;font:inherit;font-size:1rem;line-height:1.3;color:var(--f-ink);box-shadow:none;outline:0;-webkit-appearance:none;appearance:none;transition:border-color .2s ease,box-shadow .25s ease}
+.gz-form textarea.hs-input{height:auto!important;min-height:7.5rem;padding:.875rem 1rem!important;resize:vertical}
+.gz-form .hs-input::placeholder{color:var(--f-muted);opacity:1}
+.gz-form .hs-input:hover{border-color:var(--f-line-hover)}
+.gz-form .hs-input:focus{border-color:var(--f-acc);box-shadow:0 0 0 4px rgba(4,92,232,.12)}
+.gz-form select.hs-input{padding-right:2.75rem!important;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5 6 7.5l3-3' fill='none' stroke='%23030B2C' stroke-opacity='.55' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center}
+.hs-embed .gz-form select.hs-input.is-placeholder:not([multiple]){color:var(--f-muted)}
+.gz-form select.hs-input option{color:var(--f-ink)}
+/* checkboxes / consent (newsletter, content forms) */
+.gz-form .inputs-list{margin:0;padding:0;list-style:none}
+.gz-form .inputs-list label{display:flex;align-items:flex-start;gap:.625rem;font-weight:400;line-height:1.45;color:rgba(3,11,44,.72);cursor:pointer}
+.gz-form input[type=checkbox],.gz-form input[type=radio]{width:1.125rem;height:1.125rem;margin:.1rem 0 0;flex:none;accent-color:var(--f-acc)}
+.gz-form .legal-consent-container{font-size:.8125rem;line-height:1.5;color:rgba(3,11,44,.6)}
+.gz-form .legal-consent-container p{margin:0 0 .5rem}
+
+/* errors: one quiet line under the field, red hairline on the input */
+.gz-form .hs-input.is-error,.gz-form .hs-input.error,.gz-form .hs-form-field.error .hs-input,.gz-form .hs-input.invalid{border-color:var(--f-err)!important}
+.gz-form .hs-input.is-error:focus,.gz-form .hs-input.error:focus,.gz-form .hs-input.invalid:focus{box-shadow:0 0 0 4px rgba(194,40,58,.12)}
+.gz-form .hs-error-msgs,.gz-form .gz-form_error{margin:.4rem 0 0;padding:0;list-style:none}
+.gz-form .hs-error-msgs label,.gz-form .gz-form_error label,.gz-form .hs-error-msg{display:block;margin:0;font-size:.8125rem;line-height:1.35;font-weight:400;color:var(--f-err)}
+.gz-form .hs_error_rollup{display:none}
+
+/* chips (selects with a few options) */
+.gz-chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.gz-chip{display:inline-flex;align-items:center;gap:.375rem;height:2.5rem;padding:0 1rem;border:1px solid var(--f-line);border-radius:100vw;background:#fff;font:inherit;font-size:.875rem;line-height:1;color:var(--f-ink);cursor:pointer;transition:background-color .2s ease,border-color .2s ease,color .2s ease,box-shadow .25s ease}
+.gz-chip:hover{border-color:var(--f-line-hover)}
+.gz-chip:focus-visible{outline:0;box-shadow:0 0 0 4px rgba(4,92,232,.16)}
+.gz-chip_check{width:0;height:.75rem;opacity:0;transition:width .25s ease,opacity .2s ease}
+.gz-chip[aria-checked=true]{background:var(--f-acc);border-color:var(--f-acc);color:#fff}
+.gz-chip[aria-checked=true] .gz-chip_check{width:.75rem;opacity:1}
+.hs-form-field:has(.gz-chips):has(.hs-error-msgs,.gz-form_error) .gz-chip:not([aria-checked=true]){border-color:rgba(194,40,58,.45)}
+
+/* submit */
+.gz-form .hs_submit{margin-top:.5rem}
+.gz-form .actions{margin:0;padding:0}
+.gz-form .gz-form_submit,.gz-form .hs-button{display:block;width:100%;height:3.75rem;margin:0;padding:0 2rem;border:0;border-radius:100vw;background:var(--f-acc);font:inherit;font-size:1rem;font-weight:500;letter-spacing:-.011em;color:#fff;cursor:pointer;-webkit-appearance:none;appearance:none;box-shadow:0 1px 0 rgba(255,255,255,.18) inset;transition:background-color .25s ease,box-shadow .5s cubic-bezier(.2,.7,.2,1)}
+.gz-form .gz-form_submit:hover,.gz-form .gz-form_submit:focus-visible{background:#0350CF;box-shadow:0 0 0 1px rgba(171,230,255,.22),0 8px 32px 0 rgba(88,165,251,.32);outline:0}
+.hs-embed.is-sending .gz-form_submit{opacity:.7;pointer-events:none}
+/* invisible reCAPTCHA: the badge is replaced by the note below the form, as Google allows */
+.gz-form .hs_recaptcha{height:0;margin:0!important;overflow:hidden}
+.gz-form .grecaptcha-badge{visibility:hidden}
+.gz-form_captcha{margin:.875rem 0 0;font-size:.75rem;line-height:1.5;color:rgba(3,11,44,.48)}
+.gz-form_captcha a{color:inherit;text-decoration:underline;text-underline-offset:.15em}
+.hs-embed .submitted-message{padding:1.5rem;border-radius:1rem;background:#F2F6FE;font-size:1.0625rem;line-height:1.55;color:var(--f-ink)}
+/* dark surfaces (e.g. a newsletter band): add .is-dark to the host */
+.hs-embed.is-dark{--f-ink:#fff;--f-line:rgba(255,255,255,.22);--f-line-hover:rgba(255,255,255,.4);--f-muted:rgba(255,255,255,.5)}
+.hs-embed.is-dark .gz-form .hs-input:not([type=checkbox]):not([type=radio]){background-color:rgba(255,255,255,.06)}
+.hs-embed.is-dark .gz-form_captcha{color:rgba(255,255,255,.5)}
+@media (max-width:767px){
+  .gz-form fieldset.form-columns-2,.gz-form fieldset.form-columns-3{grid-template-columns:minmax(0,1fr)}
+  .gz-form .hs-input:not([type=checkbox]):not([type=radio]):not([type=file]){font-size:16px}   /* no iOS zoom on focus */
+}
+@media (prefers-reduced-motion:reduce){.hs-embed:not(.is-ready){animation:none}}
