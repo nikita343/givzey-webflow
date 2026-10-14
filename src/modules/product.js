@@ -246,6 +246,8 @@ function proof() {
     const dir = i === (active + 1) % n ? 1 : -1;
     if (REDUCED || getComputedStyle(track).display !== 'flex' || innerWidth < 992) { active = i; order(); mark(); return; }
     busy = true;
+    gsap.getTweensOf(slides).forEach(t => t.progress(1));   // a reveal still running would be frozen half-faded by Flip
+    gsap.set(slides, { clearProps: 'opacity,filter' });
     const before = slides.map(s => s.getBoundingClientRect().left);
     const state = Flip.getState(slides, { props: 'borderRadius,boxShadow' });
     active = i; order(); mark();

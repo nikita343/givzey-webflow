@@ -704,8 +704,7 @@ html.gz-js .v2-belief{border-bottom-color:transparent}
 /* --- VEO: dark transparency section — calmer measure, aligned columns, pillar type on the scale --- */
 .veo-trust_component{padding:7rem 4rem 4rem}
 .veo-trust_columns{max-width:58rem;margin-top:3.5rem;column-gap:4rem;row-gap:1.25rem}
-.veo-trust_text{font-size:1rem;line-height:1.7;color:rgba(255,255,255,.72);letter-spacing:-.005em;text-wrap:pretty}
-.veo-trust_text::first-line{color:#fff}
+.veo-trust_text{font-size:1.125rem;line-height:1.65;color:rgba(255,255,255,.78);letter-spacing:-.005em;text-wrap:pretty}
 .veo-trust_pillars{margin-top:4.5rem;gap:1.25rem}
 .veo-trust_pillar{padding:2.25rem;row-gap:.75rem;min-height:25rem;border-color:rgba(255,255,255,.1)}
 .veo-trust_pillar-title{font-size:1.5rem;line-height:1.25;letter-spacing:-.03em;margin:0}
