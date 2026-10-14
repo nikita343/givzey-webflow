@@ -4,7 +4,10 @@
 //   <div class="hs-embed" data-hs-form="<formId>"
 //        data-hs-submit="Request a demo"            optional button label
 //        data-hs-chips="vertical,demo_product_choice" optional: selects shown as chips
-//        data-hs-event="demo_request_submit">        optional: dataLayer event on submit
+//        data-hs-event="demo_request_submit"         optional: dataLayer event on submit
+//        data-hs-hide="firstname,lastname"           optional: leave optional fields out of a compact form
+//        data-hs-thanks="You’re in.">                optional: replaces HubSpot's thank-you text
+// Host classes: is-inline (field + button on one row, labels hidden), is-dark (dark surfaces).
 //     <p class="hs-embed_fallback">…</p>              optional: shown only if HubSpot fails to load
 //   </div>
 // The portal is the same for every Givzey form. Submissions, redirects and notifications stay as
@@ -111,20 +114,35 @@ function dress(host, form) {
     const input = field.querySelector('input:not([type=hidden]), select, textarea');
     const name = input?.name;
     const span = field.querySelector(':scope > label > span:first-child');
-    if (span && LABELS[name]) span.textContent = LABELS[name];
+    if (span && LABELS[name] && span.textContent !== LABELS[name]) span.textContent = LABELS[name];
     if (input && PLACEHOLDERS[name] && !input.placeholder) input.placeholder = PLACEHOLDERS[name];
     if (input?.tagName === 'SELECT') {
       field.classList.add('is-select');
-      const ph = input.querySelector('option[disabled][value=""]'); if (ph) ph.textContent = 'Select';
-      [...input.options].forEach(o => { if (HIDDEN_OPTIONS.has(o.value)) o.hidden = true; });
+      const ph = input.querySelector('option[disabled][value=""]'); if (ph && ph.textContent !== 'Select') ph.textContent = 'Select';
+      [...input.options].forEach(o => { if (HIDDEN_OPTIONS.has(o.value) && !o.hidden) o.hidden = true; });
     }
   });
+  // compact forms: drop optional fields (never required ones — HubSpot would refuse the submission)
+  const hide = (host.dataset.hsHide || '').split(',').map(x => x.trim()).filter(Boolean);
+  hide.forEach(n => {
+    const f = form.querySelector(`.hs_${n}`);
+    if (!f || f.querySelector('[required]')) return;
+    if (!f.hidden) f.hidden = true;
+    if (!f.classList.contains('gz-hidden')) f.classList.add('gz-hidden');
+    const fs = f.closest('fieldset');
+    if (fs && !fs.hidden && [...fs.querySelectorAll('.hs-form-field')].every(x => x.hidden)) fs.hidden = true;
+  });
+  if (host.classList.contains('is-inline')) {
+    // placeholders carry the label visually; the label stays for screen readers
+    form.querySelectorAll('.hs-form-field > label:not(.gz-sr-only)').forEach(l => l.classList.add('gz-sr-only'));
+  }
   const chipNames = (host.dataset.hsChips || '').split(',').map(s => s.trim()).filter(Boolean);
   chipNames.forEach(n => { const f = form.querySelector(`.hs_${n}`); if (f) chipify(f); });
 
   const submit = form.querySelector('input[type=submit], button[type=submit]');
   if (submit && host.dataset.hsSubmit) {
-    if (submit.tagName === 'INPUT') submit.value = host.dataset.hsSubmit; else submit.textContent = host.dataset.hsSubmit;
+    if (submit.tagName === 'INPUT') { if (submit.value !== host.dataset.hsSubmit) submit.value = host.dataset.hsSubmit; }
+    else if (submit.textContent !== host.dataset.hsSubmit) submit.textContent = host.dataset.hsSubmit;
   }
   if (form.querySelector('.hs_recaptcha') && !host.querySelector('.gz-form_captcha')) {
     const note = document.createElement('p');
@@ -154,13 +172,26 @@ function mount(host) {
       formInstanceId: target.id,
       onFormReady: $f => {
         clearTimeout(timer);
-        const form = $f?.[0] || $f?.get?.(0) || target.querySelector('form');
-        try { dress(host, form); } catch (e) { console.error('[givzey] hubspot dress', e); }
+        // our own target first: several instances of one form share HubSpot's element id
+        const form = target.querySelector('form') || $f?.[0];
+        if (!form) return;
+        const run = () => { try { dress(host, form); } catch (e) { console.error('[givzey] hubspot dress', e); } };
+        run();
+        // HubSpot keeps re-rendering fields after "ready" (phone widget, validation); dress again each time.
+        // Every write in dress() is guarded, so this settles after one pass.
+        let queued = false;
+        new MutationObserver(() => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; run(); }); })
+          .observe(form, { childList: true, subtree: true, attributes: true, attributeFilter: ['value', 'placeholder', 'hidden'] });
         host.classList.add('is-ready');
       },
       onFormSubmit: () => host.classList.add('is-sending'),
       onFormSubmitted: () => {
         host.classList.remove('is-sending'); host.classList.add('is-sent');
+        if (host.dataset.hsThanks) {
+          // HubSpot swaps the form for its message a tick later
+          const swap = () => { const m = host.querySelector('.submitted-message'); if (m) { m.textContent = host.dataset.hsThanks; return true; } };
+          if (!swap()) { const mo = new MutationObserver(() => swap() && mo.disconnect()); mo.observe(host, { childList: true, subtree: true }); setTimeout(() => mo.disconnect(), 5000); }
+        }
         (window.dataLayer = window.dataLayer || []).push({ event: host.dataset.hsEvent || 'hubspot_form_submit', hs_form_id: formId, page_path: location.pathname });
       }
     });
