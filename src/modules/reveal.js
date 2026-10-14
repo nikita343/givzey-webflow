@@ -5,10 +5,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 
 const HEADINGS = '.heading-style-h1, .heading-style-h2, .home-press_heading, .home-story_title, .home-story_subheading, .veo-meet_heading, .veo-cap_heading, .veo-trust_heading, .veo-proof_heading, .product-faq_heading, .product-intro_heading, .product-cap_heading, .vpgo-story_title, .product-band_title, .v2-heading, .v2-mission_text, .v2-lab_title';
-const COPY = '.home-product_text, .home-hero_text, .home-story_text, .home-story_label, .cta_text, .home-journey_text, .footer_tagline, .veo-meet_text, .veo-cap_intro, .veo-trust_text, .veo-proof_sub, .product-faq_sub, .product-intro_text, .vpgo-stats_note, .vpgo-story_text, .product-band_text, .product-band_lead, .product-band_cite, .v2-split_text, .v2-split_lead, .v2-lab_intro, .v2-stats_caption';
+const COPY = '.home-product_text, .home-hero_text, .home-story_text, .home-story_label, .cta_text, .home-journey_text, .veo-meet_text, .veo-cap_intro, .veo-trust_text, .veo-proof_sub, .product-faq_sub, .product-intro_text, .vpgo-stats_note, .vpgo-story_text, .product-band_text, .product-band_lead, .product-band_cite, .v2-split_text, .v2-split_lead, .v2-lab_intro, .v2-stats_caption';
 const TAGS = '.tag, .home-logos_label, .home-stats_chip, .veo-trust_tag';
 
+// every element a reveal touches is marked, so the generic secondary-page reveals (secondary.js) leave it alone
+export const claim = el => { if (el && el.dataset) el.dataset.gzMotion = '1'; return el; };
+
 export function headingBleed(el, { delay = 0, trigger = el, start = 'top 85%', light = false } = {}) {
+  claim(el);
   const split = SplitText.create(el, { type: 'words', wordsClass: 'gz-word', aria: 'auto', ignore: '.home-hero_heading-gradient' });
   const from = light ? '#9CC4FF' : '#3E7BEF';
   // keep gradient text intact (hero "97% of your donors are unmanaged.")
@@ -33,6 +37,7 @@ export function liveGradient(el, { loop = true } = {}) {
 }
 
 export function fadeCopy(el, { delay = 0, trigger = el, start = 'top 88%' } = {}) {
+  claim(el);
   const tl = gsap.timeline({ paused: !!trigger, delay });
   tl.from(el, { opacity: 0, filter: 'blur(10px)', y: 14, duration: 1.1, ease: 'power3.out' });
   if (trigger) ScrollTrigger.create({ trigger, start, once: true, onEnter: () => tl.play() });
@@ -40,6 +45,7 @@ export function fadeCopy(el, { delay = 0, trigger = el, start = 'top 88%' } = {}
 }
 
 export function unrollTag(el, { delay = 0, trigger = el, start = 'top 90%' } = {}) {
+  claim(el);
   const tl = gsap.timeline({ paused: !!trigger, delay });
   tl.fromTo(el, { clipPath: 'inset(0 100% 0 0 round 100vw)', opacity: 0 }, { clipPath: 'inset(0 0% 0 0 round 100vw)', opacity: 1, duration: .9, ease: 'expo.out', clearProps: 'clipPath' });
   if (trigger) ScrollTrigger.create({ trigger, start, once: true, onEnter: () => tl.play() });
@@ -62,7 +68,5 @@ export function initReveals(skip = new Set()) {
     onComplete: () => press.forEach(e => e.classList.add('is-in')),   // hover transitions only after the reveal, so CSS never fights GSAP
     scrollTrigger: { trigger: '.home-press_list', start: 'top 88%', once: true } });
 
-  // footer
-  const foot = gsap.utils.toArray('.footer_col, .footer_brand');
-  if (foot.length) gsap.from(foot, { opacity: 0, filter: 'blur(10px)', duration: 1, ease: 'power2.out', stagger: .08, scrollTrigger: { trigger: '.footer_component', start: 'top 85%', once: true } });
+  // footer: no reveal (Q.A.) — it simply sits there
 }

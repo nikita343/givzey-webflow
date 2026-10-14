@@ -4,6 +4,8 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
+import { Flip } from 'gsap/Flip';
+gsap.registerPlugin(Flip);
 import { inkLayer } from './ink-layer.js';
 import { headingBleed, fadeCopy, unrollTag } from './reveal.js';
 import { REDUCED } from '../base.js';
@@ -218,7 +220,10 @@ function trust() {
   ScrollTrigger.create({ trigger: grid, start: 'top 82%', once: true, onEnter: () => tl.play() });
 }
 
-/* ---------- customer proof: the active story opens in the centre; neighbours wait as logo cards ---------- */
+/* ---------- customer proof: works like the homepage testimonials ----------
+   The active story sits in the middle (previous · active · next). Choosing a neighbour widens it into the full
+   card while the old one folds back into a logo card: GSAP Flip animates the real widths, so the row glides
+   instead of blinking. The card that wraps from one end to the other fades across rather than flying. */
 function proof() {
   const slider = document.querySelector('.veo-proof_slider'); if (!slider) return;
   const track = slider.querySelector('.veo-proof_track'); const slides = [...track.children];
@@ -226,31 +231,30 @@ function proof() {
   const comp = slider.closest('.veo-proof_component') || slider.parentElement;
   const prev = comp.querySelector('.veo-proof_arrow.is-prev'), next = comp.querySelector('.veo-proof_arrow:not(.is-prev)');
   let active = Math.max(0, slides.findIndex(s => s.classList.contains('is-active')));
-  slider.classList.add('is-js');
-  const apply = () => {
-    // keep the active story in the middle: previous · active · next
-    for (let k = -1; k < n - 1; k++) track.appendChild(slides[(active + k + n) % n]);
-    slides.forEach((s, i) => {
-      const on = i === active; s.classList.toggle('is-active', on);
-      const card = s.querySelector('.veo-proof_card'); if (card) { card.inert = !on; card.setAttribute('aria-hidden', String(!on)); }
-      const peek = s.querySelector('.veo-proof_peek'); if (peek) { peek.setAttribute('role', 'button'); peek.setAttribute('tabindex', on ? '-1' : '0'); peek.removeAttribute('aria-hidden'); peek.setAttribute('aria-label', 'Show story: ' + (card?.getAttribute('aria-label') || '')); peek.inert = on; }
-    });
-  };
-  apply();
+  slider.classList.add('is-js', 'is-flip');
+  const order = () => { for (let k = -1; k < n - 1; k++) track.appendChild(slides[(active + k + n) % n]); };
+  const mark = () => slides.forEach((s, i) => {
+    const on = i === active; s.classList.toggle('is-active', on);
+    const card = s.querySelector('.veo-proof_card'); if (card) { card.inert = !on; card.setAttribute('aria-hidden', String(!on)); }
+    const peek = s.querySelector('.veo-proof_peek'); if (peek) { peek.setAttribute('role', 'button'); peek.setAttribute('tabindex', on ? '-1' : '0'); peek.removeAttribute('aria-hidden'); peek.setAttribute('aria-label', 'Show story: ' + (card?.getAttribute('aria-label') || '')); peek.inert = on; }
+  });
+  order(); mark();
   let busy = false;
-  const parts = () => slides[active].querySelectorAll('.veo-proof_logo, .veo-proof_context, .veo-proof_quote, .veo-proof_author, .veo-proof_side');
+  const parts = i => slides[i].querySelectorAll('.veo-proof_logo, .veo-proof_context, .veo-proof_quote, .veo-proof_author, .veo-proof_side');
   function go(i) {
     i = (i + n) % n; if (busy || i === active) return;
     const dir = i === (active + 1) % n ? 1 : -1;
-    if (REDUCED) { active = i; apply(); return; }
-    // a clean page turn: the row drifts out and softens, the order changes while it is out of sight,
-    // then the new story drifts in from the other side and its content develops line by line
+    if (REDUCED || getComputedStyle(track).display !== 'flex' || innerWidth < 992) { active = i; order(); mark(); return; }
     busy = true;
-    gsap.timeline({ onComplete: () => { busy = false; } })
-      .to(track, { opacity: 0, x: -dir * 48, filter: 'blur(8px)', duration: .32, ease: 'power2.in' })
-      .add(() => { slider.classList.add('is-swapping'); active = i; apply(); void track.offsetWidth; slider.classList.remove('is-swapping'); })
-      .fromTo(track, { x: dir * 48 }, { opacity: 1, x: 0, filter: 'blur(0px)', duration: .75, ease: 'expo.out', clearProps: 'filter,transform' })
-      .fromTo(parts(), { opacity: 0, filter: 'blur(8px)' }, { opacity: 1, filter: 'blur(0px)', duration: .7, stagger: .06, ease: 'power2.out', clearProps: 'filter,opacity' }, '<.1');
+    const before = slides.map(s => s.getBoundingClientRect().left);
+    const state = Flip.getState(slides, { props: 'borderRadius,boxShadow' });
+    active = i; order(); mark();
+    // the slide that jumped ends (left → right or back) would cross the whole row: fade it in place instead
+    const after = slides.map(s => s.getBoundingClientRect().left);
+    const wrapped = slides.filter((s, k) => Math.sign(after[k] - before[k]) === dir && Math.abs(after[k] - before[k]) > innerWidth * .5);
+    Flip.from(state, { targets: slides.filter(s => !wrapped.includes(s)), duration: .8, ease: 'power3.inOut', onComplete: () => { busy = false; } });
+    wrapped.forEach(s => gsap.fromTo(s, { opacity: 0, x: dir * 60 }, { opacity: 1, x: 0, duration: .7, delay: .25, ease: 'power3.out', clearProps: 'opacity,transform' }));
+    gsap.fromTo(parts(i), { opacity: 0, filter: 'blur(8px)' }, { opacity: 1, filter: 'blur(0px)', duration: .8, stagger: .08, delay: .35, ease: 'power2.out', clearProps: 'filter,opacity' });
   }
   prev?.addEventListener('click', e => { e.preventDefault(); go(active - 1); });
   next?.addEventListener('click', e => { e.preventDefault(); go(active + 1); });
@@ -269,7 +273,7 @@ function proof() {
   let sx = null;
   slider.addEventListener('pointerdown', e => { sx = e.clientX; });
   slider.addEventListener('pointerup', e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 50) go(active + (dx < 0 ? 1 : -1)); });
-  if (!REDUCED) gsap.from(slides, { opacity: 0, filter: 'blur(12px)', duration: 1.1, ease: 'power3.out', stagger: .1, clearProps: 'filter', scrollTrigger: { trigger: slider, start: 'top 82%', once: true } });
+  if (!REDUCED) gsap.from(slides, { opacity: 0, filter: 'blur(12px)', duration: 1.1, ease: 'power3.out', stagger: .1, clearProps: 'filter,opacity', scrollTrigger: { trigger: slider, start: 'top 82%', once: true } });
 }
 
 /* ---------- FAQ: one answer open at a time ---------- */

@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { inkLayer } from './ink-layer.js';
 import { headingBleed, fadeCopy, unrollTag } from './reveal.js';
 import { countTo } from './product.js';
+import { initWaterHero } from './ink-water.js';
 import { REDUCED } from '../base.js';
 
 function hero() {
@@ -81,7 +82,36 @@ function stats() {
   ScrollTrigger.create({ trigger: grid, start: 'top 85%', once: true, onEnter: () => tl.play() });
 }
 
+/* ---------- Version2 R2 (.v2r-*): the live hero ---------- */
+// the hero becomes deep water in the one brand blue (the homepage engine, held on blue), the headline bleeds in,
+// the copy and button develop, the four results count up along a hairline that draws across
+function heroR(sec) {
+  const water = initWaterHero(sec, { inkSel: '.v2r-none', wrapSel: null, calmSel: '.v2r-h1', avoidSel: '.v2r-row, .v2r-stats',
+    palette: 0, paper: '#061650', deep: ['#05124A', '#0A2B8C'], prepend: true, main: false });
+  if (water.ok && !REDUCED) water.ready.then(() => [[.86, .7, 1.1], [.93, .48, .8], [.74, .82, .7]].forEach(([x, y, size], i) =>
+    setTimeout(() => water.drip(x, y, { size, fall: .8 }), 500 + i * 650)));
+  if (REDUCED) return;
+  const h1 = sec.querySelector('.v2r-h1'), sub = sec.querySelector('.v2r-sub'), btn = sec.querySelector('.v2r-row .dm-btn');
+  const statsBox = sec.querySelector('.v2r-stats'), cards = gsap.utils.toArray(sec.querySelectorAll('.v2r-stat'));
+  const nav = document.querySelector('.navbar_component');
+  const tl = gsap.timeline({ delay: .05 });
+  if (nav) tl.from(nav, { opacity: 0, filter: 'blur(10px)', duration: 1, ease: 'power2.out', clearProps: 'filter,opacity' }, 0);
+  if (h1) tl.add(headingBleed(h1, { trigger: null, light: true }).play(), .1);
+  if (sub) tl.add(fadeCopy(sub, { trigger: null }).play(), .55);
+  if (btn) tl.from(btn, { opacity: 0, filter: 'blur(10px)', duration: 1, ease: 'power2.out', clearProps: 'filter' }, .7);
+  if (statsBox) tl.fromTo(statsBox, { '--gz-line': 0 }, { '--gz-line': 1, duration: 1.6, ease: 'expo.out' }, .8);
+  cards.forEach((c, i) => {
+    tl.from(c, { opacity: 0, y: 16, filter: 'blur(10px)', duration: 1, ease: 'power3.out', clearProps: 'filter,transform' }, .9 + i * .1);
+    const n = c.querySelector('.v2r-num'); if (n) tl.add(() => countTo(n, { trigger: null, duration: 2 })?.play(), .95 + i * .1);
+    const ico = c.querySelector('.sol-icon'); if (ico) tl.from(ico, { scale: .5, opacity: 0, duration: .7, ease: 'back.out(2.2)', clearProps: 'transform,opacity' }, 1 + i * .1);
+  });
+  [h1, sub, btn, ...cards].forEach(e => e && (e.dataset.gzMotion = '1'));
+  sec.querySelectorAll('.v2r-num, .v2r-label, .sol-icon').forEach(e => (e.dataset.gzMotion = '1'));
+}
+
 export function initV2() {
+  const r2 = document.querySelector('.v2r-hero');
+  if (r2) { heroR(r2); return; }
   if (!document.querySelector('.section_v2-hero')) return;
   hero(); beliefs(); lab(); stats();
 }

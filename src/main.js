@@ -22,6 +22,7 @@ import { initGap } from './modules/gap.js';
 import { initV2 } from './modules/v2.js';
 import { initHubspotForms } from './modules/hubspot.js';
 import { initAbout } from './modules/about.js';
+import { initSecondary } from './modules/secondary.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 const root = document.documentElement;
@@ -34,6 +35,20 @@ function smoothScroll() {
   gsap.ticker.add(t => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
   return lenis;
+}
+
+// Webflow sets html{height:100%}, so Lenis' own observer (on <html>) never sees the page grow when lazy images
+// load: its scroll limit stayed at the first measurement and long pages stopped scrolling part-way (Version2).
+// Watch <body> instead, re-measure Lenis at once and ScrollTrigger shortly after.
+function watchPageHeight(lenis) {
+  let h = document.body.scrollHeight, t = 0;
+  new ResizeObserver(() => {
+    const nh = document.body.scrollHeight;
+    if (Math.abs(nh - h) < 2) return;
+    h = nh; lenis?.resize();
+    clearTimeout(t); t = setTimeout(() => ScrollTrigger.refresh(), 150);
+  }).observe(document.body);
+  addEventListener('load', () => lenis?.resize());
 }
 
 function heroSequence(hero) {
@@ -62,6 +77,7 @@ async function boot() {
   const hero = document.querySelector('.section_home-hero');
   const lenis = smoothScroll();
   window.gzLenis = lenis;   // the mobile menu pauses smooth scroll while it is open
+  watchPageHeight(lenis);
   if (lenis && intro) lenis.stop();
 
   let heroTl = null;
@@ -84,7 +100,7 @@ async function boot() {
   } else if (heroTl) heroTl.play();
 
   // each module is independent: one failing must not stop the rest
-  for (const [name, fn] of Object.entries({ initHubspotForms, initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initVpgo, initVso, initGap, initV2, initAbout, initHovers })) {
+  for (const [name, fn] of Object.entries({ initHubspotForms, initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initVpgo, initVso, initGap, initV2, initAbout, initHovers, initSecondary })) {
     try { fn(); } catch (e) { console.error('[givzey]', name, e); }
   }
 

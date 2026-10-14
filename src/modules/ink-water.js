@@ -52,7 +52,7 @@ const FRAG = {
   blur: HEAD + `uniform sampler2D uTex; uniform vec2 dir;
     void main(){ vec3 s=texture2D(uTex,vUv).rgb*.227; s+=(texture2D(uTex,vUv+dir*1.385).rgb+texture2D(uTex,vUv-dir*1.385).rgb)*.316; s+=(texture2D(uTex,vUv+dir*3.231).rgb+texture2D(uTex,vUv-dir*3.231).rgb)*.0703; gl_FragColor=vec4(s,1.); }`,
   display: HEAD + NOISE + `uniform sampler2D uDye,uBloom,uVel,uArt; uniform vec2 res,velTexel; uniform float bleed,maxD,aspect,time,calmAmt,bloomAmt,push,tint;
-    uniform vec3 palL,palM,palD,paper; uniform vec4 calm;
+    uniform vec3 palL,palM,palD,paper,deepT,deepB; uniform vec4 calm;
     vec3 tonemap(vec3 c){ float l=max(c.r,max(c.g,c.b)); return l<1e-5?vec3(0.):c*(1.-exp(-l))/l; }
     vec3 pal(float l){ return l<.5?mix(palD,palM,l*2.):mix(palM,palL,(l-.5)*2.); }
     void main(){
@@ -61,7 +61,7 @@ const FRAG = {
       float k=(1.-calmAmt*.8*zone)*(1.-calmAmt*.55*top);
       // deep water (the hero's navy), lit from inside by the current hue
       float depth=smoothstep(-.25,1.15,vUv.y);
-      vec3 col=mix(vec3(.012,.043,.173),vec3(.012,.067,.286),1.-depth);
+      vec3 col=mix(deepT,deepB,1.-depth);
       col+=palD*.12*(1.-smoothstep(0.,1.1,length(vec2(cuv.x*.8,cuv.y+.1))));
       // the designed inks, pushed by the water and recoloured into the palette
       // the push follows a softened copy of the velocity: the raw field is grid-sized and turns edges into steps
@@ -118,12 +118,18 @@ function inkFrom(p, s, gain = 1.15) {
   const m = Math.max(...c) || 1; return c.map(v => Math.min(1, v / m * gain * (.55 + .45 * m)));
 }
 
-export function initWaterHero(hero, { intro = false } = {}) {
-  const imgs = [...hero.querySelectorAll('.home-hero_ink')];
-  const wrap = hero.querySelector('.home-hero_ink-wrapper') || hero;
-  const copy = hero.querySelector('.home-hero_content') || hero;
+// Options (defaults = the home hero):
+//   inkSel / wrapSel / calmSel — the artwork, where the canvas goes, the copy the ink keeps clear of
+//   palette — an index into PALETTES to hold one hue (no cycling), e.g. 0 for brand blue
+//   armed — start covered (bleed 0) and wait for playIntro(), e.g. when the block scrolls into view
+//   paper — the colour the bleed opens from; deep — the water's top / bottom colours; main — the page's hero (loader hooks, QA hooks)
+export function initWaterHero(hero, { intro = false, inkSel = '.home-hero_ink', wrapSel = '.home-hero_ink-wrapper', calmSel = '.home-hero_content',
+  palette = null, armed = false, paper = '#F3F5FA', prepend = false, main = true, avoidSel = '', deep = ['#030B2C', '#031149'] } = {}) {
+  const imgs = [...hero.querySelectorAll(inkSel)];
+  const wrap = (wrapSel && hero.querySelector(wrapSel)) || hero;
+  const copy = (calmSel && hero.querySelector(calmSel)) || hero;
   const canvas = document.createElement('canvas'); canvas.className = 'gz-hero-ink'; canvas.setAttribute('aria-hidden', 'true');
-  wrap.appendChild(canvas);
+  prepend ? wrap.prepend(canvas) : wrap.appendChild(canvas);
   const fx = document.createElement('div'); fx.className = 'gz-hero-fx'; fx.setAttribute('aria-hidden', 'true'); hero.appendChild(fx);
   const root = document.documentElement;
 
@@ -202,8 +208,10 @@ export function initWaterHero(hero, { intro = false } = {}) {
   }
 
   const CFG = { curl: 16, gravity: 14, viscosity: .32, fade: .05, thin: .14, ambient: 1.1, push: .5 };
-  const S = { calm: 1, bleed: intro ? 0 : 1, time: 0 };
-  let pal = paletteAt(0);
+  const S = { calm: 1, bleed: intro || armed ? 0 : 1, time: 0 };
+  const held = palette == null ? null : (p => ({ L: p[0], M: p[1], D: p[2], tint: 0 }))(PALETTES[palette]);
+  const palAt = t => held || paletteAt(t);
+  let pal = palAt(0);
   const corr = r => aspect > 1 ? r * aspect : r;
   function splatInto(target, x, y, c, radius, wobble, seed) {
     const u = use('splat'); gl.uniform2f(u.texel, target.tx, target.ty); gl.uniform1f(u.aspect, aspect); gl.uniform2f(u.point, x, y);
@@ -251,7 +259,7 @@ export function initWaterHero(hero, { intro = false } = {}) {
     el.style.setProperty('--c', 'rgb(' + color.map(v => Math.round(Math.min(1, v * 1.05) * 255)).join(',') + ')'); fx.appendChild(el);
     setTimeout(() => { el.remove(); addDrop(x, y, color, o); }, fall * 1000);
   }
-  const avoid = () => [copy, document.querySelector('.navbar_component')].filter(Boolean);
+  const avoid = () => [copy, main && document.querySelector('.navbar_component'), ...(avoidSel ? hero.querySelectorAll(avoidSel) : [])].filter(Boolean);
   function clearOf(x, y) {
     const c = canvas.getBoundingClientRect(); if (!c.width) return true;
     const px = c.left + x * c.width, py = c.top + (1 - y) * c.height;
@@ -287,7 +295,7 @@ export function initWaterHero(hero, { intro = false } = {}) {
     const r = copy.getBoundingClientRect(), c = canvas.getBoundingClientRect(); if (!c.width || !c.height) return;
     calmRect = [(r.left + r.width / 2 - c.left) / c.width, 1 - (r.top + r.height / 2 - c.top) / c.height, Math.max(.15, r.width / c.width * .62), Math.max(.15, r.height / c.height * .8)];
   }
-  const PAPER = hex('#F3F5FA');
+  const PAPER = hex(paper), DEEP_T = hex(deep[0]), DEEP_B = hex(deep[1]);
   function render() {
     if (useBloom) bloom();
     const u = use('display'); gl.uniform2f(u.texel, dye.tx, dye.ty);
@@ -296,7 +304,7 @@ export function initWaterHero(hero, { intro = false } = {}) {
     gl.uniform2f(u.res, canvas.width, canvas.height); gl.uniform2f(u.velTexel, vel.tx, vel.ty); gl.uniform1f(u.push, CFG.push);
     gl.uniform1f(u.bleed, S.bleed); gl.uniform1f(u.maxD, Math.hypot(aspect * .5, .5)); gl.uniform1f(u.aspect, aspect);
     gl.uniform1f(u.time, S.time); gl.uniform1f(u.calmAmt, S.calm); gl.uniform1f(u.bloomAmt, useBloom ? .32 : 0); gl.uniform1f(u.tint, pal.tint);
-    gl.uniform3fv(u.palL, pal.L); gl.uniform3fv(u.palM, pal.M); gl.uniform3fv(u.palD, pal.D); gl.uniform3fv(u.paper, PAPER);
+    gl.uniform3fv(u.palL, pal.L); gl.uniform3fv(u.palM, pal.M); gl.uniform3fv(u.palD, pal.D); gl.uniform3fv(u.paper, PAPER); gl.uniform3fv(u.deepT, DEEP_T); gl.uniform3fv(u.deepB, DEEP_B);
     gl.uniform4f(u.calm, calmRect[0], calmRect[1], calmRect[2], calmRect[3]); blit(null);
   }
 
@@ -304,7 +312,7 @@ export function initWaterHero(hero, { intro = false } = {}) {
   const ptr = { x: 0, y: 0, ax: 0, ay: 0, has: false, moved: false, phase: Math.random(), down: false, travel: 0 };
   let lastTouch = -10;
   const toUv = e => { const c = canvas.getBoundingClientRect(); return [(e.clientX - c.left) / c.width, 1 - (e.clientY - c.top) / c.height]; };
-  let revealed = !intro;
+  let revealed = !intro && !armed;
   hero.addEventListener('pointermove', e => {
     if (!revealed || REDUCED) return;
     if (e.target.closest && e.target.closest('.navbar_component')) { ptr.has = false; return; }
@@ -369,7 +377,7 @@ export function initWaterHero(hero, { intro = false } = {}) {
     raf = requestAnimationFrame(frame);
     if (!visible || document.hidden || !ok) { prev = now; return; }
     const raw = now - prev, dt = Math.min(raw / 1000, 1 / 30); prev = now; S.time += dt;
-    pal = paletteAt(S.time);
+    pal = palAt(S.time);
     if (introState) runIntro(Math.min(raw / 1000, .1));
     // GPU watchdog: bloom goes first, then resolution, then the low-res simulation
     if (raw < 1000) { perf.sum += raw; if (++perf.n === 24) { const avg = perf.sum / perf.n; perf.n = perf.sum = 0;
@@ -379,7 +387,7 @@ export function initWaterHero(hero, { intro = false } = {}) {
         else if (quality > .55) { quality = .55; allocate(); }
       } } }
     autoDrops(); runPointer(); runDrops(dt); step(dt); render();
-    if (first) { first = false; root.classList.add('gz-paper'); }
+    if (first) { first = false; if (main) root.classList.add('gz-paper'); }
   }
   new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(hero);
   let rz = 0, lastW = innerWidth;
@@ -391,14 +399,15 @@ export function initWaterHero(hero, { intro = false } = {}) {
   if (!ok) return fail();
   measureCalm();
   api.ok = true;
-  if (/[?&]gzdebug\b/.test(location.search)) window.__gzWater = { S, drops, ptr, CFG,
+  api.drip = (x, y, o = {}) => drip(x, y, inkFrom(pal, o.tone ?? (.55 + Math.random() * .4)), o);   // a drop from outside (e.g. a page's opening drops)
+  if (main && /[?&]gzdebug\b/.test(location.search)) window.__gzWater = { S, drops, ptr, CFG,
     // QA: run the simulation forward synchronously (software GPUs can't hold real time)
-    advance(sec, t0) { if (t0 !== undefined) S.time = t0; const n = Math.round(sec * 30); for (let i = 0; i < n; i++) { S.time += 1 / 30; pal = paletteAt(S.time); if (introState) runIntro(1 / 30); runPointer(); runDrops(1 / 30); step(1 / 30); } render(); },
+    advance(sec, t0) { if (t0 !== undefined) S.time = t0; const n = Math.round(sec * 30); for (let i = 0; i < n; i++) { S.time += 1 / 30; pal = palAt(S.time); if (introState) runIntro(1 / 30); runPointer(); runDrops(1 / 30); step(1 / 30); } render(); },
     drop(x, y) { addDrop(x, y, inkFrom(pal, .7)); },
     stroke(pts) { for (const [x, y] of pts) { ptr.x = x; ptr.y = y; if (!ptr.has) { ptr.ax = x; ptr.ay = y; ptr.has = true; } ptr.moved = true; runPointer(); step(1 / 30); } render(); }, get revealed() { return revealed; }, get intro() { return introState; }, get nextAuto() { return nextAuto; } };
   api.ready = buildArt().then(() => {
-    if (REDUCED) { S.bleed = 1; for (let i = 0; i < 3; i++) addDrop(.62 + i * .12, .55 + i * .08, inkFrom(pal, .7)); for (let i = 0; i < 200; i++) { runDrops(1 / 60); step(1 / 60); } render(); root.classList.add('gz-paper'); }
-    else { raf = requestAnimationFrame(frame); if (!intro) nextAuto = 2; }
+    if (REDUCED) { S.bleed = 1; for (let i = 0; i < 3; i++) addDrop(.62 + i * .12, .55 + i * .08, inkFrom(pal, .7)); for (let i = 0; i < 200; i++) { runDrops(1 / 60); step(1 / 60); } render(); if (main) root.classList.add('gz-paper'); }
+    else { raf = requestAnimationFrame(frame); if (!intro && !armed) nextAuto = 2; }
   }).catch(e => {
     console.warn('[givzey] water hero disabled', e);
     ok = false; api.ok = false; cancelAnimationFrame(raf); canvas.remove(); fx.remove(); hero.classList.remove('is-ink-live');

@@ -2,7 +2,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { inkLayer } from './ink-layer.js';
-import { initInkSim } from './hero-ink.js';
+import { initWaterHero } from './ink-water.js';
 import { REDUCED } from '../base.js';
 
 // "$20M+" / "4x" / "43%" / "$1M+": count the number part, keep prefix and suffix
@@ -41,8 +41,9 @@ export function initStory() {
   if (!inner) return;
   // the card's two inks become one live fluid (same engine as the hero, on the card's navy):
   // they bleed in when the card arrives, the cursor stirs them and leaves a blue trail, drops fall now and then
-  const NAVY = '#010B29';
-  const sim = initInkSim(inner, { inkSel: '.home-story_ink', calmSel: '.home-story_intro', top: NAVY, bot: NAVY, bleedBase: NAVY, armed: !REDUCED, prepend: true, feel: { trailInk: .17, trailRadius: .55 } });   // a quieter trail than the hero: text sits on top
+  // Q.A.: the same deep-water ink as the hero, held in the one brand blue (no palette drift)
+  const sim = initWaterHero(inner, { inkSel: '.home-story_ink', wrapSel: null, calmSel: '.home-story_intro', avoidSel: '.home-story_media',
+    palette: 0, armed: !REDUCED, paper: '#010B29', deep: ['#010B29', '#03165A'], prepend: true, main: false });
   if (REDUCED) return;
   const num = inner.querySelector('.home-story_number'); if (num) countUp(num, { duration: 2.2 });
   ScrollTrigger.create({ trigger: inner, start: 'top 75%', once: true, onEnter: () => {
