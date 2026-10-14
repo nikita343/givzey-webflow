@@ -602,3 +602,18 @@ html.gz-js .v2-belief{border-bottom-color:transparent}
   .gz-form .hs-input:not([type=checkbox]):not([type=radio]):not([type=file]){font-size:16px}   /* no iOS zoom on focus */
 }
 @media (prefers-reduced-motion:reduce){.hs-embed:not(.is-ready){animation:none}}
+
+/* ---------- Our story (/about) ---------- */
+/* timeline: the rail fills blue as you scroll; marks fill when the fill reaches them */
+.ab-line_fill{position:absolute;inset:0;background:#045CE8;transform-origin:50% 0;transform:scaleY(0);will-change:transform}
+.gz-tl .ab-mark{transition:background-color .45s ease,border-color .45s ease,color .45s ease,box-shadow .6s cubic-bezier(.2,.7,.2,1)}
+.gz-tl .ab-mark.is-now:not(.is-reached){background-color:#fff;border-color:rgba(4,92,232,.5);color:#045CE8}
+.gz-tl .ab-mark.is-reached{background-color:#045CE8;border-color:#045CE8;color:#fff;box-shadow:0 0 0 .4rem rgba(4,92,232,.12)}
+/* statement: words light up with the scroll (opacity set by JS) */
+.ab-statement .gz-sword{will-change:opacity}
+/* "As seen in": horizontal hairlines run to the page edges; the vertical ones stay in the grid */
+.ab-press{position:relative}
+.ab-press::before,.ab-pcell::after{content:"";position:absolute;left:-100vw;right:-100vw;height:1px;background:#E6E7EA;pointer-events:none}
+.ab-press::before{top:-1px}
+.ab-pcell{position:relative}
+.ab-pcell::after{bottom:-1px}
