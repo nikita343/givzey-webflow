@@ -23,6 +23,7 @@ import { initV2 } from './modules/v2.js';
 import { initHubspotForms } from './modules/hubspot.js';
 import { initAbout } from './modules/about.js';
 import { initSecondary } from './modules/secondary.js';
+import { initSolutions } from './modules/solutions.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 const root = document.documentElement;
@@ -106,7 +107,7 @@ async function boot() {
   } else if (heroTl) heroTl.play();
 
   // each module is independent: one failing must not stop the rest
-  for (const [name, fn] of Object.entries({ initHubspotForms, initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initVpgo, initVso, initGap, initV2, initAbout, initHovers, initSecondary })) {
+  for (const [name, fn] of Object.entries({ initHubspotForms, initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initVpgo, initVso, initGap, initV2, initAbout, initSolutions, initHovers, initSecondary })) {
     try { fn(); } catch (e) { console.error('[givzey]', name, e); }
   }
 

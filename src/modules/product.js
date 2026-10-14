@@ -4,8 +4,6 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
-import { Flip } from 'gsap/Flip';
-gsap.registerPlugin(Flip);
 import { inkLayer } from './ink-layer.js';
 import { headingBleed, fadeCopy, unrollTag } from './reveal.js';
 import { REDUCED } from '../base.js';
@@ -222,8 +220,11 @@ function trust() {
 
 /* ---------- customer proof: works like the homepage testimonials ----------
    The active story sits in the middle (previous · active · next). Choosing a neighbour widens it into the full
-   card while the old one folds back into a logo card: GSAP Flip animates the real widths, so the row glides
-   instead of blinking. The card that wraps from one end to the other fades across rather than flying. */
+   card while the old one folds back into a logo card. The widths animate with CSS transitions (styles.css,
+   "VEO proof"), never with inline JS geometry: a transition always lands on the class state, so a stalled frame
+   loop, rapid clicks or a resize mid-turn can no longer leave a slide stuck half-way (the old Flip version could
+   freeze with an inactive slide at full width). Slides are placed with CSS `order`, not by moving DOM nodes
+   (re-inserting a node cancels its running transition). The card that wraps from one end to the other fades in. */
 function proof() {
   const slider = document.querySelector('.veo-proof_slider'); if (!slider) return;
   const track = slider.querySelector('.veo-proof_track'); const slides = [...track.children];
@@ -231,33 +232,52 @@ function proof() {
   const comp = slider.closest('.veo-proof_component') || slider.parentElement;
   const prev = comp.querySelector('.veo-proof_arrow.is-prev'), next = comp.querySelector('.veo-proof_arrow:not(.is-prev)');
   let active = Math.max(0, slides.findIndex(s => s.classList.contains('is-active')));
-  slider.classList.add('is-js', 'is-flip');
-  const order = () => { for (let k = -1; k < n - 1; k++) track.appendChild(slides[(active + k + n) % n]); };
+  slider.classList.add('is-js', 'is-flip', 'is-css');
+  // previous = 0, active = 1, next = 2, the rest follow on the right
+  const slot = i => (i - active + 1 + n) % n;
+  const order = () => slides.forEach((s, i) => { s.style.order = slot(i); });
+  slides.forEach(s => s.querySelectorAll('.veo-proof_logo, .veo-proof_context, .veo-proof_quote, .veo-proof_author, .veo-proof_side').forEach((p, k) => p.style.setProperty('--gz-i', k)));
   const mark = () => slides.forEach((s, i) => {
     const on = i === active; s.classList.toggle('is-active', on);
     const card = s.querySelector('.veo-proof_card'); if (card) { card.inert = !on; card.setAttribute('aria-hidden', String(!on)); }
     const peek = s.querySelector('.veo-proof_peek'); if (peek) { peek.setAttribute('role', 'button'); peek.setAttribute('tabindex', on ? '-1' : '0'); peek.removeAttribute('aria-hidden'); peek.setAttribute('aria-label', 'Show story: ' + (card?.getAttribute('aria-label') || '')); peek.inert = on; }
   });
   order(); mark();
-  let busy = false;
-  const parts = i => slides[i].querySelectorAll('.veo-proof_logo, .veo-proof_context, .veo-proof_quote, .veo-proof_author, .veo-proof_side');
+  let last = 0;
+  // restart a CSS animation class (remove, reflow, add)
+  const replay = (el, cls) => { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
   function go(i) {
-    i = (i + n) % n; if (busy || i === active) return;
-    const dir = i === (active + 1) % n ? 1 : -1;
-    if (REDUCED || getComputedStyle(track).display !== 'flex' || innerWidth < 992) { active = i; order(); mark(); return; }
-    busy = true;
-    gsap.getTweensOf(slides).forEach(t => t.progress(1));   // a reveal still running would be frozen half-faded by Flip
-    gsap.set(slides, { clearProps: 'opacity,filter' });
-    const before = slides.map(s => s.getBoundingClientRect().left);
-    const state = Flip.getState(slides, { props: 'borderRadius,boxShadow' });
+    i = (i + n) % n; if (i === active) return;
+    const now = performance.now(); if (now - last < 180) return; last = now;   // a double-click is one turn, not two
+    // an entrance reveal still running must not hold a slide half-faded: finish it and drop its inline styles
+    gsap.getTweensOf(slides).forEach(t => t.progress(1));
+    gsap.set(slides, { clearProps: 'opacity,filter,transform,width,height' });
+    const was = slides.map((s, k) => slot(k));
+    const row = !REDUCED && getComputedStyle(track).display === 'flex' && innerWidth >= 992;
+    // where each slide is on screen right now (mid-turn included: the rect contains the running transform)
+    const before = row ? slides.map(s => s.getBoundingClientRect().left) : [];
+    // `is-snap` drops only the transform transition: widths keep easing from wherever they are
+    slides.forEach(s => { s.classList.add('is-snap'); s.style.transform = ''; });
     active = i; order(); mark();
-    // the slide that jumped ends (left → right or back) would cross the whole row: fade it in place instead
+    if (!row) { slides.forEach(s => { s.classList.remove('is-snap', 'is-entering', 'is-wrap-r', 'is-wrap-l'); }); return; }
+    // the new order applies at once while the widths are still the old ones (their transition only starts now):
+    // put each slide back where it was and let the transform glide to 0 alongside the width change. Both are CSS
+    // transitions with the same timing, so the row always comes to rest exactly on the class state.
     const after = slides.map(s => s.getBoundingClientRect().left);
-    const wrapped = slides.filter((s, k) => Math.sign(after[k] - before[k]) === dir && Math.abs(after[k] - before[k]) > innerWidth * .5);
-    Flip.from(state, { targets: slides.filter(s => !wrapped.includes(s)), duration: .8, ease: 'power3.inOut', onComplete: () => { busy = false; } });
-    wrapped.forEach(s => gsap.fromTo(s, { opacity: 0, x: dir * 60 }, { opacity: 1, x: 0, duration: .7, delay: .25, ease: 'power3.out', clearProps: 'opacity,transform' }));
-    gsap.fromTo(parts(i), { opacity: 0, filter: 'blur(8px)' }, { opacity: 1, filter: 'blur(0px)', duration: .8, stagger: .08, delay: .35, ease: 'power2.out', clearProps: 'filter,opacity' });
+    slides.forEach((s, k) => {
+      s.classList.remove('is-entering');
+      const d = slot(k) - was[k];
+      if (Math.abs(d) > 1) { replay(s, d > 0 ? 'is-wrap-r' : 'is-wrap-l'); return; }   // jumped ends: fade in at the new end
+      s.classList.remove('is-wrap-r', 'is-wrap-l');
+      s.style.transform = `translateX(${Math.round(before[k] - after[k])}px)`;
+    });
+    void track.offsetWidth;
+    slides.forEach(s => { s.classList.remove('is-snap'); s.style.transform = ''; });
+    replay(slides[i], 'is-entering');   // the story's parts develop in (CSS, staggered by --gz-i)
   }
+  // a resize lands every slide on its class state at once (no stale offsets)
+  let rz = 0;
+  addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => slides.forEach(s => { s.style.transform = ''; }), 100); });
   prev?.addEventListener('click', e => { e.preventDefault(); go(active - 1); });
   next?.addEventListener('click', e => { e.preventDefault(); go(active + 1); });
   slides.forEach((s, i) => {

@@ -117,7 +117,7 @@ function capabilities() {
         if (document.hidden) return;
         i = (i + 1) % filters.length;
         filters.forEach((f, j) => f.classList.toggle('is-on', j === i));
-        rows.forEach((r, j) => gsap.to(r, { opacity: focus[i] == null || focus[i] === j ? 1 : .3, duration: .4 }));
+        rows.forEach((r, j) => { r.classList.toggle('is-match', focus[i] === j); gsap.to(r, { opacity: focus[i] == null || focus[i] === j ? 1 : .35, duration: .4 }); });
       }, 2400);
     }, 1.6);
     return tl;
