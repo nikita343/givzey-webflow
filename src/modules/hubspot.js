@@ -154,12 +154,6 @@ function dress(host, form) {
     if (submit.tagName === 'INPUT') { if (submit.value !== host.dataset.hsSubmit) submit.value = host.dataset.hsSubmit; }
     else if (submit.textContent !== host.dataset.hsSubmit) submit.textContent = host.dataset.hsSubmit;
   }
-  if (form.querySelector('.hs_recaptcha') && !host.querySelector('.gz-form_captcha')) {
-    const note = document.createElement('p');
-    note.className = 'gz-form_captcha';
-    note.innerHTML = 'Protected by reCAPTCHA. Google’s <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms of Service</a> apply.';
-    form.after(note);
-  }
 }
 
 let uid = 0;

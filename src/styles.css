@@ -550,16 +550,12 @@ html.gz-js .v2-belief{border-bottom-color:transparent}
 .gz-form .gz-form_submit,.gz-form .hs-button{display:block;width:100%;height:3.75rem;margin:0;padding:0 2rem;border:0;border-radius:100vw;background:var(--f-acc);font:inherit;font-size:1rem;font-weight:500;letter-spacing:-.011em;color:#fff;cursor:pointer;-webkit-appearance:none;appearance:none;box-shadow:0 1px 0 rgba(255,255,255,.18) inset;transition:background-color .25s ease,box-shadow .5s cubic-bezier(.2,.7,.2,1)}
 .gz-form .gz-form_submit:hover,.gz-form .gz-form_submit:focus-visible{background:#0350CF;box-shadow:0 0 0 1px rgba(171,230,255,.22),0 8px 32px 0 rgba(88,165,251,.32);outline:0}
 .hs-embed.is-sending .gz-form_submit{opacity:.7;pointer-events:none}
-/* invisible reCAPTCHA: the badge is replaced by the note below the form, as Google allows */
+/* invisible reCAPTCHA: the field collapses; Google's own badge (fixed, bottom-right) stays visible */
 .gz-form .hs_recaptcha{height:0;margin:0!important;overflow:hidden}
-.gz-form .grecaptcha-badge{visibility:hidden}
-.gz-form_captcha{margin:.875rem 0 0;font-size:.75rem;line-height:1.5;color:rgba(3,11,44,.48)}
-.gz-form_captcha a{color:inherit;text-decoration:underline;text-underline-offset:.15em}
 .hs-embed .submitted-message{padding:1.5rem;border-radius:1rem;background:#F2F6FE;font-size:1.0625rem;line-height:1.55;color:var(--f-ink)}
 /* dark surfaces (e.g. a newsletter band): add .is-dark to the host */
 .hs-embed.is-dark{--f-ink:#fff;--f-line:rgba(255,255,255,.22);--f-line-hover:rgba(255,255,255,.4);--f-muted:rgba(255,255,255,.5)}
 .hs-embed.is-dark .gz-form .hs-input:not([type=checkbox]):not([type=radio]){background-color:rgba(255,255,255,.06)}
-.hs-embed.is-dark .gz-form_captcha{color:rgba(255,255,255,.5)}
 /* consent (webinar registration) */
 .gz-form .legal-consent-container{margin:.25rem 0 1.25rem}
 .gz-form .legal-consent-container .hs-richtext,.gz-form .legal-consent-container p{font-size:.8125rem;line-height:1.5;color:var(--f-muted);margin:0 0 .625rem}
@@ -578,7 +574,6 @@ html.gz-js .v2-belief{border-bottom-color:transparent}
 .hs-embed.is-inline .gz-form .gz-form_submit{width:auto;height:3.25rem;padding:0 1.5rem;font-size:.9375rem}
 .hs-embed.is-inline .gz-form .hs_recaptcha,.hs-embed.is-inline .gz-form .legal-consent-container{flex:1 1 100%;order:3}
 .hs-embed.is-inline .gz-form .hs_error_rollup{order:4}
-.hs-embed.is-inline .gz-form_captcha{margin-top:.625rem;font-size:.6875rem}
 .hs-embed.is-inline .submitted-message{padding:1rem 1.25rem;font-size:.9375rem}
 /* inline fields are pills, like the rest of the site's single-line forms */
 .hs-embed.is-inline .gz-form .hs-input:not([type=checkbox]):not([type=radio]):not([type=file]){border-radius:100vw;padding:0 1.25rem}
@@ -590,8 +585,6 @@ html.gz-js .v2-belief{border-bottom-color:transparent}
 .hs-embed.is-pill .gz-form .hs_recaptcha{position:absolute;flex:none}
 .hs-embed.is-pill .gz-form .hs-error-msgs,.hs-embed.is-pill .gz-form .gz-form_error{position:absolute;left:1.25rem;top:calc(100% + .375rem);margin:0}
 .hs-embed.is-pill .gz-form:has(.hs-error-msgs,.gz-form_error){border-color:var(--f-err)}
-.hs-embed.is-pill .gz-form_captcha{padding-left:1.25rem}
-.hs-embed.is-pill:has(.hs-error-msgs,.gz-form_error) .gz-form_captcha{margin-top:2rem}
 .hs-embed.is-pill:not(.is-ready):not(.is-failed){min-height:3.375rem;border-radius:100vw;background:#F3F5F9}
 /* dark: glassy inputs, white chips, blue button stays */
 .hs-embed.is-dark{--f-acc:#58A5FB;--f-err:#FF8A95}
@@ -600,7 +593,7 @@ html.gz-js .v2-belief{border-bottom-color:transparent}
 .hs-embed.is-dark .gz-form .gz-form_submit:hover{background:#E3EDFD}
 .hs-embed.is-dark .gz-form select.hs-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5 6 7.5l3-3' fill='none' stroke='%23FFFFFF' stroke-opacity='.7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
 .hs-embed.is-dark .submitted-message{background:rgba(255,255,255,.08);color:#fff}
-.hs-embed.is-dark .gz-form_captcha a,.hs-embed.is-dark .legal-consent-container a{color:#fff}
+.hs-embed.is-dark .legal-consent-container a{color:#fff}
 .hs-embed.is-dark .gz-chip{background:transparent;color:#fff}
 .hs-embed.is-dark .gz-chip[aria-checked=true]{background:#fff;border-color:#fff;color:#030B2C}
 @media (max-width:767px){
