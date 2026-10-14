@@ -30,11 +30,21 @@ function statement(el) {
   if (REDUCED) return;
   const split = SplitText.create(el, { type: 'words', wordsClass: 'gz-sword', aria: 'auto' });
   gsap.fromTo(split.words, { opacity: .16 }, { opacity: 1, ease: 'none', stagger: .1,
-    scrollTrigger: { trigger: el, start: 'top 78%', end: 'bottom 42%', scrub: .6 } });
+    scrollTrigger: { trigger: el, start: 'top 85%', end: 'center 45%', scrub: .6 } });
 }
 
 export function initAbout() {
   const tl = document.querySelector('.ab-tl');
   if (tl) timeline(tl);
   document.querySelectorAll('.ab-statement').forEach(statement);
+  // lazy images (the hero plate, press logos) change the page height after the triggers were measured:
+  // re-measure whenever the page grows or shrinks, so the scrubs line up with what is on screen
+  if (tl || document.querySelector('.ab-statement')) {
+    let t, h = document.body.scrollHeight;
+    new ResizeObserver(() => {
+      const nh = document.body.scrollHeight;
+      if (Math.abs(nh - h) < 2) return;
+      h = nh; clearTimeout(t); t = setTimeout(() => ScrollTrigger.refresh(), 150);
+    }).observe(document.body);
+  }
 }
