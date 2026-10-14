@@ -580,6 +580,19 @@ html.gz-js .v2-belief{border-bottom-color:transparent}
 .hs-embed.is-inline .gz-form .hs_error_rollup{order:4}
 .hs-embed.is-inline .gz-form_captcha{margin-top:.625rem;font-size:.6875rem}
 .hs-embed.is-inline .submitted-message{padding:1rem 1.25rem;font-size:.9375rem}
+/* inline fields are pills, like the rest of the site's single-line forms */
+.hs-embed.is-inline .gz-form .hs-input:not([type=checkbox]):not([type=radio]):not([type=file]){border-radius:100vw;padding:0 1.25rem}
+/* pill: field and button sit inside one white capsule (Notify me, newsletter band) */
+.hs-embed.is-pill .gz-form{flex-wrap:nowrap;align-items:center;gap:.5rem;padding:.375rem .375rem .375rem 1.25rem;border:1px solid rgba(3,11,44,.08);border-radius:100vw;background:#fff;position:relative;transition:border-color .2s ease,box-shadow .25s ease}
+.hs-embed.is-pill .gz-form:focus-within{border-color:var(--f-acc);box-shadow:0 0 0 4px rgba(4,92,232,.1)}
+.hs-embed.is-pill .gz-form .hs-input:not([type=checkbox]):not([type=radio]):not([type=file]){height:2.5rem;padding:0;border:0!important;border-radius:0;background:transparent;box-shadow:none!important;font-size:.9375rem;padding:0!important}
+.hs-embed.is-pill .gz-form .gz-form_submit{height:2.5rem;padding:0 1.25rem;font-size:.875rem}
+.hs-embed.is-pill .gz-form .hs_recaptcha{position:absolute;flex:none}
+.hs-embed.is-pill .gz-form .hs-error-msgs,.hs-embed.is-pill .gz-form .gz-form_error{position:absolute;left:1.25rem;top:calc(100% + .375rem);margin:0}
+.hs-embed.is-pill .gz-form:has(.hs-error-msgs,.gz-form_error){border-color:var(--f-err)}
+.hs-embed.is-pill .gz-form_captcha{padding-left:1.25rem}
+.hs-embed.is-pill:has(.hs-error-msgs,.gz-form_error) .gz-form_captcha{margin-top:2rem}
+.hs-embed.is-pill:not(.is-ready):not(.is-failed){min-height:3.375rem;border-radius:100vw;background:#F3F5F9}
 /* dark: glassy inputs, white chips, blue button stays */
 .hs-embed.is-dark{--f-acc:#58A5FB;--f-err:#FF8A95}
 .hs-embed.is-dark .gz-form .hs-input:focus{border-color:#58A5FB;box-shadow:0 0 0 4px rgba(88,165,251,.18)}
@@ -591,7 +604,7 @@ html.gz-js .v2-belief{border-bottom-color:transparent}
 .hs-embed.is-dark .gz-chip{background:transparent;color:#fff}
 .hs-embed.is-dark .gz-chip[aria-checked=true]{background:#fff;border-color:#fff;color:#030B2C}
 @media (max-width:767px){
-  .hs-embed.is-inline .gz-form .hs_submit,.hs-embed.is-inline .gz-form .gz-form_submit{flex:1 1 100%;width:100%}
+  .hs-embed.is-inline:not(.is-pill) .gz-form .hs_submit,.hs-embed.is-inline:not(.is-pill) .gz-form .gz-form_submit{flex:1 1 100%;width:100%}
   .gz-form fieldset.form-columns-2,.gz-form fieldset.form-columns-3{grid-template-columns:minmax(0,1fr)}
   .gz-form .hs-input:not([type=checkbox]):not([type=radio]):not([type=file]){font-size:16px}   /* no iOS zoom on focus */
 }
