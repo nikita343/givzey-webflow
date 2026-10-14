@@ -98,13 +98,17 @@ function bloom(el) {
 // every reveal fires once; one that can never be reached (bottom of a short page, a list shown later) plays anyway
 const pending = new Set(), pendingUnits = new Set();
 function watch(el, start, play) {
-  const st = ScrollTrigger.create({ trigger: el, start, once: true, onEnter: () => { pending.delete(st); play(); } });
-  pending.add(st);
+  let st = null, done = false;
+  const fire = () => { if (done) return; done = true; if (st) pending.delete(st); play(); };
+  // onEnter can fire inside create() when the element is already above the trigger line (page loaded mid-way)
+  st = ScrollTrigger.create({ trigger: el, start, once: true, onEnter: fire });
+  st.gzFire = fire;
+  if (!done) pending.add(st);
 }
 function safety() {
   const check = () => {
     const max = ScrollTrigger.maxScroll(window);
-    pending.forEach(st => { if (st.start >= max - 2) { pending.delete(st); st.vars.onEnter(); st.kill(); } });
+    pending.forEach(st => { if (st.start >= max - 2) { st.gzFire(); st.kill(); } });
     // cards below the last reachable trigger line (the bottom of the page) show anyway
     const late = [...pendingUnits].filter(u => u.getBoundingClientRect().top + scrollY - innerHeight * .9 >= max - 2);
     late.forEach(u => pendingUnits.delete(u));
