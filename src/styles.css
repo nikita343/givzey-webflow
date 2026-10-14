@@ -801,3 +801,4 @@ body:has(.v2r-hero) .navbar_component .navbar_logo-link{color:#fff}
 /* story card: the live water reads like the hero (the static inks were tuned at .4 / .2 for a flat card) */
 .home-story_inner .home-story_ink{opacity:.85}
 .home-story_inner .home-story_ink.is-top{opacity:.55}
+@media (min-width:992px){ .navbar_dropdown-col.is-products{width:28rem} .navbar_dropdown-desc{text-wrap:pretty} }
