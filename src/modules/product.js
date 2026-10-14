@@ -248,7 +248,7 @@ function proof() {
   const replay = (el, cls) => { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
   function go(i) {
     i = (i + n) % n; if (i === active) return;
-    const now = performance.now(); if (now - last < 180) return; last = now;   // a double-click is one turn, not two
+    const now = performance.now(); if (now - last < 60) return; last = now;   // one physical click never counts twice (pointer + click)
     // an entrance reveal still running must not hold a slide half-faded: finish it and drop its inline styles
     gsap.getTweensOf(slides).forEach(t => t.progress(1));
     gsap.set(slides, { clearProps: 'opacity,filter,transform,width,height' });
