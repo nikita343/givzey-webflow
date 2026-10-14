@@ -49,6 +49,12 @@ function watchPageHeight(lenis) {
     clearTimeout(t); t = setTimeout(() => ScrollTrigger.refresh(), 150);
   }).observe(document.body);
   addEventListener('load', () => lenis?.resize());
+  // belt and braces: if the page outgrew the limit Lenis knows, re-measure (cheap; also covers background tabs
+  // where ResizeObserver does not run, and the moment the wheel hits the stale end)
+  const stale = () => lenis && document.documentElement.scrollHeight - innerHeight > lenis.limit + 2;
+  setInterval(() => { if (!document.hidden && stale()) lenis.resize(); }, 1000);
+  lenis?.on('scroll', () => { if (lenis.scroll >= lenis.limit - 4 && stale()) lenis.resize(); });
+  addEventListener('visibilitychange', () => { if (!document.hidden && stale()) { lenis.resize(); ScrollTrigger.refresh(); } });
 }
 
 function heroSequence(hero) {

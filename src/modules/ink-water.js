@@ -191,7 +191,7 @@ export function initWaterHero(hero, { intro = false, inkSel = '.home-hero_ink', 
     const c = await composite(hero, imgs, Math.round(hero.clientWidth * dpr), Math.round(hero.clientHeight * dpr));
     gl.bindTexture(gl.TEXTURE_2D, art); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    hero.classList.add('is-ink-live');
+    if (main) hero.classList.add('is-ink-live');   // other hosts show the canvas only once it has drawn (see frame)
   }
 
   let vel, dye, div, curlT, prs, bloomA, bloomB, aspect = 1, VS = 1, ITER = 20, useBloom = true, quality = 1.25, forceLow = false;
@@ -387,7 +387,7 @@ export function initWaterHero(hero, { intro = false, inkSel = '.home-hero_ink', 
         else if (quality > .55) { quality = .55; allocate(); }
       } } }
     autoDrops(); runPointer(); runDrops(dt); step(dt); render();
-    if (first) { first = false; if (main) root.classList.add('gz-paper'); }
+    if (first) { first = false; if (main) root.classList.add('gz-paper'); else hero.classList.add('is-ink-live'); }
   }
   new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(hero);
   let rz = 0, lastW = innerWidth;
@@ -406,7 +406,7 @@ export function initWaterHero(hero, { intro = false, inkSel = '.home-hero_ink', 
     drop(x, y) { addDrop(x, y, inkFrom(pal, .7)); },
     stroke(pts) { for (const [x, y] of pts) { ptr.x = x; ptr.y = y; if (!ptr.has) { ptr.ax = x; ptr.ay = y; ptr.has = true; } ptr.moved = true; runPointer(); step(1 / 30); } render(); }, get revealed() { return revealed; }, get intro() { return introState; }, get nextAuto() { return nextAuto; } };
   api.ready = buildArt().then(() => {
-    if (REDUCED) { S.bleed = 1; for (let i = 0; i < 3; i++) addDrop(.62 + i * .12, .55 + i * .08, inkFrom(pal, .7)); for (let i = 0; i < 200; i++) { runDrops(1 / 60); step(1 / 60); } render(); if (main) root.classList.add('gz-paper'); }
+    if (REDUCED) { S.bleed = 1; for (let i = 0; i < 3; i++) addDrop(.62 + i * .12, .55 + i * .08, inkFrom(pal, .7)); for (let i = 0; i < 200; i++) { runDrops(1 / 60); step(1 / 60); } render(); if (main) root.classList.add('gz-paper'); else hero.classList.add('is-ink-live'); }
     else { raf = requestAnimationFrame(frame); if (!intro && !armed) nextAuto = 2; }
   }).catch(e => {
     console.warn('[givzey] water hero disabled', e);
