@@ -42,6 +42,7 @@ export function initStory() {
   // the card's two inks become one live fluid (same engine as the hero, on the card's navy):
   // they bleed in when the card arrives, the cursor stirs them and leaves a blue trail, drops fall now and then
   // Q.A.: the same deep-water ink as the hero, held in the one brand blue (no palette drift)
+  inner.querySelectorAll('.home-story_ink').forEach(i => { i.loading = 'eager'; });
   const sim = initWaterHero(inner, { inkSel: '.home-story_ink', wrapSel: null, calmSel: '.home-story_intro', avoidSel: '.home-story_media',
     palette: 0, armed: !REDUCED, paper: '#010B29', deep: ['#010B29', '#03165A'], prepend: true, main: false });
   if (REDUCED) return;

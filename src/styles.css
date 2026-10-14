@@ -798,3 +798,6 @@ body:has(.v2r-hero) .navbar_component .navbar_logo-link{color:#fff}
   body:has(.v2r-hero) .navbar_menu-button{color:#fff;background-color:rgba(21,28,59,.6);border-color:rgba(255,255,255,.14)}
   body:has(.v2r-hero) .navbar_menu-bar{background-color:#fff}
 }
+/* story card: the live water reads like the hero (the static inks were tuned at .4 / .2 for a flat card) */
+.home-story_inner .home-story_ink{opacity:.85}
+.home-story_inner .home-story_ink.is-top{opacity:.55}
