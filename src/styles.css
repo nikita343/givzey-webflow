@@ -776,6 +776,8 @@ body:has(.v2r-hero) .section_sol.is-grey+.section_sol{padding-top:10rem}
 
 /* Version2: the mission keeps its last word company (no lone "hire."), every line balanced into a calm block */
 .v2r-mh,.ab-statement,.sol-h2.is-statement{text-wrap:pretty}
+/* the mission runs wider and balanced, so "hire." never drops to a line of its own */
+.v2r-mh{max-width:80rem;text-wrap:balance}
 /* Version2 has a dark hero: whatever variant the page carries, its nav reads as the dark one */
 body:has(.v2r-hero) .navbar_component{color:#fff}
 body:has(.v2r-hero) .navbar_component .navbar_logo-link{color:#fff}
