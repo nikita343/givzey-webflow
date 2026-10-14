@@ -7,6 +7,9 @@
 //        data-hs-event="demo_request_submit"         optional: dataLayer event on submit
 //        data-hs-hide="firstname,lastname"           optional: leave optional fields out of a compact form
 //        data-hs-thanks="You’re in.">                optional: replaces HubSpot's thank-you text
+//        data-hs-topic="…"                         optional: the webinar / guide this form is for (bind to the CMS Name).
+//          Sent to the dataLayer, and written into a hidden HubSpot field if the form has one
+//          (named by data-hs-topic-field, else the first of webinar_name / content_title / topic).
 // Host classes: is-inline (field + button on one row, labels hidden), is-dark (dark surfaces).
 //     <p class="hs-embed_fallback">…</p>              optional: shown only if HubSpot fails to load
 //   </div>
@@ -139,6 +142,13 @@ function dress(host, form) {
   const chipNames = (host.dataset.hsChips || '').split(',').map(s => s.trim()).filter(Boolean);
   chipNames.forEach(n => { const f = form.querySelector(`.hs_${n}`); if (f) chipify(f); });
 
+  const topic = host.dataset.hsTopic;
+  if (topic) {
+    const names = host.dataset.hsTopicField ? [host.dataset.hsTopicField] : ['webinar_name', 'content_title', 'topic'];
+    const hidden = names.map(n => form.querySelector(`input[name="${n}"]`)).find(Boolean);
+    if (hidden && hidden.value !== topic) setNativeValue(hidden, topic);
+  }
+
   const submit = form.querySelector('input[type=submit], button[type=submit]');
   if (submit && host.dataset.hsSubmit) {
     if (submit.tagName === 'INPUT') { if (submit.value !== host.dataset.hsSubmit) submit.value = host.dataset.hsSubmit; }
@@ -192,7 +202,7 @@ function mount(host) {
           const swap = () => { const m = host.querySelector('.submitted-message'); if (m) { m.textContent = host.dataset.hsThanks; return true; } };
           if (!swap()) { const mo = new MutationObserver(() => swap() && mo.disconnect()); mo.observe(host, { childList: true, subtree: true }); setTimeout(() => mo.disconnect(), 5000); }
         }
-        (window.dataLayer = window.dataLayer || []).push({ event: host.dataset.hsEvent || 'hubspot_form_submit', hs_form_id: formId, page_path: location.pathname });
+        (window.dataLayer = window.dataLayer || []).push({ event: host.dataset.hsEvent || 'hubspot_form_submit', hs_form_id: formId, hs_topic: host.dataset.hsTopic || undefined, page_path: location.pathname });
       }
     });
   }).catch(e => { clearTimeout(timer); console.warn('[givzey] HubSpot form', e.message); fail(); });
