@@ -55,7 +55,7 @@ export function initSecondary() {
       if (el instanceof SVGElement) { if (el.getBoundingClientRect().width >= 120) media.push(el); return; }
       if (textual(el)) { texts.push(el); return; }
       // a drawing made of shapes (no words inside): treat it as one visual
-      if (!el.textContent.trim() && el.children.length) { const r = el.getBoundingClientRect(); if (r.width >= 140 && r.height >= 80) { media.push(el); return; } }
+      if (!el.textContent.trim() && el.children.length && !el.querySelector('img') && !/^section/.test(first(el))) { const r = el.getBoundingClientRect(); if (r.width >= 140 && r.height >= 80) { media.push(el); return; } }
       [...el.children].forEach(visit);
     })(section);
 
