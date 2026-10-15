@@ -76,7 +76,7 @@ function stats() {
   tl.from(cards, { opacity: 0, filter: 'blur(12px)', duration: 1.1, ease: 'power3.out', stagger: .1, clearProps: 'filter' }, 0);
   cards.forEach((c, i) => {
     const n = c.querySelector('.v2-stat_number'), dot = c.querySelector('.v2-dot');
-    if (n) tl.add(() => countTo(n, { trigger: null, duration: 2 + (i ? 0 : .4) }), .1 + i * .1);
+    const cn = n && countTo(n, { trigger: null, duration: 2 + (i ? 0 : .4) }); if (cn) tl.add(cn, .1 + i * .1);
     if (dot) tl.from(dot, { scale: 0, duration: .6, ease: 'back.out(3)' }, .2 + i * .1);
   });
   ScrollTrigger.create({ trigger: grid, start: 'top 85%', once: true, onEnter: () => tl.play() });
@@ -102,7 +102,7 @@ function heroR(sec) {
   if (statsBox) tl.fromTo(statsBox, { '--gz-line': 0 }, { '--gz-line': 1, duration: 1.6, ease: 'expo.out' }, .8);
   cards.forEach((c, i) => {
     tl.from(c, { opacity: 0, y: 16, filter: 'blur(10px)', duration: 1, ease: 'power3.out', clearProps: 'filter,transform' }, .9 + i * .1);
-    const n = c.querySelector('.v2r-num'); if (n) tl.add(() => countTo(n, { trigger: null, duration: 2 })?.play(), .95 + i * .1);
+    const n = c.querySelector('.v2r-num'), cn = n && countTo(n, { trigger: null, duration: 2 }); if (cn) tl.add(cn, .95 + i * .1);
     const ico = c.querySelector('.sol-icon'); if (ico) tl.from(ico, { scale: .5, opacity: 0, duration: .7, ease: 'back.out(2.2)', clearProps: 'transform,opacity' }, 1 + i * .1);
   });
   [h1, sub, btn, ...cards].forEach(e => e && (e.dataset.gzMotion = '1'));

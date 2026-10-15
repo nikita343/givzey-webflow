@@ -48,7 +48,8 @@ function lifecycle() {
   if (wait) tl.from(wait, { opacity: 0, x: -8, duration: .5 }, 3.2).add(() => gsap.to(wait, { opacity: .45, duration: 1, yoyo: true, repeat: -1, ease: 'sine.inOut' }), 3.8);
   if (fill) tl.from(fill, { scaleX: 0, transformOrigin: '0% 50%', duration: .4, ease: 'power3.out' }, 1.2);
   if (done) tl.from(done, { opacity: 0, scale: .7, x: -12, duration: .6, ease: 'back.out(2.2)', clearProps: 'transform' }, 1.45);
-  nums.forEach((n, i) => tl.add(() => countTo(n, { duration: 1.6, trigger: null }), 1.5 + i * .12));
+  // counts are prepared now (0 until the card plays), never at play time: that would flash the final value first
+  nums.forEach((n, i) => { const c = countTo(n, { duration: 1.6, trigger: null }); if (c) tl.add(c, 1.5 + i * .12); });
   if (glow) gsap.fromTo(glow, { xPercent: -6, yPercent: 4 }, { xPercent: 6, yPercent: -4, ease: 'none', scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: true } });
   once(card, 'top 75%', () => tl.play());
 }
@@ -133,12 +134,12 @@ function uses() {
     tl.from(scene, { ...blurIn, y: 14, scale: .97, duration: .9, ease: 'power3.out', clearProps: 'filter,transform' }, .15);
     const bars = scene.querySelectorAll('.gap-use_bar');
     if (bars.length) tl.from(bars, { scaleX: 0, transformOrigin: '0% 50%', duration: .45, stagger: .08, ease: 'power2.out' }, .5);
-    const amount = scene.querySelector('.gap-use_amount'); if (amount) tl.add(() => countTo(amount, { duration: 1.4, trigger: null }), .4);
+    const amount = scene.querySelector('.gap-use_amount'), ca = amount && countTo(amount, { duration: 1.4, trigger: null }); if (ca) tl.add(ca, .4);
     const big = scene.querySelector('.gap-use_big'); if (big) tl.from(big, { scale: .5, opacity: 0, duration: .8, ease: 'back.out(2.4)', clearProps: 'transform' }, .35);
     const pill = scene.querySelector('.gap-use_pill'); if (pill) tl.from(pill, { opacity: 0, x: -8, duration: .5, clearProps: 'transform' }, .8);
     const arc = scene.querySelector('.gap-use_ring-arc');
     if (arc) { const L = 2 * Math.PI * 29; gsap.set(arc, { strokeDasharray: L, strokeDashoffset: L }); tl.to(arc, { strokeDashoffset: 0, duration: 1.4, ease: 'power2.inOut' }, .4); }
-    const label = scene.querySelector('.gap-use_ring-label'); if (label) tl.add(() => countTo(label, { duration: 1.4, trigger: null }), .4);
+    const label = scene.querySelector('.gap-use_ring-label'), cl = label && countTo(label, { duration: 1.4, trigger: null }); if (cl) tl.add(cl, .4);
     const av = scene.querySelectorAll('.gap-use_avatar'); if (av.length) tl.from(av, { scale: 0, duration: .4, stagger: .07, ease: 'back.out(2.6)', clearProps: 'transform' }, .55);
     write(scene.querySelector('.gap-use_signature'), tl, .6, 1);
     const ok = scene.querySelector('.gap-use_ok'); if (ok) tl.from(ok, { opacity: 0, scale: .6, duration: .45, ease: 'back.out(2.4)', clearProps: 'transform' }, 1.5);

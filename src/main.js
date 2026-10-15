@@ -29,6 +29,7 @@ import { initFixes } from './modules/fixes.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 const root = document.documentElement;
+const RESOURCES = /^\/(blog|news|events|webinars|guides|case-studies|guidance|press)(\/|$)/.test(location.pathname);
 const log = (...a) => console.info('%c[givzey]', 'color:#045CE8', ...a);
 
 function smoothScroll() {
@@ -108,8 +109,12 @@ async function boot() {
     } else { loader.dissolve(); heroTl && heroTl.play(); lenis && lenis.start(); }
   } else if (heroTl) heroTl.play();
 
+  // resources (hubs + every item page): no scroll reveals at all, content is simply there (Q.A. round 4);
+  // hovers, forms, search and the final CTA ink (shown at once) still run
+  const mods = { initHubspotForms, initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initVpgo, initVso, initGap, initV2, initAbout, initSolutions, initGuidance, initFixes, initHovers, initSecondary };
+  if (RESOURCES) { root.classList.add('gz-static'); delete mods.initReveals; delete mods.initSecondary; mods.initCta = () => initCta({ instant: true }); }
   // each module is independent: one failing must not stop the rest
-  for (const [name, fn] of Object.entries({ initHubspotForms, initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initVpgo, initVso, initGap, initV2, initAbout, initSolutions, initGuidance, initFixes, initHovers, initSecondary })) {
+  for (const [name, fn] of Object.entries(mods)) {
     try { fn(); } catch (e) { console.error('[givzey]', name, e); }
   }
 

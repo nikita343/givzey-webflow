@@ -149,11 +149,39 @@ function dress(host, form) {
     if (hidden && hidden.value !== topic) setNativeValue(hidden, topic);
   }
 
+  sharedDescription(host, form);
+
   const submit = form.querySelector('input[type=submit], button[type=submit]');
   if (submit && host.dataset.hsSubmit) {
     if (submit.tagName === 'INPUT') { if (submit.value !== host.dataset.hsSubmit) submit.value = host.dataset.hsSubmit; }
     else if (submit.textContent !== host.dataset.hsSubmit) submit.textContent = host.dataset.hsSubmit;
   }
+}
+
+// One description repeated on every field (Guidance: "All Givzey Guidance Submissions Are Kept Anonymous" under
+// each label) is a note about the whole form: hide the per-field copies (CSS, via .gz-one-desc) and show it once,
+// in sentence case, above the submit button.
+const KEEP_CASE = /^(Givzey|Guidance|Version2|HubSpot|VEO|VPGO|VSO|AI|I)$/;
+function sentenceCase(t) {
+  t = t.trim().replace(/\s+/g, ' ');
+  const words = t.split(' ');
+  const title = words.length > 2 && words.filter(w => /^[a-z]/i.test(w)).every(w => /^[A-Z]/.test(w));
+  if (title) t = words.map((w, i) => (i === 0 || KEEP_CASE.test(w.replace(/\W/g, '')) ? w : w.toLowerCase())).join(' ');
+  return /[.!?]$/.test(t) ? t : t + '.';
+}
+function sharedDescription(host, form) {
+  const fields = [...form.querySelectorAll('.hs-form-field')].filter(f => !f.hidden && !f.closest('[hidden]') && f.querySelector('input:not([type=hidden]), select, textarea'));
+  const texts = fields.map(f => f.querySelector('.hs-field-desc')?.textContent.trim() || '');
+  const shared = fields.length >= 2 && texts[0] && texts.every(t => t === texts[0]);
+  if (!shared) { host.classList.remove('gz-one-desc'); form.querySelector('.gz-form_note')?.remove(); return; }
+  if (!host.classList.contains('gz-one-desc')) host.classList.add('gz-one-desc');
+  const text = sentenceCase(texts[0]);
+  let note = form.querySelector('.gz-form_note');
+  if (!note) { note = document.createElement('p'); note.className = 'gz-form_note'; }
+  if (note.textContent !== text) note.textContent = text;
+  const submitRow = form.querySelector('.hs_submit') || form.querySelector('input[type=submit], button[type=submit]');
+  if (submitRow && note.nextElementSibling !== submitRow) submitRow.before(note);
+  else if (!submitRow && !note.isConnected) form.appendChild(note);
 }
 
 let uid = 0;

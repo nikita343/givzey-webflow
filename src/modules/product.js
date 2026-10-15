@@ -11,15 +11,18 @@ import { REDUCED } from '../base.js';
 const FINE = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const MOBILE = matchMedia('(max-width: 767px)');
 
-// "43%", "1,000", "0.07%", "4x", "$1M+": count the number, keep prefix / suffix / thousands separators
-export function countTo(el, { duration = 1.8, trigger = el, start = 'top 85%', delay = 0 } = {}) {
+// "43%", "1,000", "0.07%", "4x", "$1M+": count the number, keep prefix / suffix / thousands separators.
+// The number drops to its start value (0) the moment this is called, so call it at init (never from inside a
+// timeline callback): a count prepared late shows the final value first and then visibly resets (Q.A.).
+// trigger: null → returns a tween to place in a timeline (tl.add(c, at)) or to play() later (paused: true).
+export function countTo(el, { duration = 1.8, trigger = el, start = 'top 85%', delay = 0, paused = !!trigger } = {}) {
   const raw = el.textContent.trim();
   const m = raw.match(/^([^\d]*)(\d[\d,]*\.?\d*)(.*)$/); if (!m) return null;
   const [, pre, num, post] = m, comma = num.includes(','), clean = num.replace(/,/g, '');
   const target = parseFloat(clean), dec = (clean.split('.')[1] || '').length;
   const fmt = v => pre + (comma ? Math.round(v).toLocaleString('en-US') : v.toFixed(dec)) + post;
   const o = { v: 0 }; el.textContent = fmt(0);
-  const tw = gsap.to(o, { v: target, duration, delay, ease: 'power3.out', paused: !!trigger,
+  const tw = gsap.to(o, { v: target, duration, delay, ease: 'power3.out', paused,
     onUpdate: () => { el.textContent = fmt(o.v); }, onComplete: () => { el.textContent = raw; } });
   if (trigger) ScrollTrigger.create({ trigger, start, once: true, onEnter: () => tw.play() });
   return tw;

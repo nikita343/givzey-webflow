@@ -33,7 +33,41 @@ function mobileMenu(closeDropdowns) {
   return set;
 }
 
+// Fixed navbar that steps aside: scrolling down slides it up out of view, any scroll up brings it back.
+// Always shown at the very top, while the mobile menu or a dropdown is open, and while it holds keyboard focus.
+// Off the top it gets a frosted band in its own variant (navy for Dark, white for Light) so it reads over any section.
+// Reads window scroll, which Lenis drives too, so it works with and without smooth scroll.
+const focusVisible = el => { const a = document.activeElement; try { return !!a && el.contains(a) && a.matches(':focus-visible'); } catch { return false; } };
+function autoHide() {
+  const nav = document.querySelector('.navbar_component'); if (!nav) return;
+  const root = document.documentElement;
+  const TOP = 64, DELTA = 6;
+  let last = Math.max(0, scrollY), hidden = null, scrolled = null, queued = false;
+  const setH = () => root.style.setProperty('--gz-nav-h', nav.offsetHeight + 'px');
+  setH(); addEventListener('resize', setH);
+  const locked = () => root.classList.contains('gz-menu-open') || !!nav.querySelector('.navbar_menu-item.is-open') || focusVisible(nav);
+  const apply = (h, s) => {
+    if (h !== hidden) { hidden = h; root.classList.toggle('gz-nav-hidden', h); }
+    if (s !== scrolled) { scrolled = s; root.classList.toggle('gz-nav-scrolled', s); }
+  };
+  const update = () => {
+    queued = false;
+    const y = Math.max(0, scrollY);
+    if (y <= TOP || locked()) { apply(false, y > 2); last = y; return; }
+    if (Math.abs(y - last) < DELTA) { apply(hidden, true); return; }
+    apply(y > last, true); last = y;
+  };
+  addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
+  nav.addEventListener('focusin', update);
+  // the mobile menu (html.gz-menu-open) or a dropdown (li.is-open) opening brings the bar back at once
+  const mo = new MutationObserver(() => { if (!queued) { queued = true; requestAnimationFrame(update); } });
+  mo.observe(root, { attributes: true, attributeFilter: ['class'] });
+  nav.querySelectorAll('.navbar_menu-item').forEach(li => mo.observe(li, { attributes: true, attributeFilter: ['class'] }));
+  update();
+}
+
 export function initNav() {
+  try { autoHide(); } catch (e) { console.error('[givzey] nav autoHide', e); }
   const items = [...document.querySelectorAll('.navbar_menu-item')].filter(li => li.querySelector(':scope > .navbar_dropdown'));
   if (!items.length) { mobileMenu(() => {}); return; }
   let open = null, tOpen = 0, tClose = 0;

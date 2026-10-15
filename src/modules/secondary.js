@@ -65,18 +65,21 @@ export function initSecondary() {
     if (units.length) {
       units.forEach(claim);
       gsap.set(units, { opacity: 0, y: 24, filter: 'blur(10px)' });
-      units.forEach(u => pendingUnits.add(u));
-      ScrollTrigger.batch(units, { start: 'top 90%', once: true, interval: .1,
-        onEnter: batch => {
-          batch.forEach(u => pendingUnits.delete(u));
-          gsap.to(batch, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, ease: 'power3.out', stagger: .08, clearProps: 'filter,transform' });
-          batch.forEach((u, i) => u.querySelectorAll(NUM).forEach(n => countTo(n, { trigger: null, duration: 1.8, delay: .1 + i * .08 })?.play()));
-          const icons = batch.flatMap(u => [...u.querySelectorAll(ICON)].slice(0, 2));
-          if (icons.length) gsap.from(icons, { scale: .6, opacity: 0, duration: .8, ease: 'back.out(2)', stagger: .08, delay: .15, clearProps: 'transform,opacity' });
-        } });
+      // numbers sit at 0 from the start (prepared now, played on arrival): never the final value first
+      units.forEach(u => { pendingUnits.add(u); u.querySelectorAll(NUM).forEach(n => { n._gzCount = countTo(n, { trigger: null, paused: true, duration: 1.8 }); }); });
+      ScrollTrigger.batch(units, { start: 'top 90%', once: true, interval: .1, onEnter: batch => arrive(batch) });
     }
   });
   safety();
+}
+
+// cards arrive in a soft stagger, their numbers count, their icon blooms
+function arrive(batch, delay = 0) {
+  batch.forEach(u => pendingUnits.delete(u));
+  gsap.to(batch, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, ease: 'power3.out', stagger: .08, delay, clearProps: 'filter,transform' });
+  batch.forEach((u, i) => u.querySelectorAll(NUM).forEach(n => n._gzCount?.delay(delay + .1 + i * .08).play()));
+  const icons = batch.flatMap(u => [...u.querySelectorAll(ICON)].slice(0, 2));
+  if (icons.length) gsap.from(icons, { scale: .6, opacity: 0, duration: .8, ease: 'back.out(2)', stagger: .08, delay: delay + .15, clearProps: 'transform,opacity' });
 }
 
 // copy: develops from blur; inline elements cannot move, so they only fade
@@ -112,7 +115,7 @@ function safety() {
     // cards below the last reachable trigger line (the bottom of the page) show anyway
     const late = [...pendingUnits].filter(u => u.getBoundingClientRect().top + scrollY - innerHeight * .9 >= max - 2);
     late.forEach(u => pendingUnits.delete(u));
-    if (late.length) gsap.to(late, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, ease: 'power3.out', stagger: .08, clearProps: 'filter,transform', scrollTrigger: { trigger: late[0], start: 'top bottom', once: true } });
+    if (late.length) ScrollTrigger.create({ trigger: late[0], start: 'top bottom', once: true, onEnter: () => arrive(late) });
   };
   ScrollTrigger.addEventListener('refresh', check);
   addEventListener('load', () => setTimeout(check, 300));

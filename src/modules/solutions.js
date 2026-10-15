@@ -28,6 +28,7 @@ function count(el, tl, at, duration = 1.8) {
 // builds an inline SVG chart from left to right with attribute tweens (no transforms, so patterns never squash)
 function buildSvg(svg, tl, at = 0, { spread = .9, mode = 'auto' } = {}) {
   claim(svg);
+  if (svg.dataset.axis === 'y') return buildTall(svg, tl, at, spread);
   const vb = svg.viewBox && svg.viewBox.baseVal; const W = (vb && vb.width) || 1000;
   const when = x => at + spread * Math.max(0, Math.min(1, x / W));
   svg.querySelectorAll('rect, line, circle, ellipse, text, path, polyline').forEach(el => {
@@ -53,6 +54,107 @@ function buildSvg(svg, tl, at = 0, { spread = .9, mode = 'auto' } = {}) {
       tl.from(el, { opacity: 0, duration: .6 }, when(0) + .1);
     }
   });
+}
+
+// a chart that reads top to bottom (phone / tablet timelines): builds downwards
+function buildTall(svg, tl, at, spread) {
+  const vb = svg.viewBox && svg.viewBox.baseVal; const H = (vb && vb.height) || 1000;
+  const when = y => at + spread * Math.max(0, Math.min(1, y / H));
+  svg.querySelectorAll('rect, line, circle, text, path').forEach(el => {
+    const tag = el.tagName.toLowerCase();
+    if (el.closest('defs')) return;
+    if (tag === 'rect') {
+      const y = num(el, 'y'), h = num(el, 'height');
+      if (h > 40) tl.from(el, { attr: { height: 0 }, duration: 1.2, ease: 'power3.inOut' }, when(y));
+      else tl.from(el, { opacity: 0, duration: .5, ease: 'power2.out' }, when(y) + .2);
+    } else if (tag === 'line') {
+      const x1 = num(el, 'x1'), x2 = num(el, 'x2'), y1 = num(el, 'y1'), y2 = num(el, 'y2');
+      if (Math.abs(y2 - y1) > 40) tl.from(el, { attr: { y2: y1 }, duration: 1.2, ease: 'power2.inOut' }, when(Math.min(y1, y2)));
+      else if (Math.abs(x2 - x1) > 40) tl.from(el, { attr: { x2: x1 }, duration: .9, ease: 'power2.out' }, when(y1));
+      else tl.from(el, { opacity: 0, duration: .4 }, when(y1) + .1);
+    } else if (tag === 'circle') {
+      tl.from(el, { attr: { r: 0 }, opacity: 0, duration: .55, ease: 'back.out(2.4)' }, when(num(el, 'cy')) + .15);
+    } else if (tag === 'text') {
+      tl.from(el, { opacity: 0, duration: .6, ease: 'power2.out' }, when(num(el, 'y')) + .25);
+    } else tl.from(el, { opacity: 0, duration: .6 }, when(0) + .3);
+  });
+}
+
+/* ---------- healthcare: the grateful patient window (Q.A. round 4: labels no longer crowd or clip) ----------
+   Drawn here instead of the Webflow markup: wide at desktop, a top-to-bottom timeline below 992px, pills sized to
+   their words. Keyed on the chart's aria-label, so a reworded chart in Webflow is left alone. */
+const INK = '#030b2c', BLUE = '#045CE8', MUTE = 'rgba(3,11,44,.55)';
+function careWide() {
+  const X = [['Month 1', 124], ['Month 2', 239], ['Month 3', 353], ['Month 4', 467], ['Month 5', 582], ['Month 6', 696], ['Month 9', 797], ['Month 12', 888]];
+  const dots = X.slice(0, 6).map(([, x]) => `<circle cx="${x}" cy="128" r="7" fill="${BLUE}" stroke="#fff" stroke-width="2"/>`).join('');
+  const ticks = X.map(([t, x]) => `<line x1="${x}" y1="196" x2="${x}" y2="204" stroke="rgba(3,11,44,.2)"/><text x="${x}" y="228" font-size="12" text-anchor="middle" fill="${MUTE}">${t}</text>`).join('');
+  return `<svg class="sol-svg is-wide" viewBox="0 0 920 238" role="img">
+<defs><linearGradient id="gzCareBandW" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C3D7F8"/><stop offset="1" stop-color="#C3D7F8" stop-opacity="0"/></linearGradient></defs>
+<rect x="10" y="10" width="690" height="190" fill="url(#gzCareBandW)"/>
+<line x1="10" y1="10" x2="10" y2="200" stroke="${BLUE}" stroke-width="2"/>
+<text x="28" y="40" font-size="13" fill="rgba(3,11,44,.75)">Most likely to give in the months right after care</text>
+<line x1="10" y1="200" x2="910" y2="200" stroke="rgba(3,11,44,.14)" stroke-width="1.5"/>
+<circle cx="10" cy="200" r="6" fill="${INK}"/>
+<text x="10" y="228" font-size="12" font-weight="500" fill="${INK}">Care</text>${ticks}
+<line x1="124" y1="128" x2="696" y2="128" stroke="${BLUE}" stroke-width="1.5"/>
+<line x1="708" y1="128" x2="789" y2="128" stroke="rgba(3,11,44,.4)" stroke-width="1.2" stroke-dasharray="4 4"/>
+<circle cx="797" cy="128" r="6" fill="#fff" stroke="rgba(3,11,44,.5)" stroke-width="1.2"/>
+<text x="910" y="162" font-size="12" font-weight="500" text-anchor="end" fill="rgba(3,11,44,.7)">Most teams cannot reach them in time</text>
+<line x1="696" y1="102" x2="696" y2="120" stroke="${BLUE}" stroke-width="1.5"/>${dots}
+<g class="gz-pill" data-x="110" data-cy="88" data-fs="12"><rect fill="#fff" stroke="rgba(3,11,44,.08)"/><circle r="3.5" fill="${BLUE}"/><text font-size="12" font-weight="500" fill="${INK}">Grateful Patient VEO · six-month journey</text></g>
+<g class="gz-pill is-solid" data-x="696" data-cy="88" data-fs="12" data-align="middle"><rect fill="${BLUE}"/><text font-size="12" font-weight="500" fill="#fff">Converts or hands off</text></g>
+</svg>`;
+}
+function careTall() {
+  const Y = [['Month 1', 104], ['Month 2', 144], ['Month 3', 184], ['Month 4', 224], ['Month 5', 264], ['Month 6', 304], ['Month 9', 372], ['Month 12', 424]];
+  const dots = Y.slice(0, 6).map(([, y]) => `<circle cx="104" cy="${y}" r="7" fill="${BLUE}" stroke="#fff" stroke-width="2"/>`).join('');
+  const ticks = Y.map(([t, y]) => `<line x1="68" y1="${y}" x2="76" y2="${y}" stroke="rgba(3,11,44,.2)"/><text x="0" y="${y + 4.5}" font-size="13" fill="${MUTE}">${t}</text>`).join('');
+  return `<svg class="sol-svg gz-care-tall" viewBox="0 0 340 440" role="img" data-axis="y">
+<defs><linearGradient id="gzCareBandT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C3D7F8"/><stop offset="1" stop-color="#C3D7F8" stop-opacity="0"/></linearGradient></defs>
+<rect x="72" y="30" width="268" height="290" fill="url(#gzCareBandT)"/>
+<line x1="72" y1="30" x2="340" y2="30" stroke="${BLUE}" stroke-width="2"/>
+<text x="90" y="56" font-size="14" fill="rgba(3,11,44,.75)">Most likely to give in the</text>
+<text x="90" y="74" font-size="14" fill="rgba(3,11,44,.75)">months right after care</text>
+<line x1="72" y1="30" x2="72" y2="432" stroke="rgba(3,11,44,.14)" stroke-width="1.5"/>
+<circle cx="72" cy="30" r="6" fill="${INK}"/>
+<text x="0" y="34.5" font-size="13" font-weight="500" fill="${INK}">Care</text>${ticks}
+<line x1="104" y1="104" x2="104" y2="304" stroke="${BLUE}" stroke-width="1.5"/>
+<line x1="104" y1="316" x2="104" y2="364" stroke="rgba(3,11,44,.4)" stroke-width="1.2" stroke-dasharray="4 4"/>
+<circle cx="104" cy="372" r="6" fill="#fff" stroke="rgba(3,11,44,.5)" stroke-width="1.2"/>${dots}
+<text x="126" y="180" font-size="14" font-weight="500" fill="${INK}">Grateful Patient VEO</text>
+<text x="126" y="199" font-size="13" fill="${MUTE}">six-month journey</text>
+<g class="gz-pill is-solid" data-x="124" data-cy="304" data-fs="13"><rect fill="${BLUE}"/><text font-size="13" font-weight="500" fill="#fff">Converts or hands off</text></g>
+<text x="124" y="368" font-size="13" font-weight="500" fill="rgba(3,11,44,.7)">Most teams cannot reach</text>
+<text x="124" y="386" font-size="13" font-weight="500" fill="rgba(3,11,44,.7)">them in time</text>
+</svg>`;
+}
+// pills fit their words: measure the text, then size the capsule around it
+function fitPills(svg) {
+  svg.querySelectorAll('.gz-pill').forEach(g => {
+    const text = g.querySelector('text'), rect = g.querySelector('rect'), dot = g.querySelector('circle');
+    const fs = +g.dataset.fs || 12, h = Math.round(fs * 2.3), pad = Math.round(fs * 1.15), dotW = dot ? 14 : 0;
+    let tw = 0; try { tw = text.getComputedTextLength(); } catch (e) { }
+    if (!tw) tw = text.textContent.length * fs * .56;
+    const w = Math.ceil(tw + pad * 2 + dotW), cx = +g.dataset.x, cy = +g.dataset.cy;
+    const x = g.dataset.align === 'middle' ? cx - w / 2 : cx;
+    Object.entries({ x, y: cy - h / 2, width: w, height: h, rx: h / 2 }).forEach(([k, v]) => rect.setAttribute(k, v));
+    if (dot) { dot.setAttribute('cx', x + pad + 3.5); dot.setAttribute('cy', cy); }
+    text.setAttribute('x', x + pad + dotW); text.setAttribute('y', cy + fs * .36);
+  });
+}
+function careChart() {
+  const first = document.querySelector('.sol-panel svg[aria-label^="A grateful patient is most likely"]'); if (!first) return;
+  const label = first.getAttribute('aria-label');
+  const mq = matchMedia('(max-width: 991px)');
+  let current = first;
+  const draw = () => {
+    const box = document.createElement('div'); box.innerHTML = mq.matches ? careTall() : careWide();
+    const svg = box.firstElementChild; svg.setAttribute('aria-label', label);
+    current.replaceWith(svg); current = svg; fitPills(svg);
+    svg.closest('.sol-panel')?.classList.toggle('is-care-tall', mq.matches);
+  };
+  draw();
+  mq.addEventListener('change', draw);
 }
 
 /* ---------- the gap: panel + chart, then the results band ---------- */
@@ -206,6 +308,7 @@ function portfolio(card) {
 }
 
 export function initSolutions() {
+  try { careChart(); } catch (e) { console.error('[givzey] solutions careChart', e); }
   if (REDUCED || !document.querySelector('.sol-panel, .sol-donors, .sol-start')) return;
   const run = (sel, fn) => document.querySelectorAll(sel).forEach(el => { try { fn(el); } catch (e) { console.error('[givzey] solutions', sel, e); } });
   run('.sol-panel', panel);

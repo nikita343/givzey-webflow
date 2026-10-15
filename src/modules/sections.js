@@ -56,7 +56,7 @@ export function initStory() {
   if (logo) gsap.from(logo, { opacity: 0, filter: 'blur(14px)', duration: 1.4, ease: 'power2.out', scrollTrigger: { trigger: logo, start: 'top 85%', once: true } });
 }
 
-export function initCta() {
+export function initCta({ instant = false } = {}) {
   const box = document.querySelector('.cta_component');
   if (!box) return;
   // the blue pair (home + GAP), or one product's single-colour trio (orange VEO, green VPGO, purple VSO): only the inks the active variant shows come alive
@@ -66,7 +66,7 @@ export function initCta() {
     const k = Object.keys(ORIGINS).find(c => img.classList.contains(c));
     return inkLayer(img, { host: box, origin: k ? ORIGINS[k] : (i ? [1, 0] : [0, 1]), seed: 9 + i });
   });
-  if (REDUCED) { inks.forEach(l => l.setReveal(1)); return; }
+  if (REDUCED || instant) { inks.forEach(l => l.setReveal(1)); return; }
   const o = { r: 0 };
   gsap.to(o, { r: 1, duration: 2.8, ease: 'power2.out', onUpdate: () => inks.forEach(l => l.setReveal(o.r)), scrollTrigger: { trigger: box, start: 'top 75%', once: true } });
   const haze = box.querySelector('.cta_haze');
