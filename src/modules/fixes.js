@@ -2,6 +2,7 @@
 // Blackbaud comparison: on tablet / phone the table scrolls sideways inside its card; a quiet hint says so
 // and fades once the visitor has scrolled it.
 export function initFixes() {
+  resFilter();
   document.querySelectorAll('.bb-table').forEach(table => {
     if (table.previousElementSibling?.classList.contains('gz-swipe-hint')) return;
     const hint = document.createElement('div');
@@ -18,4 +19,34 @@ export function initFixes() {
     addEventListener('resize', update);
     update();
   });
+}
+
+// Resource filter bar (blog, news, events, customer stories): it is sticky, and carries its hairline only while it
+// is stuck over the list (a sentinel just above it scrolls out of view). Its height is published as --gz-filter-h
+// so the blog's sticky Guidance promo can sit just below it.
+function resFilter() {
+  const bar = document.querySelector('.section_res-filter');
+  if (!bar) return;
+  const root = document.documentElement;
+  const setH = () => root.style.setProperty('--gz-filter-h', bar.offsetHeight + 'px');
+  setH();
+  if ('ResizeObserver' in window) new ResizeObserver(setH).observe(bar);
+  if (!('IntersectionObserver' in window) || bar.previousElementSibling?.classList.contains('gz-filter-sentinel')) return;
+  const sentinel = document.createElement('div');
+  sentinel.className = 'gz-filter-sentinel';
+  sentinel.setAttribute('aria-hidden', 'true');
+  sentinel.style.cssText = 'height:1px;margin-bottom:-1px;pointer-events:none';
+  bar.before(sentinel);
+  // the bar sticks at the top edge, or under the navbar while that is shown: watch the sentinel against that line
+  let io, last = -1;
+  const watch = () => {
+    const top = root.classList.contains('gz-nav-scrolled') && !root.classList.contains('gz-nav-hidden') ? parseFloat(getComputedStyle(root).getPropertyValue('--gz-nav-h')) || 0 : 0;
+    if (top === last) return;   // <html> class changes often (Lenis); only the sticky line matters
+    last = top; io?.disconnect();
+    io = new IntersectionObserver(([e]) => bar.classList.toggle('is-stuck', !e.isIntersecting && e.boundingClientRect.top < innerHeight / 2),
+      { rootMargin: `-${Math.round(top) + 1}px 0px 0px 0px` });
+    io.observe(sentinel);
+  };
+  watch();
+  new MutationObserver(watch).observe(root, { attributes: true, attributeFilter: ['class'] });
 }

@@ -1,4 +1,4 @@
-// /guidance — live search over the question rows.
+// /guidance — live search over the question rows, and the ask-form prefill for unanswered questions.
 // Markup (Webflow): .gd2-search_input, .gd2-groups > div#topic (h2.gd2-group_title + .gd2-rows > .gd2-row…) + p.gd2-empty.
 // The topic wrappers carry no class in Webflow, so they are found structurally and tagged .gd2-group here
 // (that also gives them the scroll-margin the page CSS sets for .gd2-group).
@@ -7,6 +7,7 @@
 const norm = s => (s || '').toLowerCase().replace(/[‘’]/g, "'").replace(/\s+/g, ' ').trim();
 
 export function initGuidance() {
+  askPrefill();
   const input = document.querySelector('.gd2-search_input');
   const wrap = document.querySelector('.gd2-groups');
   if (!input || !wrap) return;
@@ -48,4 +49,36 @@ export function initGuidance() {
   input.addEventListener('search', () => queueMicrotask(apply));
   input.addEventListener('keydown', e => { if (e.key === 'Escape' && input.value) { input.value = ''; apply(); } });
   if (input.value) apply();
+}
+
+// Questions with no published answer yet link to the ask form (#ask) and carry the question in data-gd-ask.
+// Clicking one jumps to the form (native anchor) and writes the question into the form's message field once
+// HubSpot has rendered it (the form mounts lazily as it nears the viewport). A visitor's own text is never replaced.
+function setNative(el, value) {
+  const proto = el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+  Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, value);
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+  el.dispatchEvent(new Event('change', { bubbles: true }));
+}
+function askPrefill() {
+  const host = document.querySelector('#ask [data-hs-form]');
+  if (!host || !document.querySelector('[data-gd-ask]')) return;
+  let job = 0;
+  document.addEventListener('click', e => {
+    const row = e.target.closest('[data-gd-ask]');
+    if (!row) return;
+    const q = (row.dataset.gdAsk || row.querySelector('.gd2-row_q')?.textContent || '').trim();
+    if (!q) return;
+    const id = ++job, until = Date.now() + 15000;
+    const fill = () => {
+      if (id !== job) return;
+      const field = host.querySelector('textarea') || host.querySelector('input[type=text][name*="question" i]');
+      if (!field) { if (Date.now() < until) setTimeout(fill, 200); return; }
+      const cur = field.value.trim();
+      if (!cur || cur === field.dataset.gdAsked) { setNative(field, q); field.dataset.gdAsked = q; }
+      // focus after the anchor jump has settled, without scrolling again
+      setTimeout(() => field.focus({ preventScroll: true }), 600);
+    };
+    fill();
+  });
 }

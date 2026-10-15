@@ -866,7 +866,9 @@ body:has(.v2r-hero) .navbar_component .navbar_logo-link{color:#fff}
 
 /* ===================== Round 3 fixes (15 Oct review) ===================== */
 /* blog / news: the sticky filter bar is a solid strip, so list text never shows through behind the pills */
-.section_res-filter{background-color:#fff;box-shadow:0 1px 0 rgba(3,11,44,.06)}
+.section_res-filter{background-color:#fff;box-shadow:0 1px 0 rgba(3,11,44,0);transition:top .5s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease}
+/* (Round 5) the only hairline is the one under the bar while it is stuck over the list (fixes.js resFilter) */
+.section_res-filter.is-stuck{box-shadow:0 1px 0 rgba(3,11,44,.08)}
 
 /* light-navbar pages: the open mobile menu is navy, so the logo (and the close button) turn white with it */
 @media (max-width:991px){
@@ -972,7 +974,6 @@ html.gz-menu-open .navbar_component{transform:none}
 html.gz-nav-scrolled .navbar_component::before{opacity:1}
 html.gz-menu-open .navbar_component::before{opacity:0}
 /* sticky resource filter bar: rides under the navbar while it is shown */
-.section_res-filter{transition:top .5s cubic-bezier(.2,.8,.2,1)}
 html.gz-nav-scrolled:not(.gz-nav-hidden) .section_res-filter{top:var(--gz-nav-h,5rem)}
 @media (prefers-reduced-motion:reduce){ .navbar_component,.section_res-filter{transition:none} }
 
@@ -1013,3 +1014,30 @@ html:not(.gz-ready) :is(.home-stats_number,.home-story_number,.v2r-num,.v2-stat_
 /* --- healthcare grateful-patient chart (solutions.js careChart): top-to-bottom timeline below 992px --- */
 .sol-panel.is-care-tall{overflow:visible}
 .sol-svg.gz-care-tall{width:100%;max-width:25rem;margin-left:auto;margin-right:auto}
+
+/* =====================================================================================================
+   Round 5 (15 Oct, Nick's notes): resources filter bar, blog sidebar, press rows
+   ===================================================================================================== */
+
+/* --- filter bar (blog, news, events, customer stories): plain text tabs, the selected one is the only filled
+   pill; no grey track, no grey sort pill (Webflow styles res-tabs / res-tab.is-active / res-sort carry the same) --- */
+.res-tabs{background-color:transparent;padding:0;border-radius:0;column-gap:.25rem}
+.res-tabs_list{column-gap:.25rem}
+.res-tab.is-active{background-color:#030B2C;color:#fff;box-shadow:none}
+.res-sort{background-color:transparent;padding-left:0;padding-right:0;column-gap:.5rem}
+.res-sort:hover{color:rgba(3,11,44,.7)}
+
+/* --- blog sidebar: "Most read" scrolls with the page, the Guidance promo below it is the sticky one.
+   The aside stretches to the list's height so the promo has room to stick; it rides under the filter bar
+   (and under the navbar while that is shown). --gz-filter-h comes from fixes.js --- */
+.res-eyebrow{text-transform:none;letter-spacing:0}
+@media (min-width:992px){
+  .blog-side{position:relative;top:auto;align-self:stretch}
+  .blog-promo{position:sticky;top:calc(var(--gz-filter-h,4rem) + 1.5rem);transition:top .5s cubic-bezier(.2,.8,.2,1)}
+  html.gz-nav-scrolled:not(.gz-nav-hidden) .blog-promo{top:calc(var(--gz-nav-h,5rem) + var(--gz-filter-h,4rem) + 1.5rem)}
+}
+@media (prefers-reduced-motion:reduce){ .blog-promo{transition:none} }
+
+/* --- press: announcement rows (News collection list) --- */
+.pr-row_title{transition:color .2s ease}
+.pr-row:hover .pr-row_title,.pr-row:focus-visible .pr-row_title{color:#045CE8}
