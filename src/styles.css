@@ -994,8 +994,9 @@ html:not(.gz-ready) :is(.home-stats_number,.home-story_number,.v2r-num,.v2-stat_
    the ecosystem grid's horizontal hairlines run to the page edges, like /about "As seen in" --- */
 @media (min-width:992px){
   .pt-meet{grid-template-columns:repeat(12,minmax(0,1fr));column-gap:2rem}
-  .pt-meet>.sol-h2{grid-column:1/span 6}
-  .pt-meet>.pt-meet_body{grid-column:7/span 6}
+  .pt-meet>.sol-h2{grid-column:1/span 5}
+  .pt-meet>.pt-meet_body{grid-column:6/span 7}
+  .pt-meet_lead{text-wrap:pretty}
   .section_sol:has(.pt-meet){padding-bottom:4.5rem}
 }
 .pt-grid{position:relative}
