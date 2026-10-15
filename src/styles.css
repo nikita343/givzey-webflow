@@ -1026,6 +1026,8 @@ html:not(.gz-ready) :is(.home-stats_number,.home-story_number,.v2r-num,.v2-stat_
 .res-tab.is-active{background-color:#030B2C;color:#fff;box-shadow:none}
 .res-sort{background-color:transparent;padding-left:0;padding-right:0;column-gap:.5rem}
 .res-sort:hover{color:rgba(3,11,44,.7)}
+/* /news year select (styled by the page's own embed): plain text with its chevron, no grey pill */
+.res-filter .res-year{background-color:transparent;padding-left:0;border-color:transparent;box-shadow:none}
 
 /* --- blog sidebar: "Most read" scrolls with the page, the Guidance promo below it is the sticky one.
    The aside stretches to the list's height so the promo has room to stick; it rides under the filter bar
