@@ -870,11 +870,16 @@ body:has(.v2r-hero) .navbar_component .navbar_logo-link{color:#fff}
 @media (max-width:991px){ .gd2-topics{border-left:0} }
 .gd2-topic.is-muted{opacity:.4}
 
-/* VSO timeline (phone / tablet): the card scrolls sideways, the row labels stay pinned to its left edge (vso.js) */
+/* VSO timeline (phone / tablet): the card scrolls sideways, so the two row labels become a legend pinned to the
+   card's top-left (vso.js passes the scroll offset), each with a swatch of its line */
 @media (max-width:991px){
   .vso-timeline_rows{transform:translateX(var(--vso-sx,0px));z-index:2;pointer-events:none}
-  .vso-timeline_label{background:rgba(255,255,255,.92);border-radius:.75em;padding:.35em .7em;margin-left:-.7em;box-shadow:0 0 0 1px rgba(3,11,44,.05)}
-  .vso-timeline_card{scroll-padding-left:1.25rem}
+  .vso-timeline_label{flex-direction:row;align-items:center;column-gap:.6em;padding:.3em .7em;margin-left:-.7em;background:rgba(255,255,255,.94);border-radius:100vw;box-shadow:0 0 0 1px rgba(3,11,44,.06)}
+  .vso-timeline_label::before{content:"";flex:none;width:1.5em;border-top:2px dashed rgba(3,11,44,.3)}
+  .vso-timeline_label.is-year::before{border-top:2px solid #6B3FD1}
+  .vso-timeline_label.is-silence{top:1.5em}
+  .vso-timeline_label.is-year{top:4.6em}
+  .vso-timeline_label-sub{display:none}
 }
 
 /* Blackbaud comparison (tablet / phone): the label column stays put while the two products scroll inside the card;
