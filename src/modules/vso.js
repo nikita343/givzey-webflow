@@ -12,7 +12,14 @@ const X0 = 339, X1 = 1253;   // timeline axis in SVG units (Dec → Dec)
 
 /* ---------- year-round timeline: one gift then silence, versus a year of touchpoints that ends in a renewal ---------- */
 function timeline() {
-  const stage = document.querySelector('.vso-timeline_stage'); if (!stage || REDUCED) return;
+  const stage = document.querySelector('.vso-timeline_stage'); if (!stage) return;
+  // the row labels ride along with the sideways scroll so they stay readable at the card's left edge (CSS ≤991px)
+  const scroller = stage.closest('.vso-timeline_card');
+  if (scroller) {
+    const follow = () => stage.style.setProperty('--vso-sx', scroller.scrollLeft + 'px');
+    scroller.addEventListener('scroll', follow, { passive: true }); follow();
+  }
+  if (REDUCED) return;
   const svg = stage.querySelector('.vso-timeline_svg'); if (!svg) return;
   const silence = svg.querySelector('.vso-timeline_silence'), year = svg.querySelector('.vso-timeline_year');
   const pulse = svg.querySelector('.vso-timeline_pulse'), months = svg.querySelectorAll('.vso-timeline_months text');

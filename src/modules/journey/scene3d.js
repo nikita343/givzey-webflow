@@ -167,7 +167,7 @@ vObj = transformed;`);
     canvas,
     dispose() { stage.removeEventListener('pointermove', onMove); stage.removeEventListener('pointerleave', onLeave); renderer.dispose(); canvas.remove(); },
     layout(W, H, o) { st.W = W; st.H = H; Object.assign(st, o); renderer.setSize(W, H, false); ptMat.uniforms.uH.value = H; },
-    update(t, s, v, z, sceneI, sp) {
+    update(t, s, v, z, sceneI, sp, out = 0) {
       const m = st.mouse, auto = REDUCE ? 0 : Math.sin(t * .21);
       m.x = lerp(m.x, st.target.x, .05); m.y = lerp(m.y, st.target.y, .05);
       figure.position.y = REDUCE ? 0 : Math.sin(t * 1.1) * .0015;
@@ -194,7 +194,7 @@ vObj = transformed;`);
       ui.draw(sceneI, sp, s);
       // camera: wide reference view -> in to the phone, rolling so the screen reads upright
       const e = z * z * (3 - 2 * z);
-      const visH = FIG_H / st.figFrac, fovW = 30, distW = (visH / 2) / Math.tan(fovW * deg / 2);
+      const visH = FIG_H / lerp(st.figFrac, st.figOut || st.figFrac, out), fovW = 30, distW = (visH / 2) / Math.tan(fovW * deg / 2);
       const az = (st.sway * .5 * auto + m.x * 12 + 16 + st.azOff) * deg * (1 - e), el = (4 - m.y * 4) * deg * (1 - e);
       const wideT = new THREE.Vector3(FIG_CX, visH / 2 - .02, 0);
       const wideP = wideT.clone().add(new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(distW));

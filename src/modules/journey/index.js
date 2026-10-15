@@ -3,6 +3,7 @@ import { SEASONS, REDUCE, clamp, sstep, seasonAt, rgb, rgba, mix } from './seaso
 import { Person3D, loadFigure } from './scene3d.js';
 import { ASSET } from '../../base.js';
 
+const FADE = .022;   // share of the pinned scroll one scene takes to leave (and the next to arrive)
 const SC = [{ a: 0, b: .15 }, { a: .15, b: .37 }, { a: .37, b: .59 }, { a: .59, b: .80 }, { a: .80, b: .93 }, { a: .93, b: 1.01 }];
 
 export async function initJourney(section) {
@@ -17,7 +18,7 @@ export async function initJourney(section) {
   const paper = sticky.querySelector('.home-journey_paper');
   const fallback = sticky.querySelector('.home-journey_visual');
 
-  section.classList.add('is-pinned');
+  section.classList.add('is-pinned', 'is-linked');
   const inkUrls = Object.fromEntries(SEASONS.map(s => [s.ink, ASSET(`journey/ink-${s.ink}.webp`)]));
 
   let gl = null;
@@ -35,7 +36,8 @@ export async function initJourney(section) {
   function layout() {
     const W = sticky.clientWidth, H = sticky.clientHeight, narrow = W < 820;
     geo = { W, H, narrow };
-    if (gl) gl.layout(W, H, { cx: narrow ? .5 : .66, figFrac: narrow ? .62 : .96, T: narrow ? { x: W * .5, y: H * .62 } : { x: W * .7, y: H * .52 }, closeFov: narrow ? 24 : 20, sway: 8, azOff: narrow ? -6 : -14 });
+    // figOut: the smaller framing the camera settles on for the outro, so the head never meets the top edge
+    if (gl) gl.layout(W, H, { cx: narrow ? .5 : .66, figFrac: narrow ? .62 : .96, figOut: narrow ? .56 : .8, T: narrow ? { x: W * .5, y: H * .62 } : { x: W * .7, y: H * .52 }, closeFov: narrow ? 24 : 20, sway: 8, azOff: narrow ? -6 : -14 });
   }
   layout();
   addEventListener('resize', layout);
@@ -53,11 +55,23 @@ export async function initJourney(section) {
     if (bg) bg.style.background = `radial-gradient(120% 90% at 70% 60%, ${rgb(mix(s.bg, [255, 255, 255], .35))} 0%, ${rgb(s.bg)} 60%, ${rgb(mix(s.bg, [3, 11, 44], .03))} 100%)`;
     section.style.setProperty('--journey-acc', rgb(s.acc));
     section.style.setProperty('--journey-hz', rgba(mix(s.bg, [255, 255, 255], .2), .9));
-    const z = sstep(.07, .17, p) * (1 - sstep(.92, .985, p));
+    const z = sstep(.07, .17, p) * (1 - sstep(.9, .96, p));
+    const out = sstep(.9, .97, p);
     let si = SC.findIndex(x => p >= x.a && p < x.b); if (si < 0) si = 5;
     const sp = (p - SC[si].a) / (SC[si].b - SC[si].a);
-    if (gl) gl.update(t, s, v, z, si, sp);
+    if (gl) gl.update(t, s, v, z, si, sp, out);
     if (si !== last) { scenes.forEach((e, i) => e.classList.toggle('is-active', i === si)); last = si; }
+    // copy is scroll-linked (not CSS transitions): a scene is only ever visible inside its own range, so a
+    // throttled or interrupted transition can never leave the intro heading ghosting over a later scene
+    scenes.forEach((e, i) => {
+      const r = SC[i]; if (!r) return;
+      const w = i === 0 ? 1 - sstep(r.b - FADE, r.b, p) : sstep(r.a, r.a + FADE, p) * (i === SC.length - 1 ? 1 : 1 - sstep(r.b - FADE, r.b, p));
+      const k = Math.round(w * 100) / 100;
+      if (e._gzW === k) return; e._gzW = k;
+      e.style.opacity = k; e.style.filter = k > .99 ? 'none' : `blur(${((1 - k) * 8).toFixed(1)}px)`;
+      e.style.transform = k > .99 ? 'none' : `translateY(${((1 - k) * 16).toFixed(1)}px)`;
+      e.style.visibility = k < .01 ? 'hidden' : 'visible';
+    });
     const showPaper = si === 3 && sp > .36;
     if (paper && showPaper !== lastPaper) { paper.classList.toggle('is-active', showPaper); lastPaper = showPaper; }
     if (paper && gl && showPaper) {

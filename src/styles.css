@@ -106,6 +106,7 @@ a:hover>.gz-underline,a:focus-visible>.gz-underline{transform:scaleX(1);transfor
 .home-journey_bg{transition:background .6s}
 .section_home-journey.is-pinned .home-journey_scene{position:absolute;left:0;top:0;opacity:0;filter:blur(8px);transform:translateY(16px);transition:opacity .6s ease,filter .6s ease,transform .6s ease;pointer-events:none}
 .section_home-journey.is-pinned .home-journey_scene.is-active{opacity:1;filter:none;transform:none;pointer-events:auto}
+.section_home-journey.is-linked .home-journey_scene{transition:none}   /* journey/index.js drives opacity from scroll */
 .home-journey_fill{position:absolute;left:0;top:-1px;height:3px;width:0;border-radius:3px;background:var(--journey-acc,#045CE8)}
 .section_home-journey.is-pinned .home-journey_dot{background:var(--journey-acc,#045CE8);box-shadow:0 0 0 4px rgba(255,255,255,.8);width:.6875rem;height:.6875rem}
 .home-journey_month{transition:color .3s}
@@ -853,3 +854,89 @@ body:has(.v2r-hero) .navbar_component .navbar_logo-link{color:#fff}
 /* GAP proof band: the long William & Mary title wraps instead of running under the logo */
 .product-band_who{white-space:normal}
 .product-band_role{text-wrap:pretty}
+
+/* ===================== Round 3 fixes (15 Oct review) ===================== */
+/* blog / news: the sticky filter bar is a solid strip, so list text never shows through behind the pills */
+.section_res-filter{background-color:#fff;box-shadow:0 1px 0 rgba(3,11,44,.06)}
+
+/* light-navbar pages: the open mobile menu is navy, so the logo (and the close button) turn white with it */
+@media (max-width:991px){
+  html.gz-menu-open .navbar_component.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be,
+  html.gz-menu-open .navbar_component.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_logo-link{color:#fff}
+  html.gz-menu-open .navbar_component.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_logo-link{position:relative;z-index:3}
+}
+
+/* guidance: topic chips on tablet / phone drop the desktop TOC rule; a topic with no match greys out while filtering */
+@media (max-width:991px){ .gd2-topics{border-left:0} }
+.gd2-topic.is-muted{opacity:.4}
+
+/* VSO timeline (phone / tablet): the card scrolls sideways, the row labels stay pinned to its left edge (vso.js) */
+@media (max-width:991px){
+  .vso-timeline_rows{transform:translateX(var(--vso-sx,0px));z-index:2;pointer-events:none}
+  .vso-timeline_label{background:rgba(255,255,255,.92);border-radius:.75em;padding:.35em .7em;margin-left:-.7em;box-shadow:0 0 0 1px rgba(3,11,44,.05)}
+  .vso-timeline_card{scroll-padding-left:1.25rem}
+}
+
+/* Blackbaud comparison (tablet / phone): the label column stays put while the two products scroll inside the card;
+   Givzey shows in full, Blackbaud peeks in from the right, a hint says it scrolls (compare hint: fixes.js) */
+@media (max-width:991px){
+  .bb-table{overscroll-behavior-x:contain;scrollbar-width:none}
+  .bb-table::-webkit-scrollbar{display:none}
+  .bb-table_inner>.bb-col:first-child{position:sticky;left:0;z-index:2;background-color:#fff;box-shadow:1px 0 0 rgba(3,11,44,.06)}
+  .gz-swipe-hint{display:flex;align-items:center;justify-content:flex-end;column-gap:.375rem;margin:0 0 .75rem;color:rgba(3,11,44,.55);font-size:.875rem;line-height:1.3;transition:opacity .4s ease}
+  .gz-swipe-hint.is-done{opacity:0}
+  .gz-swipe-hint svg{width:1rem;height:1rem;animation:gzNudge 1.6s ease-in-out infinite}
+}
+@media (max-width:767px){
+  .bb-table_inner{grid-template-columns:8.25rem 12.25rem 12.25rem;min-width:0}
+  .bb-th,.bb-td{padding-left:.875rem;padding-right:.875rem}
+  .bb-td{height:5.25rem}
+  .bb-td.is-label{column-gap:0}
+  .bb-td.is-label .sol-icon{display:none}
+}
+@media (min-width:992px){ .gz-swipe-hint{display:none} }
+@keyframes gzNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){ .gz-swipe-hint svg{animation:none} }
+
+/* 404: the card starts below the (absolute) navbar */
+@media (max-width:991px){ .nf-section{padding-top:9rem} }
+@media (max-width:767px){ .nf-section{padding-top:7.5rem} }
+
+/* VEO capabilities: rows always end full. Cards flow in a wrapping row; a short last row stretches across,
+   and a group of six sits on one row. The visual keeps the height of a regular tile however wide its card gets. */
+@media (min-width:768px){
+  .veo-cap_grid{display:flex;flex-wrap:wrap;container-type:inline-size;--cap-n:5;--cap-gx:1rem}
+  .veo-cap_grid>.veo-cap_card{flex:1 1 calc((100% - (var(--cap-n) - 1) * var(--cap-gx)) / var(--cap-n));min-width:0}
+  .veo-cap_grid .veo-cap_visual{aspect-ratio:auto;height:calc((100cqw - (var(--cap-n) - 1) * var(--cap-gx)) / var(--cap-n) * 190 / 236)}
+  .veo-cap_grid:has(>.veo-cap_card:last-child:nth-child(6)){--cap-n:6}
+}
+@media (min-width:768px) and (max-width:991px){
+  .veo-cap_grid{--cap-n:3}
+  .veo-cap_grid:has(>.veo-cap_card:last-child:nth-child(6)){--cap-n:3}
+  /* 3n+1 cards: the last four pair up instead of leaving one alone */
+  .veo-cap_grid:has(>.veo-cap_card:last-child:nth-child(3n+1)):not(:has(>.veo-cap_card:last-child:nth-child(1)))>.veo-cap_card:nth-last-child(-n+4){flex-basis:calc((100% - var(--cap-gx)) / 2)}
+}
+
+/* GAP use cases: five cards read as three over two (the second row shares the width) */
+@media (min-width:768px){
+  .gap-use_grid{display:flex;flex-wrap:wrap}
+  .gap-use_grid>.gap-use_card{flex:1 1 calc((100% - 2rem) / 3);min-width:0}
+}
+@media (min-width:768px) and (max-width:991px){
+  .gap-use_grid>.gap-use_card{flex-basis:calc((100% - 1rem) / 2)}
+}
+
+/* Version2 hero: the button sits under the subhead, not floating at the far right */
+.v2r-row{flex-direction:column;align-items:flex-start;justify-content:flex-start;row-gap:2rem}
+/* Version2 beliefs (tablet / phone): one column for every card (the narrow card's span-2 made a hidden 0px column),
+   and the cards are only as tall as their words */
+@media (max-width:991px){
+  .v2r-bento>.v2r-bcard{grid-column:1/-1}
+  .v2r-bcard{min-height:0;row-gap:2rem}
+}
+
+/* caps rule (Round 3): functional labels stay, in sentence case */
+.home-journey_eyebrow,.cs-sector_eyebrow,.post-toc_label,.post-author_label,.veo-trust_tag{text-transform:none;letter-spacing:0}
+/* careers department pills are typed in capitals in Webflow: shown in sentence case */
+.cr-dept .tag{display:inline-block;text-transform:lowercase;letter-spacing:0}
+.cr-dept .tag::first-letter{text-transform:uppercase}
