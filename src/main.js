@@ -112,7 +112,11 @@ async function boot() {
   // resources (hubs + every item page): no scroll reveals at all, content is simply there (Q.A. round 4);
   // hovers, forms, search and the final CTA ink (shown at once) still run
   const mods = { initHubspotForms, initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initVpgo, initVso, initGap, initV2, initAbout, initSolutions, initGuidance, initFixes, initHovers, initSecondary };
-  if (RESOURCES) { root.classList.add('gz-static'); delete mods.initReveals; delete mods.initSecondary; mods.initCta = () => initCta({ instant: true }); }
+  if (RESOURCES) {
+    root.classList.add('gz-static');
+    for (const k of Object.keys(mods)) if (!['initHubspotForms', 'initNav', 'initProduct', 'initGuidance', 'initFixes', 'initHovers'].includes(k)) delete mods[k];
+    mods.initCta = () => initCta({ instant: true });
+  }
   // each module is independent: one failing must not stop the rest
   for (const [name, fn] of Object.entries(mods)) {
     try { fn(); } catch (e) { console.error('[givzey]', name, e); }

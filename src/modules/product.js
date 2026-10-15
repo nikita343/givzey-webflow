@@ -38,7 +38,8 @@ function hero() {
   const order = cards.slice().reverse();   // DOM is back→front; the newest touchpoint (front) leads
   if (cards.length) gsap.set(cards, { xPercent: -50, x: 0 });   // GSAP owns the centring, so parallax never fights the CSS translate
   visual?.classList.add('is-live');
-  if (REDUCED) { layer?.setReveal(1); return; }
+  // resources pages (html.gz-static, e.g. /press) show their hero as it is, no entrance
+  if (REDUCED || isStatic()) { layer?.setReveal(1); return; }
 
   const tl = gsap.timeline({ delay: .05 });
   const nav = document.querySelector('.navbar_component');
@@ -323,12 +324,15 @@ function faq() {
       btn.addEventListener('keydown', e => { if (e.key === ' ') { e.preventDefault(); btn.click(); } });
       return set;
     });
-    if (!REDUCED) gsap.from(items, { opacity: 0, filter: 'blur(8px)', duration: .8, ease: 'power2.out', stagger: .08, clearProps: 'filter', scrollTrigger: { trigger: list, start: 'top 85%', once: true } });
+    if (!REDUCED && !isStatic()) gsap.from(items, { opacity: 0, filter: 'blur(8px)', duration: .8, ease: 'power2.out', stagger: .08, clearProps: 'filter', scrollTrigger: { trigger: list, start: 'top 85%', once: true } });
   });
 }
 
+const isStatic = () => document.documentElement.classList.contains('gz-static');
 export function initProduct() {
-  for (const [name, fn] of Object.entries({ hero, chat, pyramid, stats, capabilities, trust, proof, faq })) {
+  // resources pages: only the static hero setup and the FAQ accordion (no reveals)
+  const fns = isStatic() ? { hero, faq } : { hero, chat, pyramid, stats, capabilities, trust, proof, faq };
+  for (const [name, fn] of Object.entries(fns)) {
     try { fn(); } catch (e) { console.error('[givzey] product', name, e); }
   }
 }
