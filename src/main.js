@@ -119,6 +119,7 @@ async function boot() {
     } else { loader.dissolve(); playHero(); setTimeout(() => { clearTimeout(cap); release(); }, 500); }
   } else if (heroTl) heroTl.play();
   // QA: replay the loader on the page (?gzdebug)
+  if (/[?&]gzdebug\b/.test(location.search)) window.__gzGsap = gsap;
   if (ink && ink.ok && /[?&]gzdebug\b/.test(location.search)) window.__gzReplay = () => {
     scrollTo(0, 0); root.classList.add('gz-intro'); ink.cover(); const l = playLoader(); ink.prepareLogo(LOGO);
     return l.done.then(() => new Promise(r => setTimeout(r, 120))).then(() => ink.burst(l.svg, { onStamp: () => l.burst(), onUncover: () => { root.classList.remove('gz-intro'); l.remove(); } }));

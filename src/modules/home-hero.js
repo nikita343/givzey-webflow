@@ -409,7 +409,7 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
     const hw = rect ? rect[2] * aspect / 2 : .12, hh = rect ? rect[3] / 2 : .03;
     // the blast: one wide tear around the lockup + a hard kick right at the symbol
     // the blast comes in three pulses, so the lockup first tears at its edges, then floods outward
-    I.kicks = [[0, .42], [.1, .33], [.22, .25]].map(([at, k]) => ({ at, k, done: false }));
+    I.kicks = [[.05, .4], [.14, .33], [.26, .27]].map(([at, k]) => ({ at, k, done: false }));
     I.kick = k => {
       const seed = Math.random() * 40;
       blast(cx, cy, hw * 1.05, Math.max(hh * 2.2, .05), F.burst * k, seed);
