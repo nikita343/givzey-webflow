@@ -7,6 +7,7 @@
 //     from the centre (the Header V2 bleed), then the copy comes in.
 // No artwork: the designed Figma inks stay in the page only as the no-WebGL fallback.
 import { REDUCED } from '../base.js';
+import { revealMode } from './loader.js';
 
 // ---- tunables (Nick: everything worth tweaking lives here) ----
 export const HERO_FX = {
@@ -40,7 +41,8 @@ export const HERO_FX = {
   // colour (blue palette; the hue cycle rotates all of it)
   base: ['#030B2C', '#031149'],        // hero top / bottom (the Webflow gradient)
   glow: '#0B2C93',                     // soft inner light of the water
-  loader: '#020924',                   // loader screen (a touch darker than the hero, so the bleed reads)
+  loader: '#020924',                   // loader screen for the 'burst' reveal (a touch darker than the hero, so the bleed reads)
+  paper: '#F3F5FA',                    // loader screen for the 'ink' reveal (Header V1: ink bleeding across paper)
   inkDeep: '#1D4CD2', inkSky: '#4A8BF5', inkLight: '#A8CBFF',
   hueMax: 150,                         // degrees at the warm end (0 = blue, 50 purple, 100 magenta, 150 red-orange)
   huePeriod: 44                        // seconds for blue -> warm -> blue
@@ -95,7 +97,7 @@ const FRAG = {
     void main(){ float L=texture2D(uP,vL).x,R=texture2D(uP,vR).x,T=texture2D(uP,vT).x,B=texture2D(uP,vB).x; gl_FragColor=vec4(texture2D(uVel,vUv).xy-vec2(R-L,T-B),0.,1.); }`,
   scale: HEAD + `uniform sampler2D uTex; uniform float value; void main(){ gl_FragColor=value*texture2D(uTex,vUv); }`,
   // dye: r = ink density, g = density x tone (0 deep .. 1 sky), b = white (the logo, fades fast)
-  display: HEAD + NOISE + `uniform sampler2D uDye; uniform float aspect,time,calmAmt,calmK,scrim,bleed,maxD; uniform vec2 bleedC;
+  display: HEAD + NOISE + `uniform sampler2D uDye; uniform float aspect,time,calmAmt,calmK,scrim,bleed,maxD,rimK; uniform vec2 bleedC;
     uniform vec3 base0,base1,glowC,loaderC,inkDeep,inkSky,inkLight; uniform vec4 calm; uniform mat3 hue;
     void main(){
       vec3 col=mix(base1,base0,smoothstep(.0,.75,vUv.y));
@@ -118,7 +120,7 @@ const FRAG = {
       ink=mix(ink,inkLight,smoothstep(1.1,3.2,a)*.6);
       ink=mix(ink,vec3(.965,.975,1.),smoothstep(.12,1.,w));
       col=mix(col,ink,clamp(cover+smoothstep(.1,.7,w),0.,1.));
-      col=mix(col,inkSky,rim*.45);
+      col=mix(col,inkSky,rim*rimK);
       col*=1.-scrim*calmAmt*exp(-zr*zr*1.15);
       col=hue*col;
       col+=(hash(gl_FragCoord.xy+fract(time*.61)*97.)-.5)/255.;   // dither: no banding on the dark gradient
@@ -269,12 +271,13 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
 
   // ---- state ----
   const S = { time: 0, calm: intro ? 0 : 1, bleed: intro ? 0 : 1, hue: 0 };
-  const C = { base0: hex(F.base[0]), base1: hex(F.base[1]), glow: hex(F.glow), loader: hex(F.loader), deep: hex(F.inkDeep), sky: hex(F.inkSky), light: hex(F.inkLight) };
+  const mode = revealMode();
+  const C = { base0: hex(F.base[0]), base1: hex(F.base[1]), glow: hex(F.glow), loader: hex(mode === 'ink' ? F.paper : F.loader), deep: hex(F.inkDeep), sky: hex(F.inkSky), light: hex(F.inkLight) };
   let hueM = hueMatrix(0), cssHue = -1, bleedC = [.5, .5];   // bleedC: where the loader bleed opens from (the logo)
   function render() {
     const u = use('display');
     gl.uniform1i(u.uDye, dye.read.bind(0)); gl.uniform1f(u.aspect, aspect); gl.uniform1f(u.time, S.time);
-    gl.uniform1f(u.calmAmt, S.calm); gl.uniform1f(u.calmK, F.calm); gl.uniform1f(u.scrim, F.scrim); gl.uniform1f(u.bleed, S.bleed); gl.uniform2f(u.bleedC, bleedC[0], bleedC[1]);
+    gl.uniform1f(u.calmAmt, S.calm); gl.uniform1f(u.calmK, F.calm); gl.uniform1f(u.scrim, F.scrim); gl.uniform1f(u.bleed, S.bleed); gl.uniform1f(u.rimK, mode === 'ink' ? 0 : .45); gl.uniform2f(u.bleedC, bleedC[0], bleedC[1]);
     gl.uniform1f(u.maxD, Math.hypot(aspect * Math.max(bleedC[0], 1 - bleedC[0]), Math.max(bleedC[1], 1 - bleedC[1])));
     gl.uniform3fv(u.base0, C.base0); gl.uniform3fv(u.base1, C.base1); gl.uniform3fv(u.glowC, C.glow); gl.uniform3fv(u.loaderC, C.loader);
     gl.uniform3fv(u.inkDeep, C.deep); gl.uniform3fv(u.inkSky, C.sky); gl.uniform3fv(u.inkLight, C.light);
@@ -372,10 +375,16 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
   let introState = null;
   const easeIO = x => { x = Math.min(1, Math.max(0, x)); return x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; };
   const smooth = x => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
-  // timings after the burst (s): bleed runs .0 -> BLEED, copy reveals at REVEAL, the intro ends at END
-  const BLEED = 1.15, REVEAL = .6, END = 1.7;
-  // [time after the burst, x, y, size]: soft drops spread around the copy so the hero opens full of ink
-  const OPENING = [[.2, .16, .7, 1.4], [.34, .85, .3, 1.3], [.5, .8, .8, 1.05], [.68, .15, .24, 1.15]];
+  // timings after the hand-off (s): bleed runs 0 -> bleed in `steps` sprite-like frames, copy reveals at reveal, the intro ends at end
+  // opening: [time, x, y, size] soft drops spread around the copy so the hero opens full of ink
+  const TIMING = {
+    burst: { bleed: 1.15, steps: 22, reveal: .6, end: 1.7, calmIn: 1.1,
+      opening: [[.2, .16, .7, 1.4], [.34, .85, .3, 1.3], [.5, .8, .8, 1.05], [.68, .15, .24, 1.15]] },
+    // Header V1: a slower bleed across paper, the drops land as it finishes, the copy comes in once the screen is ink
+    ink: { bleed: 1.75, steps: 26, reveal: 1.8, end: 3.1, calmIn: 1.3,
+      opening: [[1.2, .8, .46, 1.4], [1.55, .3, .74, 1.1], [1.95, .86, .76, 1.05], [2.45, .48, .2, 1.0], [2.95, .16, .36, 1.1]] }
+  };
+  const T = TIMING[mode];
   async function stampLogo(lr) {
     const img = logoImg ? await Promise.race([logoImg, new Promise(r => setTimeout(() => r(null), 150))]) : null;
     const c = canvas.getBoundingClientRect();
@@ -401,7 +410,16 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
       uncover: once(() => { o.onUncover && o.onUncover(); }) };
     I.finish = once(() => { I.done = true; if (introState === I) introState = null; S.bleed = 1; S.calm = 1; I.reveal(); I.uncover(); res(); });
     // safety nets in wall time (background tab, weak GPU): the page is never held
-    if (!S.manual) { setTimeout(I.reveal, (REVEAL + .5) * 1000); setTimeout(I.finish, (END + .7) * 1000); }   // S.manual: QA stepping
+    if (!S.manual) { setTimeout(I.reveal, (T.reveal + .5) * 1000); setTimeout(I.finish, (T.end + .7) * 1000); }   // S.manual: QA stepping
+    if (mode === 'ink') {
+      // V1: nothing is stamped or blown apart; the ink simply bleeds out from behind the logo
+      const lr = svgEl && svgEl.getBoundingClientRect(), c = canvas.getBoundingClientRect();
+      if (lr && lr.width && c.width) bleedC = [(lr.left + lr.width / 2 - c.left) / c.width, Math.min(.9, Math.max(.1, 1 - (lr.top + lr.height / 2 - c.top) / c.height))];
+      else bleedC = [.5, .5];
+      o.onStamp && o.onStamp();
+      if (!I.done) introState = I;
+      return;
+    }
     const rect = await stampLogo(svgEl && svgEl.getBoundingClientRect());   // measured before the lockup starts to move
     o.onStamp && o.onStamp();
     const cx = rect ? rect[0] + rect[2] / 2 : .5, cy = rect ? rect[1] + rect[3] / 2 : .5;
@@ -422,12 +440,12 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
   function runIntro(dt) {
     const I = introState; I.t += dt; const t = I.t;
     if (I.kicks) for (const q of I.kicks) if (!q.done && t >= q.at) { q.done = true; I.kick(q.k); }
-    S.bleed = Math.min(1, Math.floor(easeIO(t / BLEED) * 22) / 22 + (t > BLEED ? 1 : 0));   // stepped, like sprite frames
-    while (I.fired < OPENING.length && t >= OPENING[I.fired][0]) { const d = OPENING[I.fired++]; drop(d[1], d[2], .5 + Math.random() * .2, d[3], .25 + Math.random() * .55); }
-    if (t >= REVEAL) I.reveal();
-    if (t >= BLEED) I.uncover();
-    S.calm = smooth((t - REVEAL) / 1.1);
-    if (t >= END) I.finish();
+    S.bleed = Math.min(1, Math.floor(easeIO(t / T.bleed) * T.steps) / T.steps + (t > T.bleed ? 1 : 0));   // stepped, like sprite frames
+    while (I.fired < T.opening.length && t >= T.opening[I.fired][0]) { const d = T.opening[I.fired++]; drop(d[1], d[2], .5 + Math.random() * .2, d[3], .25 + Math.random() * .55); }
+    if (t >= T.reveal) I.reveal();
+    if (t >= T.bleed) I.uncover();
+    S.calm = smooth((t - T.reveal) / T.calmIn);
+    if (t >= T.end) I.finish();
   }
 
   // ---- loop ----
@@ -469,6 +487,7 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
   if (!ok) return fail();
   measureCalm();
   api.ok = true;
+  api.mode = mode;
 
   function staticFrame() {
     S.bleed = 1; S.calm = 1; live = false; setHue(0);
@@ -480,7 +499,7 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
   if (REDUCED) staticFrame();
   else raf = requestAnimationFrame(frame);
 
-  if (/[?&]gzdebug\b/.test(location.search)) window.__gzHero = { S, F, ptr, hand, get calmRect() { return calmRect; }, get low() { return low; }, get level() { return perf.level; },
+  if (/[?&]gzdebug\b/.test(location.search)) window.__gzHero = { S, F, ptr, hand, mode, get intro() { return !!introState; }, get calmRect() { return calmRect; }, get low() { return low; }, get level() { return perf.level; },
     // QA: run the simulation forward synchronously (software GPUs can't hold real time)
     advance(sec) { const n = Math.round(sec * 30); for (let i = 0; i < n; i++) tick(1 / 30, 1 / 30); },
     setTime(t) { S.time = t; setHue(hueAt(t)); render(); },

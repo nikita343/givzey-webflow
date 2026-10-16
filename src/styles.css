@@ -1,9 +1,16 @@
 /* ===== Givzey motion layer — loaded from Vercel, sits on top of the Webflow styles ===== */
 
 /* --- loader: dark-blue screen, the logo lands in the centre, then bursts into the hero's ink (home-hero.js) --- */
-html.gz-intro body::before{background:#020924!important}   /* the page's head cover was paper; the loader is dark now */
-/* after the burst the cover fades instead of vanishing (on phones the hero is shorter than the screen) */
-html.gz-intro-fade:not(.gz-intro) body::before{content:"";position:fixed;inset:var(--gz-cover-top,0px) 0 0 0;z-index:9998;background:#020924;opacity:0;transition:opacity .8s ease;pointer-events:none}
+/* two reveals (loader.js revealMode): 'ink' = Header V1, paper screen the ink bleeds across; 'burst' = dark screen, logo blown apart */
+html.gz-intro body::before{background:#f3f5fa!important}
+html.gz-intro.gz-reveal-burst body::before{background:#020924!important}
+/* after the reveal the cover fades instead of vanishing (on phones the hero is shorter than the screen) */
+html.gz-intro-fade:not(.gz-intro) body::before{content:"";position:fixed;inset:var(--gz-cover-top,0px) 0 0 0;z-index:9998;background:#031149;opacity:0;transition:opacity .8s ease;pointer-events:none}
+/* V1 on phones the hero is shorter than the screen: the paper below it turns to the hero's navy as the ink reaches the bottom */
+html.gz-intro.gz-reveal-ink.gz-bleeding body::before{background:#031149!important;transition:background-color .6s ease .55s}
+html.gz-intro-fade.gz-reveal-burst:not(.gz-intro) body::before{background:#020924}
+/* V1: the lockup inverts against whatever is under it, dark on paper, white once the ink has reached it */
+html.gz-reveal-ink .gz-loader{mix-blend-mode:difference}
 .gz-loader{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;color:#fff;pointer-events:none}
 .gz-loader_mark{width:clamp(10.5rem,17vw,16.5rem);will-change:transform,opacity}
 .gz-loader_mark svg{display:block;width:100%;height:auto;overflow:visible}

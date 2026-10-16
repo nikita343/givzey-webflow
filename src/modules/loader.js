@@ -5,6 +5,17 @@ import { gsap } from 'gsap';
 import { LOGO } from '../logo.js';
 import { REDUCED } from '../base.js';
 
+// Which reveal plays after the lockup (Nick 16 Oct, trying both):
+//   'ink'   = Header V1: the screen is paper, the ink bleeds out from the logo in stepped frames and swallows it;
+//             the lockup is drawn in difference blend, so it reads dark on paper and turns white as the ink passes under it
+//   'burst' = the logo is stamped into the fluid and blown apart over a dark screen (15 Oct build)
+// Default below; any page can be forced with ?reveal=ink or ?reveal=burst.
+export const REVEAL_DEFAULT = 'ink';
+export function revealMode() {
+  const m = /[?&]reveal=(ink|burst)\b/.exec(location.search);
+  return m ? m[1] : REVEAL_DEFAULT;
+}
+
 export function shouldIntro() {
   return document.documentElement.classList.contains('gz-intro') && !REDUCED;
 }
@@ -15,7 +26,9 @@ export function playLoader() {
   el.className = 'gz-loader'; el.setAttribute('aria-hidden', 'true');
   el.innerHTML = `<div class="gz-loader_mark">${LOGO}</div>`;
   document.body.appendChild(el);
-  root.classList.add('gz-loader-on');
+  const mode = revealMode();
+  root.classList.remove('gz-reveal-ink', 'gz-reveal-burst');
+  root.classList.add('gz-loader-on', 'gz-reveal-' + mode);
 
   const mark = el.querySelector('.gz-loader_mark'), svg = el.querySelector('svg');
   const [symbol, word] = svg.querySelectorAll(':scope > g');
@@ -40,6 +53,8 @@ export function playLoader() {
     // the ink copy of the logo is in the canvas now: the DOM lockup flashes away on top of it
     burst() { tl.kill(); gsap.to(mark, { opacity: 0, scale: 1.09, filter: 'blur(3px)', duration: .24, ease: 'power2.in' }); },
     remove,
+    // V1: the lockup stays while the ink swallows it, then fades out as the hero copy comes in
+    fade() { tl.kill(); return gsap.to(mark, { opacity: 0, duration: .35, ease: 'power1.out', onComplete: remove }); },
     // no ink engine: the lockup and the cover simply fade
     dissolve() {
       tl.kill();

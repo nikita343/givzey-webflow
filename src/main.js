@@ -7,7 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import Lenis from 'lenis';
 import { REDUCED } from './base.js';
-import { shouldIntro, playLoader } from './modules/loader.js';
+import { shouldIntro, playLoader, revealMode } from './modules/loader.js';
 import { initHomeHero } from './modules/home-hero.js';
 import { LOGO } from './logo.js';
 import { headingBleed, fadeCopy, unrollTag, liveGradient, initReveals } from './modules/reveal.js';
@@ -104,17 +104,18 @@ async function boot() {
     // hard cap: whatever happens (hidden tab, weak GPU), the page is free 4 s after boot; normally the intro ends at ~3 s
     let played = false;
     const playHero = () => { if (!played) { played = true; heroTl && heroTl.play(); } };
-    const release = () => { loader.remove(); root.classList.remove('gz-intro'); ink && ink.endIntro && ink.endIntro(); playHero(); lenis && lenis.start(); };
-    const cap = setTimeout(release, 4000);
+    const release = () => { loader.remove(); root.classList.remove('gz-intro', 'gz-bleeding'); ink && ink.endIntro && ink.endIntro(); playHero(); lenis && lenis.start(); };
+    const inkV1 = revealMode() === 'ink';   // Header V1 reveal: the lockup stays under the bleeding ink, then fades
+    const cap = setTimeout(release, inkV1 ? 5200 : 4000);
     if (ink && ink.ok) ink.prepareLogo(LOGO);
     // symbol, then wordmark, then a short hold
     await Promise.race([loader.done, new Promise(r => setTimeout(r, 1450))]);
     await new Promise(r => setTimeout(r, 60));
     if (ink && ink.ok) {
       ink.burst(loader.svg, {
-        onStamp: () => loader.burst(),
-        onReveal: playHero,
-        onUncover: () => { root.style.setProperty('--gz-cover-top', Math.max(0, Math.round(hero.getBoundingClientRect().bottom)) + 'px'); root.classList.add('gz-intro-fade'); root.classList.remove('gz-intro'); loader.remove(); setTimeout(() => root.classList.remove('gz-intro-fade'), 900); }
+        onStamp: () => { if (inkV1) root.classList.add('gz-bleeding'); else loader.burst(); },
+        onReveal: () => { if (inkV1) loader.fade(); playHero(); },
+        onUncover: () => { root.style.setProperty('--gz-cover-top', Math.max(0, Math.round(hero.getBoundingClientRect().bottom)) + 'px'); root.classList.add('gz-intro-fade'); root.classList.remove('gz-intro'); if (!inkV1) loader.remove(); setTimeout(() => root.classList.remove('gz-intro-fade'), 900); }
       }).then(() => { clearTimeout(cap); release(); });
     } else { loader.dissolve(); playHero(); setTimeout(() => { clearTimeout(cap); release(); }, 500); }
   } else if (heroTl) heroTl.play();
@@ -122,7 +123,8 @@ async function boot() {
   if (/[?&]gzdebug\b/.test(location.search)) window.__gzGsap = gsap;
   if (ink && ink.ok && /[?&]gzdebug\b/.test(location.search)) window.__gzReplay = () => {
     scrollTo(0, 0); root.classList.add('gz-intro'); ink.cover(); const l = playLoader(); ink.prepareLogo(LOGO);
-    return l.done.then(() => new Promise(r => setTimeout(r, 120))).then(() => ink.burst(l.svg, { onStamp: () => l.burst(), onUncover: () => { root.classList.remove('gz-intro'); l.remove(); } }));
+    const v1 = revealMode() === 'ink';
+    return l.done.then(() => new Promise(r => setTimeout(r, 120))).then(() => ink.burst(l.svg, { onStamp: () => { if (v1) root.classList.add('gz-bleeding'); else l.burst(); }, onReveal: () => { if (v1) l.fade(); }, onUncover: () => { root.classList.remove('gz-intro'); if (!v1) l.remove(); } })).then(() => { l.remove(); root.classList.remove('gz-bleeding'); });
   };
 
   // resources (hubs + every item page): no scroll reveals at all, content is simply there (Q.A. round 4);
