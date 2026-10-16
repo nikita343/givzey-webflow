@@ -101,20 +101,20 @@ async function boot() {
 
   const ink = hero ? initHomeHero(hero, { intro }) : null;
   if (intro && loader) {
-    // hard cap: whatever happens, the page is free ~3.3 s after boot
+    // hard cap: whatever happens (hidden tab, weak GPU), the page is free 4 s after boot; normally the intro ends at ~3 s
     let played = false;
     const playHero = () => { if (!played) { played = true; heroTl && heroTl.play(); } };
-    const release = () => { loader.remove(); root.classList.remove('gz-intro'); playHero(); lenis && lenis.start(); };
-    const cap = setTimeout(release, 3300);
+    const release = () => { loader.remove(); root.classList.remove('gz-intro'); ink && ink.endIntro && ink.endIntro(); playHero(); lenis && lenis.start(); };
+    const cap = setTimeout(release, 4000);
     if (ink && ink.ok) ink.prepareLogo(LOGO);
     // symbol, then wordmark, then a short hold
-    await Promise.race([loader.done, new Promise(r => setTimeout(r, 1500))]);
-    await new Promise(r => setTimeout(r, 120));
+    await Promise.race([loader.done, new Promise(r => setTimeout(r, 1450))]);
+    await new Promise(r => setTimeout(r, 60));
     if (ink && ink.ok) {
       ink.burst(loader.svg, {
         onStamp: () => loader.burst(),
         onReveal: playHero,
-        onUncover: () => { root.classList.remove('gz-intro'); loader.remove(); }
+        onUncover: () => { root.style.setProperty('--gz-cover-top', Math.max(0, Math.round(hero.getBoundingClientRect().bottom)) + 'px'); root.classList.add('gz-intro-fade'); root.classList.remove('gz-intro'); loader.remove(); setTimeout(() => root.classList.remove('gz-intro-fade'), 900); }
       }).then(() => { clearTimeout(cap); release(); });
     } else { loader.dissolve(); playHero(); setTimeout(() => { clearTimeout(cap); release(); }, 500); }
   } else if (heroTl) heroTl.play();

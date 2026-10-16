@@ -30,7 +30,7 @@ export function playLoader() {
     // then "Givzey" writes in, letter by letter
     .to(letters, { opacity: 1, x: 0, filter: 'blur(0px)', duration: .45, ease: 'power2.out', stagger: .05 }, .5)
     // a slow breath while it holds, so the burst has something to break
-    .to(mark, { scale: 1.035, duration: 1.2, ease: 'sine.inOut' }, .3);
+    .to(mark, { scale: 1.035, duration: 1.05, ease: 'sine.inOut' }, .25);
 
   let gone = false;
   const remove = () => { if (gone) return; gone = true; el.remove(); root.classList.remove('gz-loader-on'); };

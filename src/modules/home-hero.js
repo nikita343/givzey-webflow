@@ -25,13 +25,13 @@ export const HERO_FX = {
   // cursor trail
   trailRadius: .0062,                  // ink radius (bigger = wider, softer trail)
   trailVelRadius: .011,                // radius of the push
-  trailInk: .15,                       // ink per frame at full speed
-  trailPush: .45,                      // how much the water follows the cursor
+  trailInk: .3,                        // ink density along the trail
+  trailPush: .7,                       // how much the water follows the cursor
   trailSmooth: 22,                     // cursor follow rate (lower = lazier, rounder strokes)
   swirlEvery: .13, swirlOffset: .05, swirlSize: .0035, swirlSpeed: 260,   // little vortices shed beside the path
   // ambient hand (idle only)
   ambientIdle: 3.5,                    // seconds without cursor before it starts
-  ambientInk: .085, ambientSpeed: .16, ambientPush: .35,
+  ambientInk: .18, ambientSpeed: .16, ambientPush: .5,
   // loader burst
   burst: 800,                          // total outward push that blows the logo apart (spread over three pulses)
   // copy protection
@@ -95,7 +95,7 @@ const FRAG = {
     void main(){ float L=texture2D(uP,vL).x,R=texture2D(uP,vR).x,T=texture2D(uP,vT).x,B=texture2D(uP,vB).x; gl_FragColor=vec4(texture2D(uVel,vUv).xy-vec2(R-L,T-B),0.,1.); }`,
   scale: HEAD + `uniform sampler2D uTex; uniform float value; void main(){ gl_FragColor=value*texture2D(uTex,vUv); }`,
   // dye: r = ink density, g = density x tone (0 deep .. 1 sky), b = white (the logo, fades fast)
-  display: HEAD + NOISE + `uniform sampler2D uDye; uniform float aspect,time,calmAmt,calmK,scrim,bleed,maxD;
+  display: HEAD + NOISE + `uniform sampler2D uDye; uniform float aspect,time,calmAmt,calmK,scrim,bleed,maxD; uniform vec2 bleedC;
     uniform vec3 base0,base1,glowC,loaderC,inkDeep,inkSky,inkLight; uniform vec4 calm; uniform mat3 hue;
     void main(){
       vec3 col=mix(base1,base0,smoothstep(.0,.75,vUv.y));
@@ -103,7 +103,7 @@ const FRAG = {
       // loader: the dark cover bleeds open from the centre (the ink itself is never masked, so the logo ink shows at once)
       float rim=0.;
       if(bleed<1.){
-        vec2 q=(vUv-.5)*vec2(aspect,1.); float dist=length(q);
+        vec2 q=(vUv-bleedC)*vec2(aspect,1.); float dist=length(q);
         float nb=fbm(q*3.1+7.)*.62+fbm(q*12.+3.)*.16;
         float f=bleed*(maxD+.95)-.3-dist-(nb-.4)*.62;
         float amt=max(smoothstep(0.,.02,f),smoothstep(-.11,0.,f)*.3+smoothstep(-.035,0.,f)*.25);
@@ -270,11 +270,12 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
   // ---- state ----
   const S = { time: 0, calm: intro ? 0 : 1, bleed: intro ? 0 : 1, hue: 0 };
   const C = { base0: hex(F.base[0]), base1: hex(F.base[1]), glow: hex(F.glow), loader: hex(F.loader), deep: hex(F.inkDeep), sky: hex(F.inkSky), light: hex(F.inkLight) };
-  let hueM = hueMatrix(0), cssHue = -1;
+  let hueM = hueMatrix(0), cssHue = -1, bleedC = [.5, .5];   // bleedC: where the loader bleed opens from (the logo)
   function render() {
     const u = use('display');
     gl.uniform1i(u.uDye, dye.read.bind(0)); gl.uniform1f(u.aspect, aspect); gl.uniform1f(u.time, S.time);
-    gl.uniform1f(u.calmAmt, S.calm); gl.uniform1f(u.calmK, F.calm); gl.uniform1f(u.scrim, F.scrim); gl.uniform1f(u.bleed, S.bleed); gl.uniform1f(u.maxD, Math.hypot(aspect * .5, .5));
+    gl.uniform1f(u.calmAmt, S.calm); gl.uniform1f(u.calmK, F.calm); gl.uniform1f(u.scrim, F.scrim); gl.uniform1f(u.bleed, S.bleed); gl.uniform2f(u.bleedC, bleedC[0], bleedC[1]);
+    gl.uniform1f(u.maxD, Math.hypot(aspect * Math.max(bleedC[0], 1 - bleedC[0]), Math.max(bleedC[1], 1 - bleedC[1])));
     gl.uniform3fv(u.base0, C.base0); gl.uniform3fv(u.base1, C.base1); gl.uniform3fv(u.glowC, C.glow); gl.uniform3fv(u.loaderC, C.loader);
     gl.uniform3fv(u.inkDeep, C.deep); gl.uniform3fv(u.inkSky, C.sky); gl.uniform3fv(u.inkLight, C.light);
     gl.uniform4f(u.calm, calmRect[0], calmRect[1], calmRect[2], calmRect[3]); gl.uniformMatrix3fv(u.hue, false, hueM);
@@ -303,9 +304,11 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
   function paintStroke(a, b, ink, push, tone) {
     const dx = b[0] - a[0], dy = b[1] - a[1], dist = Math.hypot(dx * aspect, dy);
     if (dist < 2e-5 || dist > .25) return dist;
-    const k = Math.min(1, dist / .012);
-    seg(vel, a, b, [dx * aspect * VS() * push, dy * VS() * push, 0, 0], F.trailVelRadius);
-    seg(dye, a, b, inkC(ink * k, tone), F.trailRadius);
+    // a frame's segment is short next to the brush, so consecutive capsules overlap ~2r/len times:
+    // scale by len/r so ink and push per unit of path stay constant whatever the frame rate or speed
+    const kd = Math.min(1, dist / Math.sqrt(corr(F.trailRadius))), kv = Math.min(1, dist / Math.sqrt(corr(F.trailVelRadius)));
+    seg(vel, a, b, [dx * aspect * VS() * push * kv, dy * VS() * push * kv, 0, 0], F.trailVelRadius);
+    seg(dye, a, b, inkC(ink * kd, tone), F.trailRadius);
     return dist;
   }
   function runPointer(dt) {
@@ -402,6 +405,7 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
     const rect = await stampLogo(svgEl && svgEl.getBoundingClientRect());   // measured before the lockup starts to move
     o.onStamp && o.onStamp();
     const cx = rect ? rect[0] + rect[2] / 2 : .5, cy = rect ? rect[1] + rect[3] / 2 : .5;
+    bleedC = [cx, Math.min(.9, Math.max(.1, cy))];
     const hw = rect ? rect[2] * aspect / 2 : .12, hh = rect ? rect[3] / 2 : .03;
     // the blast: one wide tear around the lockup + a hard kick right at the symbol
     // the blast comes in three pulses, so the lockup first tears at its edges, then floods outward
@@ -414,11 +418,12 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
     if (!rect) splat(dye, cx, cy, inkC(2.2, .8, 1.6), .004);
     if (!I.done) introState = I;
   });
+  api.endIntro = () => { if (introState) introState.finish(); };   // the page's hard cap: skip to the settled hero
   function runIntro(dt) {
     const I = introState; I.t += dt; const t = I.t;
     if (I.kicks) for (const q of I.kicks) if (!q.done && t >= q.at) { q.done = true; I.kick(q.k); }
     S.bleed = Math.min(1, Math.floor(easeIO(t / BLEED) * 22) / 22 + (t > BLEED ? 1 : 0));   // stepped, like sprite frames
-    while (I.fired < OPENING.length && t >= OPENING[I.fired][0]) { const d = OPENING[I.fired++]; drop(d[1], d[2], .7 + Math.random() * .25, d[3], .25 + Math.random() * .55); }
+    while (I.fired < OPENING.length && t >= OPENING[I.fired][0]) { const d = OPENING[I.fired++]; drop(d[1], d[2], .5 + Math.random() * .2, d[3], .25 + Math.random() * .55); }
     if (t >= REVEAL) I.reveal();
     if (t >= BLEED) I.uncover();
     S.calm = smooth((t - REVEAL) / 1.1);
@@ -468,7 +473,7 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
   function staticFrame() {
     S.bleed = 1; S.calm = 1; live = false; setHue(0);
     const spots = [[.16, .72, 1.2], [.84, .28, 1.1], [.82, .78, .9], [.12, .25, .8], [.5, .1, .9]];
-    for (const [x, y, s] of spots) drop(x, y, .7, s, .2 + Math.random() * .6);
+    for (const [x, y, s] of spots) drop(x, y, 1.3, s, .2 + Math.random() * .6);
     for (let i = 0; i < 90; i++) step(1 / 60);
     render(); hero.classList.add('is-ink-live'); root.classList.add('gz-paper');
   }
@@ -479,6 +484,12 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
     // QA: run the simulation forward synchronously (software GPUs can't hold real time)
     advance(sec) { const n = Math.round(sec * 30); for (let i = 0; i < n; i++) tick(1 / 30, 1 / 30); },
     setTime(t) { S.time = t; setHue(hueAt(t)); render(); },
+    // dye stats (WebGL2 only): max / mean density and how much of the field is visibly inked
+    probe() { const t = dye.read; gl.bindFramebuffer(gl.FRAMEBUFFER, t.fb); const px = new Float32Array(t.w * t.h * 4);
+      try { gl.readPixels(0, 0, t.w, t.h, gl.RGBA, gl.FLOAT, px); } catch (e) { return String(e); }
+      let mx = 0, sum = 0, inked = 0; for (let i = 0; i < px.length; i += 4) { const a = px[i]; sum += a; if (a > mx) mx = a; if (a > .3) inked++; }
+      return { max: +mx.toFixed(3), mean: +(sum / (px.length / 4)).toFixed(4), inked: +(inked / (px.length / 4)).toFixed(3) }; },
+    clear() { introState = null; api.cover(); S.bleed = 1; S.calm = 1; live = true; render(); },
     stroke(pts, dt = 1 / 60) { for (const [x, y] of pts) { ptr.tx = x; ptr.ty = y; ptr.over = true; ptr.last = S.time; tick(dt, dt); } ptr.over = false; },
     // average luminance + contrast with white text over canvas-px rects [x,y,w,h] (css px, relative to the hero)
     sample(rects) { render(); const out = [], c = canvas.getBoundingClientRect(), sx = canvas.width / c.width, sy = canvas.height / c.height;
