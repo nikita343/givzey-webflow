@@ -1,17 +1,24 @@
 /* ===== Givzey motion layer — loaded from Vercel, sits on top of the Webflow styles ===== */
 
-/* --- loader --- */
-.gz-loader{position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;color:#fff;mix-blend-mode:difference;pointer-events:none}
-.gz-loader_mark{width:clamp(10rem,15vw,14rem)}
+/* --- loader: dark-blue screen, the logo lands in the centre, then bursts into the hero's ink (home-hero.js) --- */
+html.gz-intro body::before{background:#030B2C!important}   /* the page's head cover was paper; the loader is dark now */
+.gz-loader{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;color:#fff;pointer-events:none}
+.gz-loader_mark{width:clamp(10.5rem,17vw,16.5rem);will-change:transform,opacity}
 .gz-loader_mark svg{display:block;width:100%;height:auto;overflow:visible}
-.gz-loader_tag{font-family:var(--font--body,Geist),Arial,sans-serif;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase}
-/* while the loader runs the page sits under a paper cover; once the ink canvas has drawn paper, the hero rises above it so the bleed is seen */
+/* while the loader runs the page sits under the cover; once the ink canvas has drawn, the hero rises above it so the burst is seen */
 html.gz-intro.gz-paper .section_home-hero{z-index:9999}
+html.gz-intro .gz-hero-ink{transition:none}
+html.gz-loader-on{overflow:hidden}
+
+/* --- home hero: the headline gradient and the button follow the scene's hue (same matrix as the canvas) --- */
+.section_home-hero .home-hero_heading-wrapper,.section_home-hero .home-hero_button-wrapper>.button{filter:hue-rotate(var(--gz-hue,0deg))}
+/* no WebGL: static artwork + a soft shade behind the copy so the text stays clear */
+.section_home-hero .home-hero_content{isolation:isolate}
+.section_home-hero:not(.is-ink-live) .home-hero_content::before{content:"";position:absolute;left:50%;top:50%;width:min(64rem,120%);height:120%;transform:translate(-50%,-50%);
+  background:radial-gradient(closest-side,rgba(3,11,44,.62),rgba(3,11,44,.38) 55%,rgba(3,11,44,0));z-index:-1;pointer-events:none}
 .gz-hero-fx{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .gz-drip{position:absolute;top:0;width:var(--s);height:calc(var(--s)*1.25);margin-left:calc(var(--s)/-2);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;background:var(--c);box-shadow:0 0 14px var(--c);transform:translateY(-40px);animation:gzDrip var(--d) cubic-bezier(.5,0,.95,.45) forwards}
 @keyframes gzDrip{to{transform:translateY(var(--y))}}
-html.gz-intro .gz-hero-ink{transition:none}
-html.gz-loader-on{overflow:hidden}
 
 /* --- hero live ink --- */
 .gz-hero-ink{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .6s ease}

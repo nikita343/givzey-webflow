@@ -8,7 +8,8 @@ import { SplitText } from 'gsap/SplitText';
 import Lenis from 'lenis';
 import { REDUCED } from './base.js';
 import { shouldIntro, playLoader } from './modules/loader.js';
-import { initWaterHero } from './modules/ink-water.js';
+import { initHomeHero } from './modules/home-hero.js';
+import { LOGO } from './logo.js';
 import { headingBleed, fadeCopy, unrollTag, liveGradient, initReveals } from './modules/reveal.js';
 import { initProductCards } from './modules/product-cards.js';
 import { initStats, initStory, initCta } from './modules/sections.js';
@@ -68,13 +69,14 @@ function heroSequence(hero) {
   const text = hero.querySelector('.home-hero_text');
   const btn = hero.querySelector('.home-hero_button-wrapper');
   const tl = gsap.timeline({ paused: true });
+  // the copy first (headline, subhead, button), then the nav and the rest of the site (Loom 15 Oct)
+  if (tag) tl.add(unrollTag(tag, { trigger: null }).play(), 0);
+  if (h1) tl.add(headingBleed(h1, { trigger: null, light: true }).play(), .05);
+  if (h1) tl.add(liveGradient(h1), .05);
+  if (text) tl.add(fadeCopy(text, { trigger: null }).play(), .45);
+  if (btn) tl.from(btn, { opacity: 0, filter: 'blur(10px)', duration: 1, ease: 'power2.out' }, .65);
   // clearProps: a leftover filter would turn the nav into a containing block and break the fixed mobile menu
-  if (nav) tl.from(nav, { opacity: 0, filter: 'blur(10px)', duration: 1, ease: 'power2.out', clearProps: 'filter,opacity' }, 0);
-  if (tag) tl.add(unrollTag(tag, { trigger: null }).play(), .05);
-  if (h1) tl.add(headingBleed(h1, { trigger: null, light: true }).play(), .15);
-  if (h1) tl.add(liveGradient(h1), .15);
-  if (text) tl.add(fadeCopy(text, { trigger: null }).play(), .55);
-  if (btn) tl.from(btn, { opacity: 0, filter: 'blur(10px)', duration: 1, ease: 'power2.out' }, .75);
+  if (nav) tl.from(nav, { opacity: 0, filter: 'blur(10px)', y: -8, duration: 1, ease: 'power2.out', clearProps: 'filter,opacity,transform' }, .9);
   return tl;
 }
 
@@ -82,9 +84,12 @@ async function boot() {
   // reserve the journey's pinned scroll length before any ScrollTrigger measures the page
   document.querySelector('.section_home-journey')?.classList.add('is-pinned');
   addEventListener('load', () => ScrollTrigger.refresh());
-  const intro = shouldIntro();
-  const loader = intro ? playLoader() : null;
   const hero = document.querySelector('.section_home-hero');
+  // the loader plays from the top of the page (a reload would otherwise restore the scroll under it)
+  const intro = shouldIntro() && !!hero;
+  if (intro) { try { history.scrollRestoration = 'manual'; } catch (e) {} scrollTo(0, 0); }
+  else root.classList.remove('gz-intro');
+  const loader = intro ? playLoader() : null;
   const lenis = smoothScroll();
   window.gzLenis = lenis;   // the mobile menu pauses smooth scroll while it is open
   watchPageHeight(lenis);
@@ -94,19 +99,24 @@ async function boot() {
   if (hero && !REDUCED) heroTl = heroSequence(hero);
   root.classList.add('gz-ready');   // content may show now; GSAP holds the initial states
 
-  const ink = hero ? initWaterHero(hero, { intro }) : null;
-  let inkReady = false;
-  ink?.ready?.then(() => { inkReady = true; });
+  const ink = hero ? initHomeHero(hero, { intro }) : null;
   if (intro && loader) {
-    // the mark assembles on paper while the artwork loads; then the ink bleeds open from the centre
-    await Promise.race([Promise.all([loader.done, ink?.ready]), new Promise(r => setTimeout(r, 2600))]);
-    if (lenis) setTimeout(() => lenis.start(), 4500);   // never hold the scroll longer than this
-    if (ink && ink.ok && inkReady) {
-      ink.playIntro({
-        onCover: () => loader.leave(),
-        onReveal: () => { root.classList.remove('gz-intro'); heroTl && heroTl.play(); }
-      }).then(() => lenis && lenis.start());
-    } else { loader.dissolve(); heroTl && heroTl.play(); lenis && lenis.start(); }
+    // hard cap: whatever happens, the page is free ~3.3 s after boot
+    let played = false;
+    const playHero = () => { if (!played) { played = true; heroTl && heroTl.play(); } };
+    const release = () => { loader.remove(); root.classList.remove('gz-intro'); playHero(); lenis && lenis.start(); };
+    const cap = setTimeout(release, 3300);
+    if (ink && ink.ok) ink.prepareLogo(LOGO);
+    // symbol, then wordmark, then a short hold
+    await Promise.race([loader.done, new Promise(r => setTimeout(r, 1500))]);
+    await new Promise(r => setTimeout(r, 120));
+    if (ink && ink.ok) {
+      ink.burst(loader.svg, {
+        onStamp: () => loader.burst(),
+        onReveal: playHero,
+        onUncover: () => { root.classList.remove('gz-intro'); loader.remove(); }
+      }).then(() => { clearTimeout(cap); release(); });
+    } else { loader.dissolve(); playHero(); setTimeout(() => { clearTimeout(cap); release(); }, 500); }
   } else if (heroTl) heroTl.play();
 
   // resources (hubs + every item page): no scroll reveals at all, content is simply there (Q.A. round 4);
