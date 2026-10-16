@@ -983,7 +983,8 @@ body:has(.v2r-hero) .navbar_component .navbar_logo-link{color:#fff}
    It was absolutely positioned (out of flow) already, so the hero layout does not move.
    transform is only set while hidden: a transform on the bar would trap the fixed mobile menu inside it --- */
 .navbar_component{position:fixed;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
-html.gz-nav-hidden .navbar_component{transform:translateY(-100%)}
+/* hidden: up by its height plus 3rem, so the CTA's soft glow does not hang under the top edge as a blue haze */
+html.gz-nav-hidden .navbar_component{transform:translateY(calc(-100% - 3rem))}
 html.gz-menu-open .navbar_component{transform:none}
 /* off the very top the bar sits on a frosted band in its own variant, so links and logo read over any section */
 .navbar_component::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity .4s ease;
