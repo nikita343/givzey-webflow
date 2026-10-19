@@ -3,6 +3,7 @@
 //  - text links: a brush-stroke underline wipes in from the left and out to the right (pure CSS, see styles.css)
 //  - cards: a light follows the cursor along the border and pools softly inside, tinted per product
 //  - nav: one liquid highlight glides between items
+//  - logos: no hover motion
 import { gsap } from 'gsap';
 
 const FINE = matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -96,20 +97,11 @@ function nav() {
   list.addEventListener('pointerleave', () => { shown = false; gsap.to(pill, { opacity: 0, scale: .9, duration: .35, ease: 'power2.out' }); });
 }
 
-function footerLogo() {
-  const logo = document.querySelector('.footer_logo-link svg, .navbar_logo-link svg');
-  document.querySelectorAll('.footer_logo-link, .navbar_logo-link').forEach(a => {
-    const drops = a.querySelectorAll('svg > g:first-of-type path');
-    if (!drops.length) return;
-    gsap.set(drops, { transformOrigin: '50% 50%' });
-    a.addEventListener('pointerenter', () => gsap.fromTo(drops, { scale: .6 }, { scale: 1, duration: .9, ease: 'elastic.out(1.2,.4)', stagger: .06, overwrite: true }));
-  });
-  return logo;
-}
+// the logo stays still on hover (client tracker 19 Oct: no bounce)
 
 export function initHovers() {
   injectFilter();
   buttons();
   if (!FINE) return;
-  links(); glowCards(); nav(); footerLogo();
+  links(); glowCards(); nav();
 }

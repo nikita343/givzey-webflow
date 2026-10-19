@@ -2,8 +2,9 @@
 
 /* --- loader: dark-blue screen, the logo lands in the centre, then bursts into the hero's ink (home-hero.js) --- */
 /* two reveals (loader.js revealMode): 'ink' = Header V1, paper screen the ink bleeds across; 'burst' = dark screen, logo blown apart */
-html.gz-intro body::before{background:#f3f5fa!important}
-html.gz-intro.gz-reveal-burst body::before{background:#020924!important}
+/* the cover is dark from the first paint (the burst is the default); only the V1 'ink' reveal starts on paper */
+html.gz-intro body::before{background:#020924!important}
+html.gz-intro.gz-reveal-ink body::before{background:#f3f5fa!important}
 /* after the reveal the cover fades instead of vanishing (on phones the hero is shorter than the screen) */
 html.gz-intro-fade:not(.gz-intro) body::before{content:"";position:fixed;inset:var(--gz-cover-top,0px) 0 0 0;z-index:9998;background:#031149;opacity:0;transition:opacity .8s ease;pointer-events:none}
 /* V1 on phones the hero is shorter than the screen: the paper below it turns to the hero's navy as the ink reaches the bottom */
@@ -19,10 +20,18 @@ html.gz-intro.gz-paper .section_home-hero{z-index:9999}
 html.gz-intro .gz-hero-ink{transition:none}
 html.gz-loader-on{overflow:hidden}
 
-/* --- home hero: the headline gradient and the button follow the scene's hue (same matrix as the canvas) --- */
-.section_home-hero .home-hero_heading-wrapper,.section_home-hero .home-hero_button-wrapper>.button{filter:hue-rotate(var(--gz-hue,0deg))}
-.navbar_container>.button{transition:box-shadow .6s cubic-bezier(.2,.7,.2,1),filter .9s ease}
-html.gz-hero-in .navbar_container>.button{filter:hue-rotate(var(--gz-hue,0deg))}
+/* --- home hero: the headline gradient follows the scene's hue (same matrix as the canvas); the buttons (hero + nav)
+   stay brand blue (client tracker 19 Oct) --- */
+.section_home-hero .home-hero_heading-wrapper{filter:hue-rotate(var(--gz-hue,0deg))}
+/* drops falling into the water: they take the scene's hue like the ink they become */
+.gz-hero-drips{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;filter:hue-rotate(var(--gz-hue,0deg))}
+.gz-hero-drip{position:absolute;top:0;left:0;width:var(--s);height:calc(var(--s)*1.3);margin-left:calc(var(--s)/-2);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;
+  background:radial-gradient(circle at 42% 38%,#d6e6ff,#6f9ff7 55%,#2f63e0);box-shadow:0 0 calc(var(--s)*1.6) rgba(74,139,245,.55);opacity:0;
+  animation:gzHeroDrip var(--d) cubic-bezier(.55,0,.9,.5) forwards}
+@keyframes gzHeroDrip{0%{transform:translateY(-3rem) scaleY(1.25);opacity:0}12%{opacity:.85}88%{opacity:.85}100%{transform:translateY(var(--y)) scaleY(1);opacity:0}}
+.gz-hero-ring{position:absolute;width:var(--r);height:calc(var(--r)*.42);margin:calc(var(--r)*-.21) 0 0 calc(var(--r)/-2);border-radius:50%;
+  border:1px solid rgba(168,203,255,.55);opacity:0;animation:gzHeroRing 1.1s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes gzHeroRing{0%{transform:scale(.15);opacity:.8}100%{transform:scale(1);opacity:0}}
 /* no WebGL: static artwork + a soft shade behind the copy so the text stays clear */
 .section_home-hero .home-hero_content{isolation:isolate}
 .section_home-hero:not(.is-ink-live) .home-hero_content::before{content:"";position:absolute;left:50%;top:50%;width:min(64rem,120%);height:120%;transform:translate(-50%,-50%);

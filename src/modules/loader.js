@@ -5,12 +5,13 @@ import { gsap } from 'gsap';
 import { LOGO } from '../logo.js';
 import { REDUCED } from '../base.js';
 
-// Which reveal plays after the lockup (Nick 16 Oct, trying both):
+// Which reveal plays after the lockup (Nick 16 Oct tried both; client tracker 19 Oct: "full logo should animate in,
+// then burst away into the ink splash style" -> burst is the default again):
 //   'ink'   = Header V1: the screen is paper, the ink bleeds out from the logo in stepped frames and swallows it;
 //             the lockup is drawn in difference blend, so it reads dark on paper and turns white as the ink passes under it
 //   'burst' = the logo is stamped into the fluid and blown apart over a dark screen (15 Oct build)
 // Default below; any page can be forced with ?reveal=ink or ?reveal=burst.
-export const REVEAL_DEFAULT = 'ink';
+export const REVEAL_DEFAULT = 'burst';
 export function revealMode() {
   const m = /[?&]reveal=(ink|burst)\b/.exec(location.search);
   return m ? m[1] : REVEAL_DEFAULT;

@@ -2,6 +2,8 @@
 //   - The cursor drags a large soft trail of medium-blue ink through the water; it swirls, drifts away and fades.
 //   - When nobody is moving the cursor, a slow invisible hand paints the odd calm stroke at the edges, so it is never dead.
 //   - The whole scene (navy base + ink) shifts hue together: blue -> purple -> warm red/orange -> back (HUE below).
+//   - Subtle ink drops keep falling into the water from the top of the hero (client tracker 19 Oct), on top of the
+//     cursor interaction: a small droplet is seen falling, lands with a faint ring and sinks as a soft plume.
 //   - A calm zone sits behind the headline, subhead and button: ink is held back there and a soft scrim darkens it.
 //   - Loader hand-off: burst(svg) stamps the loader's logo into the ink, blows it outward and bleeds the hero open
 //     from the centre (the Header V2 bleed), then the copy comes in.
@@ -33,6 +35,12 @@ export const HERO_FX = {
   // ambient hand (idle only)
   ambientIdle: 3.5,                    // seconds without cursor before it starts
   ambientInk: .18, ambientSpeed: .16, ambientPush: .5,
+  // falling drops (always on, cursor or not)
+  dripFirst: 1.6,                      // seconds after the reveal before the first drop
+  dripEvery: [4.5, 9],                 // seconds between drops (random in range); sometimes a second one follows
+  dripInk: .34,                        // ink each drop brings (subtle; the cursor trail is .3 per stroke)
+  dripSize: .62,                       // plume size
+  dripSink: 26,                        // downward push of the plume (uv/s x sim) - the "dropping down" feel
   // loader burst
   burst: 800,                          // total outward push that blows the logo apart (spread over three pulses)
   // copy protection
@@ -361,6 +369,43 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
     hand.x = nx; hand.y = ny;
   }
 
+  // ---- falling drops: a droplet falls from the top of the hero, lands with a ring and sinks as a soft plume ----
+  const fx = document.createElement('div'); fx.className = 'gz-hero-drips'; fx.setAttribute('aria-hidden', 'true');
+  canvas.after(fx);
+  const drips = { next: -1, pending: [] };
+  function dripSpot() {
+    for (let i = 0; i < 24; i++) { const x = .05 + Math.random() * .9, y = .18 + Math.random() * .6; if (!inCalm(x, y, 1.45)) return [x, y]; }
+    return [Math.random() < .5 ? .08 + Math.random() * .12 : .8 + Math.random() * .12, .25 + Math.random() * .5];
+  }
+  function launchDrip(scale = 1) {
+    const [x, y] = dripSpot(), W = canvas.clientWidth, H = canvas.clientHeight; if (!W || !H) return;
+    const px = x * W, py = (1 - y) * H, size = (7 + Math.random() * 4) * scale, fall = .55 + py / 900;
+    const el = document.createElement('span'); el.className = 'gz-hero-drip'; el.style.left = px.toFixed(1) + 'px';
+    el.style.setProperty('--s', size.toFixed(1) + 'px'); el.style.setProperty('--y', (py - size * 1.3).toFixed(1) + 'px'); el.style.setProperty('--d', fall.toFixed(2) + 's');
+    fx.appendChild(el);
+    drips.pending.push({ x, y, px, py, at: S.time + fall, el, scale });
+  }
+  function landDrip(d) {
+    d.el.remove();
+    const ring = document.createElement('span'); ring.className = 'gz-hero-ring';
+    ring.style.left = d.px.toFixed(1) + 'px'; ring.style.top = d.py.toFixed(1) + 'px'; ring.style.setProperty('--r', (54 * d.scale).toFixed(0) + 'px');
+    fx.appendChild(ring); setTimeout(() => ring.remove(), 1200);
+    const sz = F.dripSize * d.scale;
+    splat(dye, d.x, d.y, inkC(F.dripInk, .45 + Math.random() * .45), .0016 * sz);
+    blast(d.x, d.y, .03 * sz, .03 * sz, 120 * Math.sqrt(sz), Math.random() * 50);
+    splat(vel, d.x, d.y - .01, [0, -F.dripSink * simH / 128, 0, 0], .0012 * sz);   // the plume sinks
+  }
+  function runDrips() {
+    if (!live || REDUCED) return;
+    if (drips.next < 0) drips.next = S.time + F.dripFirst;
+    if (S.time >= drips.next) {
+      launchDrip(.85 + Math.random() * .35);
+      if (Math.random() < .3) setTimeout(() => live && launchDrip(.6 + Math.random() * .2), 380 + Math.random() * 500);   // the odd second drip
+      drips.next = S.time + F.dripEvery[0] + Math.random() * (F.dripEvery[1] - F.dripEvery[0]);
+    }
+    for (let i = drips.pending.length - 1; i >= 0; i--) if (S.time >= drips.pending[i].at) landDrip(drips.pending.splice(i, 1)[0]);
+  }
+
   // ---- loader hand-off: stamp the logo, blow it apart, bleed the hero open ----
   const logoTex = gl.createTexture();
   let logoImg = null;
@@ -455,7 +500,7 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
     S.time += dt;
     setHue(REDUCED ? 0 : hueAt(S.time));
     if (introState) runIntro(Math.min(raw, .1));
-    runPointer(dt); runAmbient(dt);
+    runPointer(dt); runAmbient(dt); runDrips();
     step(dt * F.simSpeed); render();
   }
   function frame(now) {
@@ -508,6 +553,7 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
       try { gl.readPixels(0, 0, t.w, t.h, gl.RGBA, gl.FLOAT, px); } catch (e) { return String(e); }
       let mx = 0, sum = 0, inked = 0; for (let i = 0; i < px.length; i += 4) { const a = px[i]; sum += a; if (a > mx) mx = a; if (a > .3) inked++; }
       return { max: +mx.toFixed(3), mean: +(sum / (px.length / 4)).toFixed(4), inked: +(inked / (px.length / 4)).toFixed(3) }; },
+    drip() { launchDrip(1); },
     clear() { introState = null; api.cover(); S.bleed = 1; S.calm = 1; live = true; render(); },
     stroke(pts, dt = 1 / 60) { for (const [x, y] of pts) { ptr.tx = x; ptr.ty = y; ptr.over = true; ptr.last = S.time; tick(dt, dt); } ptr.over = false; },
     // average luminance + contrast with white text over canvas-px rects [x,y,w,h] (css px, relative to the hero)
