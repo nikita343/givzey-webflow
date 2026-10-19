@@ -38,7 +38,7 @@ export const HERO_FX = {
   // falling drops (always on, cursor or not)
   dripFirst: 1.6,                      // seconds after the reveal before the first drop
   dripEvery: [4.5, 9],                 // seconds between drops (random in range); sometimes a second one follows
-  dripInk: .34,                        // ink each drop brings (subtle; the cursor trail is .3 per stroke)
+  dripInk: .46,                        // ink each drop brings (subtle; the cursor trail is .3 per stroke)
   dripSize: .62,                       // plume size
   dripSink: 26,                        // downward push of the plume (uv/s x sim) - the "dropping down" feel
   // loader burst
