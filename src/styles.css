@@ -920,26 +920,40 @@ body:has(.v2r-hero) .navbar_component .navbar_logo-link{color:#fff}
   .vso-timeline_label-sub{display:none}
 }
 
-/* Blackbaud comparison (tablet / phone): the label column stays put while the two products scroll inside the card;
-   Givzey shows in full, Blackbaud peeks in from the right, a hint says it scrolls (compare hint: fixes.js) */
+/* Comparison tables on tablet / phone: no sideways scrolling. fixes.js (compareStack) rebuilds the table as one block
+   per row: the question on top, Givzey and the other product side by side under it */
+.bb-stack{display:none}
+.bb-row_short{display:none}
 @media (max-width:991px){
-  .bb-table{overscroll-behavior-x:contain;scrollbar-width:none}
-  .bb-table::-webkit-scrollbar{display:none}
-  .bb-table_inner>.bb-col:first-child{position:sticky;left:0;z-index:2;background-color:#fff;box-shadow:1px 0 0 rgba(3,11,44,.06)}
-  .gz-swipe-hint{display:flex;align-items:center;justify-content:flex-end;column-gap:.375rem;margin:0 0 .75rem;color:rgba(3,11,44,.55);font-size:.875rem;line-height:1.3;transition:opacity .4s ease}
-  .gz-swipe-hint.is-done{opacity:0}
-  .gz-swipe-hint svg{width:1rem;height:1rem;animation:gzNudge 1.6s ease-in-out infinite}
+  .bb-table{display:none}
+  .bb-stack{display:block;background-color:#fff;border-radius:1.5rem;padding:.25rem 1.5rem}
+  .bb-row{padding:1.25rem 0}
+  .bb-row+.bb-row{border-top:1px solid rgba(3,11,44,.07)}
+  .bb-row_label{display:flex;align-items:center;column-gap:.625rem;margin-bottom:.75rem;color:#030b2c;font-size:1rem;font-weight:500;line-height:1.35}
+  .bb-row_vals{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.5rem}
+  .bb-row_val{padding:.75rem .875rem .875rem;border-radius:.875rem;background-color:#f7f8fa;color:rgba(3,11,44,.7);font-size:.875rem;line-height:1.4}
+  .bb-row_val.is-v2{background-color:#f2f6fe;box-shadow:inset 0 0 0 1px rgba(4,92,232,.22);color:#030b2c}
+  .bb-row_name{margin-bottom:.375rem;color:rgba(3,11,44,.5);font-size:.75rem;font-weight:500;line-height:1.3}
+  .bb-row_val.is-v2 .bb-row_name{color:#045ce8}
+  .bb-row_body .bb-mark{column-gap:.4rem}
 }
+@media (max-width:479px){
+  .bb-stack{padding:0 1rem}
+  .bb-row_val{padding:.625rem .75rem .75rem}
+  .bb-row_full{display:none}
+  .bb-row_short{display:inline}
+}
+
+/* Privacy subprocessor table on phones: each row becomes a small entry (name and country, purpose underneath) */
 @media (max-width:767px){
-  .bb-table_inner{grid-template-columns:8.25rem 12.25rem 12.25rem;min-width:0}
-  .bb-th,.bb-td{padding-left:.875rem;padding-right:.875rem}
-  .bb-td{height:5.25rem}
-  .bb-td.is-label{column-gap:0}
-  .bb-td.is-label .sol-icon{display:none}
+  .lg-table_row.is-head{display:none}
+  .lg-table_row.is-head+.lg-table_row{border-top:0}
+  .lg-table_row:not(.is-head){grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"n c" "p p";column-gap:1rem;row-gap:.125rem;padding:.875rem 1rem}
+  .lg-table_row:not(.is-head)>.lg-table_cell{padding:0}
+  .lg-table_row:not(.is-head)>.lg-table_cell:nth-child(1){grid-area:n;color:#030b2c;font-weight:600}
+  .lg-table_row:not(.is-head)>.lg-table_cell:nth-child(2){grid-area:p;color:rgba(3,11,44,.65)}
+  .lg-table_row:not(.is-head)>.lg-table_cell:nth-child(3){grid-area:c;color:rgba(3,11,44,.5);font-size:.8125rem;text-align:right}
 }
-@media (min-width:992px){ .gz-swipe-hint{display:none} }
-@keyframes gzNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
-@media (prefers-reduced-motion:reduce){ .gz-swipe-hint svg{animation:none} }
 
 /* 404: the card starts below the (absolute) navbar */
 @media (max-width:991px){ .nf-section{padding-top:9rem} }

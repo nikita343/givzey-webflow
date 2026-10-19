@@ -1,27 +1,10 @@
 // Small page affordances that need a little script (Round 3 review).
-// Blackbaud comparison: on tablet / phone the table scrolls sideways inside its card; a quiet hint says so
-// and fades once the visitor has scrolled it.
 export function initFixes() {
   resFilter();
   topicLinks();
   moreLists();
   wideFigures();
-  document.querySelectorAll('.bb-table').forEach(table => {
-    if (table.previousElementSibling?.classList.contains('gz-swipe-hint')) return;
-    const hint = document.createElement('div');
-    hint.className = 'gz-swipe-hint';
-    hint.setAttribute('aria-hidden', 'true');
-    hint.innerHTML = '<span>Swipe to compare</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>';
-    table.before(hint);
-    const update = () => {
-      const scrollable = table.scrollWidth - table.clientWidth > 4;
-      hint.style.display = scrollable ? '' : 'none';
-      if (table.scrollLeft > 24) hint.classList.add('is-done');
-    };
-    table.addEventListener('scroll', update, { passive: true });
-    addEventListener('resize', update);
-    update();
-  });
+  compareStack();
 }
 
 // Resource filter bar (blog, news, events, customer stories): it is sticky, and carries its hairline only while it
@@ -99,5 +82,50 @@ function wideFigures() {
     const img = fig.querySelector('img'); if (!img) return;
     const set = () => fig.classList.toggle('gz-fig-wide', img.naturalWidth >= 600);
     img.complete ? set() : img.addEventListener('load', set, { once: true });
+  });
+}
+
+// Comparison tables (Blackbaud vs Givzey): below 992px no sideways scrolling. The column-built table is read once and
+// rebuilt as one block per row: the question, then Givzey and the other product side by side. CSS swaps the two.
+function compareStack() {
+  document.querySelectorAll('.bb-table').forEach(table => {
+    if (table.nextElementSibling?.classList.contains('bb-stack')) return;
+    const cols = [...table.querySelectorAll('.bb-col')];
+    if (cols.length < 3) return;
+    const cells = col => [...col.children].filter(c => c.classList.contains('bb-td'));
+    const [labels, ...products] = cols;
+    const names = products.map(c => c.querySelector('.bb-th')?.textContent.trim() || '');
+    const stack = document.createElement('div');
+    stack.className = 'bb-stack';
+    stack.setAttribute('role', 'list');
+    cells(labels).forEach((label, i) => {
+      const row = document.createElement('div');
+      row.className = 'bb-row';
+      row.setAttribute('role', 'listitem');
+      const head = document.createElement('div');
+      head.className = 'bb-row_label';
+      head.append(...[...label.childNodes].map(n => n.cloneNode(true)));
+      const vals = document.createElement('div');
+      vals.className = 'bb-row_vals';
+      products.forEach((col, k) => {
+        const cell = cells(col)[i];
+        const v = document.createElement('div');
+        v.className = 'bb-row_val' + (col.classList.contains('is-v2') ? ' is-v2' : '');
+        const name = document.createElement('div');
+        name.className = 'bb-row_name';
+        // phones get the short name ("Blackbaud") so both captions stay on one line and the values line up
+        name.innerHTML = '<span class="bb-row_full"></span><span class="bb-row_short"></span>';
+        name.firstChild.textContent = names[k];
+        name.lastChild.textContent = names[k].split(' ')[0];
+        const body = document.createElement('div');
+        body.className = 'bb-row_body';
+        if (cell) body.append(...[...cell.childNodes].map(n => n.cloneNode(true)));
+        v.append(name, body);
+        vals.append(v);
+      });
+      row.append(head, vals);
+      stack.append(row);
+    });
+    table.after(stack);
   });
 }
