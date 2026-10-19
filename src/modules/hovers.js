@@ -34,7 +34,7 @@ function buttons() {
 
 const BRUSH = `<svg viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 6.2C24 4.4 41 7.6 63 5.6S104 3.9 127 5.4 171 7.3 198 4.6" pathLength="1"/></svg>`;
 // every plain text link on the site draws the homepage brush line on hover (Q.A.)
-export const TEXT_LINKS = '.home-product_link, .home-story_link, .footer_link, .footer_legal-link, .footer_email, .v2-link, .cr-link, .sol-link, .res-link, .res-more, .cs-sector_link, .blog-promo_link, .demo_fallback-link, .res-hero_crumb, .post-body a, .w-richtext a';
+export const TEXT_LINKS = '.home-product_link, .home-story_link, .footer_link, .footer_legal-link, .footer_email, .v2-link, .cr-link, .sol-link, .res-link, .res-more, .cs-sector_link, .blog-promo_link, .demo_fallback-link, .res-hero_crumb, .post-more_link, .post-author_link, .sol-doc_link, .gd-tpl_dl, .wb-up_reg, .post-body a, .w-richtext a';
 function links() {
   document.querySelectorAll(TEXT_LINKS).forEach(a => {
     if (a.querySelector('.gz-underline')) return;

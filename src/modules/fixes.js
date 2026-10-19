@@ -3,6 +3,9 @@
 // and fades once the visitor has scrolled it.
 export function initFixes() {
   resFilter();
+  topicLinks();
+  moreLists();
+  wideFigures();
   document.querySelectorAll('.bb-table').forEach(table => {
     if (table.previousElementSibling?.classList.contains('gz-swipe-hint')) return;
     const hint = document.createElement('div');
@@ -49,4 +52,52 @@ function resFilter() {
   };
   watch();
   new MutationObserver(watch).observe(root, { attributes: true, attributeFilter: ['class'] });
+}
+
+// "All pledge articles" and friends point at /blog?topic=…#latest. On /blog itself Webflow treats that as a same-page
+// hash link and swallows the click, so nothing happened (launch tracker 19 Oct). Same page: switch the tab and glide
+// down to the list instead of navigating.
+const slug = s => (s || '').toLowerCase().trim().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+function topicLinks() {
+  if (!document.querySelector('.res-tab')) return;
+  document.addEventListener('click', e => {
+    const a = e.target.closest?.('a[href*="topic="]');
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    const u = new URL(a.href, location.href);
+    if (u.origin !== location.origin || u.pathname.replace(/\/$/, '') !== location.pathname.replace(/\/$/, '')) return;
+    const t = u.searchParams.get('topic');
+    const tab = [...document.querySelectorAll('.res-tab')].find(b => (b.getAttribute('data-filter') || slug(b.textContent)) === t);
+    if (!tab) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    tab.click();
+    const target = document.getElementById(u.hash.slice(1) || 'latest') || document.querySelector('.section_res-filter');
+    if (!target) return;
+    const css = getComputedStyle(document.documentElement);
+    const off = (parseFloat(css.getPropertyValue('--gz-filter-h')) || 0) + (parseFloat(css.getPropertyValue('--gz-nav-h')) || 0) + 8;
+    if (window.gzLenis) window.gzLenis.scrollTo(target, { offset: -off, duration: 1.2 });
+    else target.scrollIntoView({ behavior: 'smooth' });
+  }, true);
+}
+
+// Templates: the "More stories / news / events" list never points back at the page you are on; when that leaves it
+// empty the whole section goes (launch tracker 19 Oct).
+function moreLists() {
+  const here = location.pathname.replace(/\/$/, '');
+  document.querySelectorAll('.section_post-more').forEach(sec => {
+    sec.querySelectorAll('.w-dyn-item').forEach(it => {
+      const a = it.matches('a') ? it : it.querySelector('a[href]');
+      if (a && new URL(a.href, location.href).pathname.replace(/\/$/, '') === here) it.remove();
+    });
+    if (!sec.querySelector('.w-dyn-item')) sec.style.display = 'none';
+  });
+}
+
+// Article images: anything drawn at article width or larger fills the column; small images (logos, icons,
+// screenshots of a detail) keep their own size so they never blur (launch tracker 19 Oct).
+function wideFigures() {
+  document.querySelectorAll('.post-rich figure.w-richtext-figure-type-image, .post-rich figure[data-rt-type=image]').forEach(fig => {
+    const img = fig.querySelector('img'); if (!img) return;
+    const set = () => fig.classList.toggle('gz-fig-wide', img.naturalWidth >= 600);
+    img.complete ? set() : img.addEventListener('load', set, { once: true });
+  });
 }

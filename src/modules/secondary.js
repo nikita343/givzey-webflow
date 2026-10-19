@@ -14,7 +14,7 @@ import { REDUCED } from '../base.js';
 
 // sections that own their motion (home, product feature sections, final CTA)
 const OWN = /^(section_home|section_veo|section_vpgo|section_vso|section_gap|section_product-(stats|cap|band|faq|intro)|section_cta)/;
-const SKIP = '.hs-embed, .w-pagination-wrapper, script, style, .w-embed:not(:has(svg)), [data-gz-skip], .gz-hero-ink, .gz-hero-fx';
+const SKIP = '.ab-press, .hs-embed, .w-pagination-wrapper, script, style, .w-embed:not(:has(svg)), [data-gz-skip], .gz-hero-ink, .gz-hero-fx';
 const UNIT = /(card|tile|item|row|step|stat|benefit|win|pcell|mile|cert|doc|domain|sector|contact|role|jrow|bcard|kcard|cmp|note|flowcard|stepcard|node|mini|layer|ftile|ctile|sav)$/;
 const HEAD = /(^|[-_])(h\d|mh|ph|vh|title|heading|statement)$/;
 const NUM = '.v2r-num, .dm-stat_num, .sol-results_num, .sol-story_num, .cs-sector_n, .sol-bignum';

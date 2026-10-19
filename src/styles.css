@@ -1071,3 +1071,29 @@ html:not(.gz-ready) :is(.home-stats_number,.home-story_number,.v2r-num,.v2-stat_
 /* --- press: announcement rows (News collection list) --- */
 .pr-row_title{transition:color .2s ease}
 .pr-row:hover .pr-row_title,.pr-row:focus-visible .pr-row_title{color:#045CE8}
+
+/* ===== launch tracker, 19 Oct (round 2) ===== */
+/* blog: the inline newsletter form no longer grows 8px when HubSpot adds its (invisible) reCAPTCHA row, so the page
+   does not jump ~3s after load */
+.hs-embed.is-inline .gz-form .hs_recaptcha{position:absolute;flex:none;width:0}
+/* standalone text links carry no resting underline: the brush line on hover is the affordance.
+   Links inside running copy (articles, legal, form consent, Version2 prose) keep theirs */
+:is(.post-author_link,.post-more_link,.res-more,.blog-promo_link,.res-link,.res-card_more,.wb-up_reg,.gd-tpl_dl,.gd-card_dl,.cs-card_more,.cs-sector_link,.sol-link,.sol-doc_link,.cr-link){text-decoration-line:none}
+/* resource pages: the navbar band and the sticky filter bar read as one white surface, no seam between them */
+body:has(.section_res-filter) .navbar_component.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be::before{background-color:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
+html.gz-nav-scrolled:not(.gz-nav-hidden) .section_res-filter{top:calc(var(--gz-nav-h,5rem) - 1px)}
+/* article images: wide ones fill the column (fixes.js marks them), small ones keep their natural size */
+.post-rich figure.gz-fig-wide{display:block;width:100%;max-width:100%}
+.post-rich figure.gz-fig-wide>div{display:block}
+.post-rich figure.gz-fig-wide img{display:block;width:100%;height:auto}
+/* customer story: tighter "at a glance" card */
+.csd-glance{padding:1.75rem 2rem}
+@media (max-width:767px){.csd-glance{padding:1.5rem}}
+/* partners: the grey intro cell runs to the page edge (left on desktop, both sides once it spans the row) */
+.pt-cell.is-intro{z-index:0}
+.pt-cell.is-intro::before{content:"";position:absolute;top:0;bottom:0;right:100%;width:100vw;z-index:-1;background:#f7f8fa;pointer-events:none}
+@media (max-width:991px){.pt-cell.is-intro::before{left:-100vw;right:-100vw;width:auto}}
+/* careers "What you would be working on": the muted part starts its own line */
+.dm-main>.sol-h2 .res-muted{display:block}
+/* Blackbaud statement blocks: the supporting paragraph is narrower than the heading */
+.sol-head_main:has(.sol-h2.is-statement)>.sol-text.is-sm{max-width:32rem}
