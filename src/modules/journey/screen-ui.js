@@ -17,18 +17,18 @@ export function ScreenUI(THREE, inkUrl, aniso = 8){
     // battery
     g.lineWidth=2.2; rr(W-92, 44, 40, 19, 5.5); g.globalAlpha=.45; g.stroke(); g.globalAlpha=1; rr(W-88.5, 47.5, 29, 12, 3); g.fill();
     g.globalAlpha=.45; rr(W-49.5, 50.5, 3, 6, 1.5); g.fill(); g.globalAlpha=1; g.lineCap='butt'; }
-  function header(acc,title,sub){ g.fillStyle='#fff'; g.fillRect(0,0,W,190); g.fillStyle='rgba(3,11,44,.08)'; g.fillRect(0,190,W,2); status(false);
-    g.fillStyle=acc; g.beginPath(); g.arc(88,136,30,0,7); g.fill(); g.fillStyle='#fff'; g.font=F(600,28); g.textAlign='center'; g.fillText(title[0],88,146); g.textAlign='left';
-    g.fillStyle='#030B2C'; g.font=F(600,30); g.fillText(title,136,128); g.fillStyle='rgba(3,11,44,.55)'; g.font=F(400,23); g.fillText(sub,136,160); }
+  function header(acc,title,sub){ g.fillStyle='#fff'; g.fillRect(0,0,W,170); g.fillStyle='rgba(3,11,44,.08)'; g.fillRect(0,170,W,2); status(false);
+    g.fillStyle=acc; g.beginPath(); g.arc(88,122,28,0,7); g.fill(); g.fillStyle='#fff'; g.font=F(600,27); g.textAlign='center'; g.fillText(title[0],88,131); g.textAlign='left';
+    g.fillStyle='#030B2C'; g.font=F(600,29); g.fillText(title,134,115); g.fillStyle='rgba(3,11,44,.55)'; g.font=F(400,22); g.fillText(sub,134,146); }
   function bubbles(list, n, acc, y0, typing){
-    let y=y0; g.font=F(400,29);
+    let y=y0; g.font=F(400,27);
     list.forEach((m,i)=>{ if(i>=n) return;
-      if(m.chip){ g.font=F(500,24); const tw=g.measureText(m.text).width+40; g.fillStyle=acc+'22'; rr(40,y,tw,52,26); g.fill(); g.fillStyle=acc; g.fillText(m.text,60,y+35); y+=72; g.font=F(400,29); return; }
-      const lines=wrap(m.text, 380); const bw=Math.max(...lines.map(l=>g.measureText(l).width))+44, bh=lines.length*38+30;
+      if(m.chip){ g.font=F(500,23); const tw=g.measureText(m.text).width+40; g.fillStyle=acc+'22'; rr(40,y,tw,50,25); g.fill(); g.fillStyle=acc; g.fillText(m.text,60,y+33); y+=66; g.font=F(400,27); return; }
+      const lines=wrap(m.text, 420); const bw=Math.max(...lines.map(l=>g.measureText(l).width))+44, bh=lines.length*35+28;
       const x = m.out? W-40-bw : 40;
       g.fillStyle = m.out? '#030B2C' : '#fff'; rr(x,y,bw,bh,28); g.fill();
       if(!m.out){ g.strokeStyle='rgba(3,11,44,.1)'; g.lineWidth=2; g.stroke(); }
-      g.fillStyle = m.out? '#fff' : '#030B2C'; lines.forEach((l,k)=>g.fillText(l, x+22, y+44+k*38)); y+=bh+18; });
+      g.fillStyle = m.out? '#fff' : '#030B2C'; lines.forEach((l,k)=>g.fillText(l, x+22, y+41+k*35)); y+=bh+14; });
     if (typing) { g.fillStyle='#fff'; rr(40,y,120,64,30); g.fill(); g.strokeStyle='rgba(3,11,44,.1)'; g.lineWidth=2; g.stroke(); g.fillStyle='rgba(3,11,44,.45)'; for(let i=0;i<3;i++){ g.beginPath(); g.arc(72+i*28, y+32, 7, 0, 7); g.fill(); } }
   }
   const SMS1=[{text:"Hi Chris! Thank you for supporting our students. What inspired your first gift?"},{out:1,text:"I was a scholarship student myself."},{text:"That's wonderful. Would you like an update on what scholarship support makes possible today?"},{out:1,text:"Yes, I'd love that."},{chip:1,text:"✓ Interest found: student scholarships"}];
@@ -53,7 +53,7 @@ export function ScreenUI(THREE, inkUrl, aniso = 8){
       g.fillStyle='rgba(3,11,44,.7)'; g.font=F(400,25); wrap(msg[1],480).slice(0,2).forEach((l,k)=>g.fillText(l,64,954+k*32));
     } else if (scene===1 || scene===4){
       g.fillStyle='#F4F5F8'; g.fillRect(0,0,W,H); header(acc,'Lauren','Northbridge · Virtual Engagement Officer');
-      bubbles(scene===1?SMS1:SMS4, scene===1?count(T1):count(T4), acc, 236, typing);
+      bubbles(scene===1?SMS1:SMS4, scene===1?count(T1):count(T4), acc, 200, typing);
     } else if (scene===2){
       const n=count([.06,.16,.3,.42,.66]);
       g.fillStyle='#fff'; g.fillRect(0,0,W,H); header(acc,'Lauren at Northbridge','to Chris · April 14');
