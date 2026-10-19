@@ -1084,7 +1084,7 @@ body:has(.section_res-filter) .navbar_component.w-variant-7fb13ce5-188f-785d-2ce
 html.gz-nav-scrolled:not(.gz-nav-hidden) .section_res-filter{top:calc(var(--gz-nav-h,5rem) - 1px)}
 /* article images: wide ones fill the column (fixes.js marks them), small ones keep their natural size */
 .post-rich figure.gz-fig-wide{display:block;width:100%;max-width:100%}
-.post-rich figure.gz-fig-wide>div{display:block}
+.post-rich figure.gz-fig-wide>div,.post-rich figure.gz-fig-wide>figcaption{display:block}
 .post-rich figure.gz-fig-wide img{display:block;width:100%;height:auto}
 /* customer story: tighter "at a glance" card */
 .csd-glance{padding:1.75rem 2rem}
