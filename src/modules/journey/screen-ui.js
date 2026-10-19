@@ -1,13 +1,22 @@
 // Phone screen UI drawn to a canvas texture (copy from the client's donor-journey artifact: Chris / Lauren / Northbridge)
-export function ScreenUI(THREE, inkUrl){
-  const W=600, H=1236; const c=document.createElement('canvas'); c.width=W; c.height=H; const g=c.getContext('2d');
-  const tex = new THREE.CanvasTexture(c); tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 8;
+export function ScreenUI(THREE, inkUrl, aniso = 8){
+  // drawn at 2x (1200x2472 px) so the text stays sharp when the camera is right up to the phone; layout units stay 600x1236
+  const W=600, H=1236, SS=2; const c=document.createElement('canvas'); c.width=W*SS; c.height=H*SS; const g=c.getContext('2d');
+  const tex = new THREE.CanvasTexture(c); tex.encoding = THREE.sRGBEncoding; tex.anisotropy = aniso; tex.minFilter = THREE.LinearMipmapLinearFilter;
   const inkImg = new Image(); inkImg.crossOrigin = 'anonymous'; inkImg.src = inkUrl; inkImg.onload = ()=>{ last=''; };
   let last='';
   const F = (w,s)=>`${w} ${s}px Geist, ui-sans-serif, system-ui, sans-serif`;
   const rr=(x,y,w,h,r)=>{ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); };
   function wrap(text, maxW){ const words=text.split(' '); const lines=[]; let cur=''; for(const w of words){ const t=cur?cur+' '+w:w; if(g.measureText(t).width>maxW && cur){ lines.push(cur); cur=w; } else cur=t; } if(cur) lines.push(cur); return lines; }
-  function status(dark){ g.fillStyle=dark?'#fff':'#030B2C'; g.font=F(600,28); g.fillText('9:41',52,62); g.fillRect(W-110,44,34,18); g.fillRect(W-70,44,22,18); rr(W-200+0,40,0,0,0); }
+  function status(dark){ const col=dark?'#fff':'#030B2C'; g.fillStyle=col; g.strokeStyle=col; g.font=F(600,28); g.fillText('9:41',52,62);
+    // signal bars
+    for(let i=0;i<4;i++){ const h=7+i*4; rr(W-176+i*9, 60-h, 6, h, 1.5); g.fill(); }
+    // wifi
+    g.lineWidth=3.2; g.lineCap='round'; for(let i=0;i<3;i++){ g.beginPath(); g.arc(W-118, 62, 5+i*6, Math.PI*1.25, Math.PI*1.75); g.stroke(); }
+    g.beginPath(); g.arc(W-118, 60, 2.6, 0, 7); g.fill();
+    // battery
+    g.lineWidth=2.2; rr(W-92, 44, 40, 19, 5.5); g.globalAlpha=.45; g.stroke(); g.globalAlpha=1; rr(W-88.5, 47.5, 29, 12, 3); g.fill();
+    g.globalAlpha=.45; rr(W-49.5, 50.5, 3, 6, 1.5); g.fill(); g.globalAlpha=1; g.lineCap='butt'; }
   function header(acc,title,sub){ g.fillStyle='#fff'; g.fillRect(0,0,W,190); g.fillStyle='rgba(3,11,44,.08)'; g.fillRect(0,190,W,2); status(false);
     g.fillStyle=acc; g.beginPath(); g.arc(88,136,30,0,7); g.fill(); g.fillStyle='#fff'; g.font=F(600,28); g.textAlign='center'; g.fillText(title[0],88,146); g.textAlign='left';
     g.fillStyle='#030B2C'; g.font=F(600,30); g.fillText(title,136,128); g.fillStyle='rgba(3,11,44,.55)'; g.font=F(400,23); g.fillText(sub,136,160); }
@@ -32,7 +41,7 @@ export function ScreenUI(THREE, inkUrl){
     const typing = scene===1? typ(SMS1,T1) : scene===4? typ(SMS4,T4) : false;
     const key = [scene, scene===1?count(T1):scene===4?count(T4):scene===2?count([.06,.16,.3,.42,.66]):scene===3?count([.06,.14,.2,.26,.72]):0, typing, s.name].join('|');
     if (key===last) return false; last=key;
-    g.clearRect(0,0,W,H);
+    g.setTransform(SS,0,0,SS,0,0); g.clearRect(0,0,W,H);
     if (scene===0 || scene===5){
       const gr=g.createLinearGradient(0,0,0,H); gr.addColorStop(0, `rgb(${s.acc.join(',')})`); gr.addColorStop(1,'#030B2C'); g.fillStyle=gr; g.fillRect(0,0,W,H);
       if (inkImg.complete) { g.globalAlpha=.35; g.drawImage(inkImg, -300, 260, 1200, 610); g.globalAlpha=1; }

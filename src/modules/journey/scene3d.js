@@ -11,7 +11,11 @@ const VS = `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*
 const INK_FS = `
 uniform sampler2D t0,t1,t2,t3; uniform vec4 uW, uK; uniform float uTime, uBias, uOp, uFlip; uniform vec2 uSeed;
 varying vec2 vUv;
-vec4 sa(sampler2D t, vec2 uv, float k){ vec2 q = vec2((uv.x-0.5)*k+0.5, uv.y); float inb = step(0.0,q.x)*step(q.x,1.0)*step(0.0,q.y)*step(q.y,1.0); return texture2D(t, q, uBias)*inb; }
+vec4 s1(sampler2D t, vec2 q, float b){ float inb = step(0.0,q.x)*step(q.x,1.0)*step(0.0,q.y)*step(q.y,1.0); return texture2D(t, q, b)*inb; }
+vec4 sa(sampler2D t, vec2 uv, float k){ vec2 q = vec2((uv.x-0.5)*k+0.5, uv.y);
+  if (uBias < 0.05) return s1(t, q, 0.0);
+  float r = 0.0022*(exp2(uBias)-1.0); float b = uBias*0.7;   // depth of field: 5 soft taps, mip bias kept low so it never turns blocky
+  return (s1(t,q,b)*2.0 + s1(t,q+vec2(r,r*0.5),b) + s1(t,q+vec2(-r*0.5,r),b) + s1(t,q+vec2(-r,-r*0.5),b) + s1(t,q+vec2(r*0.5,-r),b))/6.0; }
 void main(){
   vec2 uv = vUv; if (uFlip > 0.5) uv.x = 1.0-uv.x;
   float t = uTime*0.06;
@@ -68,7 +72,7 @@ export async function loadFigure(url) {
 function makePhone() {
   const w = .077, h = .160, d = .008, r = .012;
   const shape = new THREE.Shape(); shape.moveTo(-w / 2 + r, -h / 2); shape.lineTo(w / 2 - r, -h / 2); shape.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r); shape.lineTo(w / 2, h / 2 - r); shape.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2); shape.lineTo(-w / 2 + r, h / 2); shape.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r); shape.lineTo(-w / 2, -h / 2 + r); shape.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
-  const geo = new THREE.ExtrudeGeometry(shape, { depth: d, bevelEnabled: true, bevelThickness: .0012, bevelSize: .0012, bevelSegments: 3, curveSegments: 10 }); geo.translate(0, 0, -d / 2);
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: d, bevelEnabled: true, bevelThickness: .0012, bevelSize: .0012, bevelSegments: 6, curveSegments: 28 }); geo.translate(0, 0, -d / 2);
   const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0b0f1a, metalness: .7, roughness: .32 });
   const screenMat = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
   const screen = new THREE.Mesh(new THREE.PlaneGeometry(w - .006, h - .006), screenMat); screen.position.z = d / 2 + .0014;
@@ -86,7 +90,7 @@ export function Person3D(stage, geometry, inkUrls) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
   renderer.setClearColor(0x000000, 0); renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
-  const PR = Math.min(window.devicePixelRatio || 1, 2); renderer.setPixelRatio(PR);
+  const PR = Math.min(2, Math.max(window.devicePixelRatio || 1, 1.5)); renderer.setPixelRatio(PR);   // 1x screens render at 1.5x and downsample: no stair-stepped edges
   const scene = new THREE.Scene();
   const cam = new THREE.PerspectiveCamera(30, 1, .02, 60);
 
@@ -108,7 +112,7 @@ vObj = transformed;`);
     sh.fragmentShader = 'uniform vec3 uRim, uRim2, uRimDir, uRimDir2; uniform float uCine; uniform sampler2D uMask; uniform float uUseMask, uFab; varying vec2 vMUv; varying vec3 vObj;\n' + sh.fragmentShader
       .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n#ifdef USE_COLOR\n { float mi = floor(vColor.g*3.0+0.5); roughnessFactor = mi < 0.5 ? 0.7 : mi < 1.5 ? 0.88 : mi < 2.5 ? 0.7 : 0.38; }\n#endif')
       .replace('#include <color_fragment>', '#ifdef USE_COLOR\n float matId = floor(vColor.g*3.0+0.5);\n diffuseColor.rgb *= vColor.r * (matId < 0.5 ? 1.1 : matId < 1.5 ? 1.0 : matId < 2.5 ? 0.5 : 0.4);\n#endif')
-      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n if (uFab > 0.5 && abs(vColor.g*3.0-2.0) < 0.5) { float h1 = sin(vObj.y*1400.0 + vObj.x*600.0 + sin(vObj.z*300.0)*4.0)*0.55 + sin(vObj.z*2100.0 + vObj.y*500.0 + sin(vObj.x*700.0))*0.45; normal = normalize(normal + vec3(h1*0.22, h1*0.14, h1*0.22)); }\n if (uFab > 0.5 && abs(vColor.g*3.0-1.0) < 0.5) { float f1 = sin(vObj.y*420.0 + sin(vObj.z*90.0)*2.0)*0.5 + sin(vObj.x*510.0 + vObj.y*260.0)*0.35; normal = normalize(normal + vec3(f1*0.018, f1*0.024, f1*0.018)); }')
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n if (uFab > 0.01 && abs(vColor.g*3.0-2.0) < 0.5) { float h1 = sin(vObj.y*1400.0 + vObj.x*600.0 + sin(vObj.z*300.0)*4.0)*0.55 + sin(vObj.z*2100.0 + vObj.y*500.0 + sin(vObj.x*700.0))*0.45; normal = normalize(normal + vec3(h1*0.22, h1*0.14, h1*0.22)*uFab); }\n if (uFab > 0.01 && abs(vColor.g*3.0-1.0) < 0.5) { float f1 = sin(vObj.y*420.0 + sin(vObj.z*90.0)*2.0)*0.5 + sin(vObj.x*510.0 + vObj.y*260.0)*0.35; normal = normalize(normal + vec3(f1*0.018, f1*0.024, f1*0.018)*uFab); }')
       .replace('#include <dithering_fragment>', 'if (uCine > 0.5) {\n   vec3 nv = normalize(normal); float ndv = clamp(abs(dot(nv, normalize(vViewPosition))),0.0,1.0);\n   float edge = pow(1.0 - ndv, 5.0) * smoothstep(0.02, 0.14, ndv) * 2.3; float halo = pow(1.0 - ndv, 2.5);\n   float s1 = smoothstep(-0.3, 0.35, dot(nv, uRimDir)); float s2 = smoothstep(-0.1, 0.5, dot(nv, uRimDir2));\n   float occ = 1.0;\n#ifdef USE_COLOR\n   occ = smoothstep(0.25, 0.85, vColor.r); gl_FragColor.rgb *= mix(0.25, 1.0, smoothstep(0.02, 0.35, vColor.r));\n#endif\n   gl_FragColor.rgb += (uRim * (edge * 3.4 * s1 + halo * 0.10 * s1) + uRim2 * edge * 1.3 * s2) * occ;\n }\n#include <dithering_fragment>');
   };
   const body = new THREE.Mesh(geometry, bodyMat);
@@ -123,7 +127,7 @@ vObj = transformed;`);
   figure.updateMatrixWorld(true);
   axisU = axisU.clone().applyQuaternion(figure.quaternion); axisN = axisN.clone().applyQuaternion(figure.quaternion); axisX = axisX.clone().applyQuaternion(figure.quaternion);
   const hisRight = new THREE.Vector3(0, 0, 1).applyQuaternion(figure.quaternion);
-  const ui = ScreenUI(THREE, inkUrls.spring); P.screenMat.map = ui.tex; P.screenMat.needsUpdate = true;
+  const ui = ScreenUI(THREE, inkUrls.spring, renderer.capabilities.getMaxAnisotropy()); P.screenMat.map = ui.tex; P.screenMat.needsUpdate = true;
 
   const hemi = new THREE.HemisphereLight(0xffffff, 0x080c1c, .05); scene.add(hemi);
   const rim = new THREE.DirectionalLight(0xffffff, .18); scene.add(rim); scene.add(rim.target);
@@ -139,7 +143,8 @@ vObj = transformed;`);
   const glow = new THREE.Mesh(new THREE.PlaneGeometry(.9, .9), glowMat); scene.add(glow);
 
   const L = new THREE.TextureLoader(); L.setCrossOrigin('anonymous');
-  const inkTex = SEASONS.map(s => { const t = L.load(inkUrls[s.ink]); t.minFilter = THREE.LinearMipmapLinearFilter; return t; });
+  const ANISO = renderer.capabilities.getMaxAnisotropy();
+  const inkTex = SEASONS.map(s => { const t = L.load(inkUrls[s.ink]); t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = ANISO; return t; });
   const inkMaterial = (op, seed, flip) => new THREE.ShaderMaterial({ vertexShader: VS, fragmentShader: INK_FS, transparent: true, depthWrite: false,
     uniforms: { t0: { value: inkTex[0] }, t1: { value: inkTex[1] }, t2: { value: inkTex[2] }, t3: { value: inkTex[3] }, uW: { value: new THREE.Vector4(1, 0, 0, 0) },
       uK: { value: new THREE.Vector4(SEASONS[0].k, SEASONS[1].k, SEASONS[2].k, SEASONS[3].k) }, uTime: { value: 0 }, uBias: { value: 0 }, uOp: { value: op }, uFlip: { value: flip }, uSeed: { value: new THREE.Vector2(seed, seed * 1.7) } } });
@@ -175,6 +180,7 @@ vObj = transformed;`);
       rimU.uBreath.value = REDUCE ? 0 : (Math.sin(t * 1.1) * .5 + .5) * .0045;
       const typing = !REDUCE && (sceneI === 1 || sceneI === 4) && z > .6;
       const tap = k => Math.max(0, Math.sin(t * 11 + k)) ** 6 * .005;
+      rimU.uFab.value = clamp((z - .35) / .45);   // cloth detail fades in only as the camera closes in
       rimU.uTapR.value = typing ? tap(0) : 0; rimU.uTapL.value = typing ? tap(2.2) : 0;
       P.glareMat.uniforms.uK.value = (camPos.x - camTgt.x) * .6 + (camPos.z - camTgt.z) * .3;
       shadowMat.uniforms.uCol.value.copy(lin(mix(s.fig, [0, 0, 0], .5)));
