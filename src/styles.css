@@ -1111,3 +1111,16 @@ html.gz-nav-scrolled:not(.gz-nav-hidden) .section_res-filter{top:calc(var(--gz-n
 .dm-main>.sol-h2 .res-muted{display:block}
 /* Blackbaud statement blocks: the supporting paragraph is narrower than the heading */
 .sol-head_main:has(.sol-h2.is-statement)>.sol-text.is-sm{max-width:32rem}
+
+/* --- VEO hero (client, 20 Oct): the handwritten-note card was removed; the gift card takes its slot and the
+   three cards sit a little lower so the stack stays centred in the visual --- */
+.product-hero_stack:not(:has(.is-note)):has(.product-hero_card.is-gift) .product-hero_card.is-text{top:14.1em}
+.product-hero_stack:not(:has(.is-note)):has(.product-hero_card.is-gift) .product-hero_card.is-email{top:19.9em}
+.product-hero_stack:not(:has(.is-note)) .product-hero_card.is-gift{top:24.97em;opacity:1;transform:translate(-50%)scale(.8427)}
+
+/* --- GAP "time to a confirmed gift" (client, 20 Oct): the timeline is gone, the three rates carry the panel --- */
+.gap-life_panel:not(:has(.gap-life_speed)) .gap-life_eyebrow{text-transform:uppercase}
+@media (min-width:992px){
+  .gap-life_card .gap-life_panel:not(:has(.gap-life_speed)){top:50%;transform:translateY(-50%);row-gap:1.25em}
+  .gap-life_card .gap-life_panel:not(:has(.gap-life_speed)) .gap-life_stat-num{font-size:4em}
+}
