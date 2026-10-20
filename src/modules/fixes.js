@@ -5,6 +5,12 @@ export function initFixes() {
   moreLists();
   wideFigures();
   compareStack();
+  // headings that break onto a second line on desktop with <br>: the break is hidden on phones (styles.css), so keep a
+  // space in front of it or the two words run together ("waysthat")
+  document.querySelectorAll('.cta_content h2 br').forEach(br => {
+    const prev = br.previousSibling;
+    if (!(prev && prev.nodeType === 3 && /\s$/.test(prev.textContent))) br.before(' ');
+  });
 }
 
 // Resource filter bar (blog, news, events, customer stories): it is sticky, and carries its hairline only while it
