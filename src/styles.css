@@ -833,26 +833,27 @@ body:has(.v2r-hero) .section_sol.is-grey+.section_sol{padding-top:10rem}
 .v2r-mh,.ab-statement,.sol-h2.is-statement{text-wrap:pretty}
 /* the mission runs wider and balanced, so "hire." never drops to a line of its own */
 .v2r-mh{max-width:80rem;text-wrap:balance}
-/* Version2 has a dark hero: whatever variant the page carries, its nav reads as the dark one */
-body:has(.v2r-hero) .navbar_component{color:#fff}
-body:has(.v2r-hero) .navbar_component .navbar_logo-link{color:#fff}
+/* pages with the dark .v2r-hero (Autonomous fundraising): the nav reads as the dark one only while it sits on the hero;
+   once the frosted (white) band is on (.gz-nav-scrolled) it goes back to the normal light nav, so the logo never turns white on white */
+html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_component{color:#fff}
+html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_component .navbar_logo-link{color:#fff}
 @media (min-width:992px){
-  body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be::before{background-color:rgba(21,28,59,.5);box-shadow:none;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-  body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_link,
-  body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_link:hover{color:#fff}
-  body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .gz-nav-pill{background:radial-gradient(120% 140% at 50% 120%,rgba(88,165,251,.45),rgba(255,255,255,.10) 60%);box-shadow:0 0 24px rgba(88,165,251,.35),inset 0 0 0 1px rgba(255,255,255,.14)}
-  body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown{background-color:#09143c;border-color:rgba(255,255,255,.1);box-shadow:0 24px 60px rgba(1,5,26,.45)}
-  body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-item{color:#fff}
-  body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-item:hover,
-  body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-item.w--current{background-color:rgba(255,255,255,.06);color:#fff}
-  body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-desc{color:rgba(255,255,255,.6)}
-  body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-label{color:rgba(171,230,255,.8)}
-  body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-arrow{color:#ABE6FF}
-  body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-col+.navbar_dropdown-col{border-left-color:rgba(255,255,255,.08)}
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be::before{background-color:rgba(21,28,59,.5);box-shadow:none;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_link,
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_link:hover{color:#fff}
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .gz-nav-pill{background:radial-gradient(120% 140% at 50% 120%,rgba(88,165,251,.45),rgba(255,255,255,.10) 60%);box-shadow:0 0 24px rgba(88,165,251,.35),inset 0 0 0 1px rgba(255,255,255,.14)}
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown{background-color:#09143c;border-color:rgba(255,255,255,.1);box-shadow:0 24px 60px rgba(1,5,26,.45)}
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-item{color:#fff}
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-item:hover,
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-item.w--current{background-color:rgba(255,255,255,.06);color:#fff}
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-desc{color:rgba(255,255,255,.6)}
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-label{color:rgba(171,230,255,.8)}
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-arrow{color:#ABE6FF}
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_dropdown-col+.navbar_dropdown-col{border-left-color:rgba(255,255,255,.08)}
 }
 @media (max-width:991px){
-  body:has(.v2r-hero) .navbar_menu-button{color:#fff;background-color:rgba(21,28,59,.6);border-color:rgba(255,255,255,.14)}
-  body:has(.v2r-hero) .navbar_menu-bar{background-color:#fff}
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu-button{color:#fff;background-color:rgba(21,28,59,.6);border-color:rgba(255,255,255,.14)}
+  html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu-bar{background-color:#fff}
 }
 /* story card: the live water reads like the hero (the static inks were tuned at .4 / .2 for a flat card) */
 .home-story_inner .home-story_ink{opacity:.85}

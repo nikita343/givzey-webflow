@@ -36,7 +36,9 @@ function hero() {
   const layer = ink ? inkLayer(ink, { host: visual, origin: [1, 0], seed: 4.2 }) : null;
   const cards = visual ? [...visual.querySelectorAll('.product-hero_card')] : [];
   const order = cards.slice().reverse();   // DOM is back→front; the newest touchpoint (front) leads
-  if (cards.length) gsap.set(cards, { xPercent: -50, x: 0 });   // GSAP owns the centring, so parallax never fights the CSS translate
+  // VEO: the cards live on an iPhone lock screen (phones.js); the phone moves as one piece
+  const lock = visual?.querySelector('.gz-phone.is-lock');
+  if (cards.length && !lock) gsap.set(cards, { xPercent: -50, x: 0 });   // GSAP owns the centring, so parallax never fights the CSS translate
   visual?.classList.add('is-live');
   // resources pages (html.gz-static, e.g. /press) show their hero as it is, no entrance
   if (REDUCED || isStatic()) { layer?.setReveal(1); return; }
@@ -59,8 +61,14 @@ function hero() {
     // otherwise let the intro capture a half-rotated arrow as its resting state
     if (arrow) tl.fromTo(arrow, { opacity: 0, scale: .6, rotate: -90 }, { opacity: 1, scale: 1, rotate: 0, duration: .9, ease: 'back.out(1.8)',
       onStart: () => { arrow.style.transition = 'none'; }, onComplete: () => { gsap.set(arrow, { clearProps: 'transform,rotate,scale,opacity' }); arrow.style.transition = ''; } }, .7);
+    if (lock) {
+      // the phone rises in, then the notifications arrive oldest first (text, email, gift), each landing on top
+      tl.fromTo(lock, { y: 60, opacity: 0, filter: 'blur(8px)' }, { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.2, ease: 'expo.out', clearProps: 'filter' }, .45);
+      order.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: -14, scale: .95, transformOrigin: '50% 0%' },
+        { opacity: 1, y: 0, scale: 1, duration: .8, ease: 'back.out(1.4)', clearProps: 'transform,scale' }, 1.15 + i * .55));
+    }
     const front = order[0];
-    order.forEach((c, i) => {
+    if (!lock) order.forEach((c, i) => {
       const s = gsap.getProperty(c, 'scale'), op = parseFloat(getComputedStyle(c).opacity) || 1;
       const dy = i ? front.offsetTop - c.offsetTop : 28;
       tl.fromTo(c, { y: dy, scale: s * .94, opacity: 0, filter: 'blur(6px)' },
@@ -70,7 +78,8 @@ function hero() {
   if (!FINE || !visual) return;
   // the stack floats with the cursor; nearer (bigger) cards travel further
   tl.then(() => {
-    const qs = order.map((c, i) => { const d = 1 - i * .22; return [gsap.quickTo(c, 'x', { duration: .9, ease: 'power3' }), gsap.quickTo(c, 'y', { duration: .9, ease: 'power3' }), d]; });
+    const movers = lock ? [lock] : order;
+    const qs = movers.map((c, i) => { const d = 1 - i * .22; return [gsap.quickTo(c, 'x', { duration: .9, ease: 'power3' }), gsap.quickTo(c, 'y', { duration: .9, ease: 'power3' }), d]; });
     visual.addEventListener('pointermove', e => {
       const r = visual.getBoundingClientRect(), nx = (e.clientX - r.left) / r.width - .5, ny = (e.clientY - r.top) / r.height - .5;
       qs.forEach(([qx, qy, d]) => { qx(nx * 18 * d); qy(ny * 12 * d); });

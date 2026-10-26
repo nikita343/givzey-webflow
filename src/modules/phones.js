@@ -50,7 +50,17 @@ function home() {
       // the donor's reply reads as an outcome next to the device, not as part of the email
       const reply = card.querySelector('.mock-email_reply');
       if (reply) { reply.classList.add('gz-phone_callout'); visual.appendChild(reply); }
-    } else messagesChrome(card.querySelector('.mock-card_header'));
+    } else {
+      const header = card.querySelector('.mock-card_header');
+      // a contact photo of a silhouette reads odd in Messages: show the grey iOS monogram instead (client 26 Oct)
+      const persona = header?.querySelector(':scope > .mock-persona');
+      if (persona) {
+        const name = header.querySelector('.mock-name')?.textContent.trim() || '';
+        persona.before(el('div', 'mock-avatar gz-phone_monogram', name.charAt(0).toUpperCase()));
+        persona.classList.add('is-replaced');
+      }
+      messagesChrome(header);
+    }
   });
 }
 
@@ -80,6 +90,20 @@ function solutions() {
   });
 }
 
+// VEO hero (client 26 Oct): the three touchpoint cards are notifications on the donor's lock screen.
+// The cards stay Webflow elements; the newest (gift, first in the DOM) sits on top as on iOS.
+function lockScreen() {
+  document.querySelectorAll('.product-hero_visual.is-veo .product-hero_stack').forEach(stack => {
+    if (stack.closest('.gz-phone')) return;
+    const { screen } = frame(stack, 'lock');
+    const now = new Date();
+    const date = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    stack.before(el('div', 'gz-phone_lockhead', `<span class="gz-phone_date">${date}</span><span class="gz-phone_clock">9:41</span>`));
+    screen.appendChild(el('div', 'gz-phone_home', ''));
+    stack.closest('.product-hero_visual').classList.add('has-lock');
+  });
+}
+
 export function initPhones() {
-  for (const fn of [home, productHero, solutions]) { try { fn(); } catch (e) { console.error('[givzey] phones', e); } }
+  for (const fn of [home, productHero, solutions, lockScreen]) { try { fn(); } catch (e) { console.error('[givzey] phones', e); } }
 }

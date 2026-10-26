@@ -29,6 +29,7 @@ import { initGuidance } from './modules/guidance.js';
 import { initFixes } from './modules/fixes.js';
 import { initDonorJourney } from './modules/donor-journey.js';
 import { initPhones } from './modules/phones.js';
+import { initConsent } from './modules/consent.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 const root = document.documentElement;
@@ -137,6 +138,7 @@ async function boot() {
     for (const k of Object.keys(mods)) if (!['initHubspotForms', 'initNav', 'initProduct', 'initGuidance', 'initFixes', 'initHovers'].includes(k)) delete mods[k];
     mods.initCta = () => initCta({ instant: true });
   }
+  mods.initConsent = initConsent;   // every page, resources included
   // each module is independent: one failing must not stop the rest
   for (const [name, fn] of Object.entries(mods)) {
     try { fn(); } catch (e) { console.error('[givzey]', name, e); }
