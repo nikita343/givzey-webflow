@@ -64,6 +64,7 @@
 .gz-phone :is(.mock-linkcard_title,.product-chat_video-title){font-size:.75rem!important;font-weight:600!important;line-height:1.25!important}
 .gz-phone :is(.mock-linkcard .mock-meta,.mock-video_play,.product-chat_video-meta){font-size:.6875rem!important;color:#6c6c70!important}
 .gz-phone .product-chat_video{display:flex!important;align-items:center;gap:.55rem;margin-top:.1rem!important}
+.gz-phone .product-chat_video-body{min-width:0;white-space:normal}
 .gz-phone .product-chat_video-thumb{flex:none;width:2.6rem!important;height:2.6rem!important;border-radius:.45rem!important}
 /* video message (home VSO card) */
 .gz-phone .mock-video_thumb{position:relative;background:linear-gradient(140deg,#9a6ee0,#5a2fb2)!important}
