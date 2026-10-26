@@ -131,9 +131,10 @@
   .sol-preview.has-phone>.gz-phone{--pw:16rem}
   .home-product_visual.has-phone>.gz-phone{--pw:17rem;margin-top:2.25rem}
   .home-product_visual.has-phone>.mock-email_reply{right:.75rem;bottom:1rem;width:13rem;font-size:.75rem}
-  .product-chat_stack.has-phone{top:3.5rem!important}
-  .product-chat_stack.has-phone>.product-chat_reply.gz-phone_callout{top:12rem;right:-2.75rem;width:12.5rem}
-  .product-chat_stack.has-phone>.product-chat_status.gz-phone_callout{top:19rem;left:-2.75rem;width:16rem}
+  .product-hero_visual:has(.product-chat_stack.has-phone){aspect-ratio:auto!important;height:34rem!important}
+  .product-chat_stack.has-phone{top:3.75rem!important}
+  .product-chat_stack.has-phone>.product-chat_reply.gz-phone_callout{top:18.5rem;right:-2.5rem;width:13rem}
+  .product-chat_stack.has-phone>.product-chat_status.gz-phone_callout{top:25.5rem;left:-2.5rem;width:16.5rem}
 }
 /* the bundle frames these on load; keep the bare mock from flashing first (shown anyway after 3 s) */
 html:not(.gz-ready) :is(.product-chat_stack,.home-product_visual>.mock-card,.sol-preview>.sol-chat){visibility:hidden;animation:gzShowLate 0s 3s forwards}
