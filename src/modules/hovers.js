@@ -1,6 +1,6 @@
 // Hovers: ink and light, never the usual "lift a few pixels".
 //  - buttons: an ink blot spreads from where the cursor enters (wobbly edge via SVG turbulence) and the glow deepens
-//  - text links: a brush-stroke underline wipes in from the left and out to the right (pure CSS, see styles.css)
+//  - text links: a straight underline wipes in from the left and out to the right (pure CSS, see styles.css)
 //  - cards: a light follows the cursor along the border and pools softly inside, tinted per product
 //  - nav: one liquid highlight glides between items
 //  - logos: no hover motion
@@ -32,7 +32,8 @@ function buttons() {
   });
 }
 
-const BRUSH = `<svg viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 6.2C24 4.4 41 7.6 63 5.6S104 3.9 127 5.4 171 7.3 198 4.6" pathLength="1"/></svg>`;
+// client tracker 26 Oct: straight underline instead of the brush stroke (same wipe in/out)
+const BRUSH = `<svg viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true"><path d="M1 5H199" pathLength="1"/></svg>`;
 // every plain text link on the site draws the homepage brush line on hover (Q.A.)
 export const TEXT_LINKS = '.home-product_link, .home-story_link, .footer_link, .footer_legal-link, .footer_email, .v2-link, .cr-link, .sol-link, .res-link, .res-more, .cs-sector_link, .blog-promo_link, .demo_fallback-link, .res-hero_crumb, .post-more_link, .post-author_link, .sol-doc_link, .gd-tpl_dl, .wb-up_reg, .post-body a, .w-richtext a';
 function links() {
@@ -50,7 +51,7 @@ const GLOW = [
   ['.home-testimonials_logo-card', '88,165,251'],
   ['.cta_component', '88,165,251'],
   ['.navbar_dropdown-feature', '171,230,255'],
-  ['.veo-cap_card', '242,140,40'],
+  ['.veo-cap_card:not(.is-text)', '242,140,40'],
   ['.veo-meet_card', '242,140,40'],
   ['.veo-meet_pyramid', '242,140,40'],
   ['.product-stats_feature', 'accent'],
