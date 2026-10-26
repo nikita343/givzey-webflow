@@ -114,7 +114,9 @@
 .home-product_visual.has-phone>.home-product_persona{display:none}
 .product-chat_stack.has-phone{display:block!important;position:absolute!important;top:5.75rem!important;bottom:auto!important;left:50%!important;right:auto!important;width:auto!important;max-width:none!important;margin:0!important;transform:translateX(-50%)}
 .product-chat_stack.has-phone>.product-chat_reply.gz-phone_callout{top:18.25rem;right:-8.5rem;width:16.5rem;margin:0!important}
-.product-chat_stack.has-phone>.product-chat_status.gz-phone_callout{top:25.5rem;left:-7.5rem;width:max-content;max-width:22rem;margin:0!important}
+.product-chat_stack.has-phone>.product-chat_status.gz-phone_callout{top:25.5rem;left:-7.5rem;width:21rem;margin:0!important}
+.product-chat_stack.has-phone>.product-chat_status.gz-phone_callout .product-chat_status-body{white-space:normal;min-width:0}
+.product-chat_stack.has-phone>.product-chat_status.gz-phone_callout .product-chat_pill{white-space:nowrap}
 .sol-preview.has-phone{display:flex!important;flex-direction:column;align-items:center!important;justify-content:safe center!important;gap:1.5rem;overflow:hidden!important}
 .sol-preview.has-phone>.gz-phone{--pw:19rem}
 .sol-preview.has-phone>.sol-caption{position:relative;z-index:4;flex:none;width:max-content;max-width:calc(100% - 2.5rem);margin:0;padding:.6rem .95rem;border-radius:999px;
@@ -122,7 +124,7 @@
 
 @media (max-width:991px){
   .product-chat_stack.has-phone>.product-chat_reply.gz-phone_callout{right:-5rem;width:14rem}
-  .product-chat_stack.has-phone>.product-chat_status.gz-phone_callout{left:-4.5rem;max-width:18rem}
+  .product-chat_stack.has-phone>.product-chat_status.gz-phone_callout{left:-4.5rem;width:18rem}
 }
 @media (max-width:767px){
   .gz-phone{--pw:16.5rem}
@@ -131,7 +133,7 @@
   .home-product_visual.has-phone>.mock-email_reply{right:.75rem;bottom:1rem;width:13rem;font-size:.75rem}
   .product-chat_stack.has-phone{top:3.5rem!important}
   .product-chat_stack.has-phone>.product-chat_reply.gz-phone_callout{top:12rem;right:-2.75rem;width:12.5rem}
-  .product-chat_stack.has-phone>.product-chat_status.gz-phone_callout{top:19rem;left:-2.75rem;max-width:16rem}
+  .product-chat_stack.has-phone>.product-chat_status.gz-phone_callout{top:19rem;left:-2.75rem;width:16rem}
 }
 /* the bundle frames these on load; keep the bare mock from flashing first (shown anyway after 3 s) */
 html:not(.gz-ready) :is(.product-chat_stack,.home-product_visual>.mock-card,.sol-preview>.sol-chat){visibility:hidden;animation:gzShowLate 0s 3s forwards}
