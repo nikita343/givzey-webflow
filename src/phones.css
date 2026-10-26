@@ -16,7 +16,7 @@
 .gz-phone_time{font-size:.8125rem;font-weight:600;letter-spacing:-.01em;line-height:1}
 .gz-phone_island{position:absolute;top:.6rem;left:50%;width:31%;height:1.7rem;transform:translateX(-50%);border-radius:1rem;background:#000}
 .gz-phone_icons{width:3.55rem;height:auto;display:block}
-.gz-phone .gz-phone_app{flex:1 1 auto;min-height:0;width:auto!important;max-width:none!important;height:auto!important;margin:0!important;padding:0!important;
+.gz-phone .gz-phone_app{flex:0 0 auto;min-height:0;width:auto!important;max-width:none!important;height:auto!important;margin:0!important;padding:0!important;
   border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
   color:#000;font-size:.8125rem;line-height:1.32;overflow:visible}
 .gz-phone .gz-phone_app::before,.gz-phone .gz-phone_app::after{display:none}
