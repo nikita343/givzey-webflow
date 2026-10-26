@@ -1218,7 +1218,6 @@ html.gz-nav-scrolled:not(.gz-nav-hidden) .section_res-filter{top:calc(var(--gz-n
   .dj-h{font-size:39px;line-height:1.07;margin-bottom:16px}
   .dj-scene[data-copy="5"] .dj-h{font-size:36px}
   .dj-body{max-width:285px;font-size:13px;line-height:1.55}
-  .dj-body br{display:none}
   .dj-notes{left:auto;right:6%;top:65%;width:280px}
   .dj-note{padding:15px 17px 14px;border-radius:20px}
   .dj-note_meta{margin-bottom:11px;font-size:10px}
