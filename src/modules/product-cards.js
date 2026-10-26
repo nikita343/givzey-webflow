@@ -39,7 +39,7 @@ function chatSequence(list) {
 
 function emailSequence(card) {
   const tl = gsap.timeline();
-  const parts = [card.querySelector('.mock-email_header'), ...card.querySelectorAll('.mock-email_body > *'), card.querySelector('.mock-email_reply')].filter(Boolean);
+  const parts = [card.querySelector('.mock-email_header'), ...card.querySelectorAll('.mock-email_body > *'), (card.closest('.home-product_visual') || card).querySelector('.mock-email_reply')].filter(Boolean);
   parts.forEach((el, i) => {
     tl.from(el, { opacity: 0, filter: 'blur(6px)', duration: .5, ease: 'power2.out' }, i ? '+=.12' : 0);
   });

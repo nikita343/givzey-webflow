@@ -115,7 +115,8 @@ function chat() {
 
   if (!FINE || !visual) return;
   // the conversation floats with the cursor; nearer cards travel further
-  const items = [surfaced, reply, email].filter(Boolean);
+  const phone = stack.querySelector('.gz-phone');   // in a device the screen content moves as one
+  const items = (phone ? [surfaced, reply && !phone.contains(reply) ? reply : null, phone] : [surfaced, reply, email]).filter(Boolean);
   tl.then(() => {
     const qs = items.map((c, i) => { const d = 1 - i * .22; return [gsap.quickTo(c, 'x', { duration: .9, ease: 'power3' }), gsap.quickTo(c, 'y', { duration: .9, ease: 'power3' }), d]; });
     visual.addEventListener('pointermove', e => {
