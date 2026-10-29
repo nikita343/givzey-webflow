@@ -1248,20 +1248,6 @@ html.gz-nav-scrolled:not(.gz-nav-hidden) .section_res-filter{top:calc(var(--gz-n
 @media (max-height:730px) and (min-width:901px){.dj-h.is-lead{font-size:62px}.dj-h{font-size:51px}.dj-copy{top:45%}.dj-body{font-size:15px}.dj-eyebrow{margin-bottom:20px}.dj-timeline{bottom:27px}.dj-notes{top:44%;width:340px}.dj-note{padding:17px 20px}}
 @media (prefers-reduced-motion:reduce){.dj-scene,.dj-note{transition:none!important}.dj-photo,.dj-ink{will-change:auto}}
 
-/* ===== Version2 in the navbar (client tracker 29 Oct): bold, bright blue, a soft glow that drifts behind it ===== */
-@property --gz-v2a{syntax:'<angle>';inherits:false;initial-value:0deg}
-.navbar_link.is-v2{position:relative;isolation:isolate;font-weight:600;color:#7DB9FF;background:none}
-.navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_link.is-v2{color:#045CE8}
-.navbar_link.is-v2::before{content:"";position:absolute;inset:-.125rem -.25rem;z-index:-1;border-radius:inherit;pointer-events:none;
-  background:conic-gradient(from var(--gz-v2a),rgba(4,92,232,.55),rgba(88,165,251,.15),rgba(171,230,255,.5),rgba(4,92,232,.2),rgba(4,92,232,.55));
-  filter:blur(.55rem);opacity:.75;animation:gzV2Glow 6s linear infinite}
-.navbar_link.is-v2::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;
-  background:rgba(4,92,232,.14);box-shadow:inset 0 0 0 1px rgba(125,185,255,.35)}
-.navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_link.is-v2::before{opacity:.45}
-.navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_link.is-v2::after{background:rgba(4,92,232,.07);box-shadow:inset 0 0 0 1px rgba(4,92,232,.22)}
-.navbar_link.is-v2:hover::before{opacity:1}
-@keyframes gzV2Glow{to{--gz-v2a:360deg}}
-@media (prefers-reduced-motion:reduce){.navbar_link.is-v2::before{animation:none}}
-@media (max-width:991px){.navbar_link.is-v2::before{inset:.25rem -.25rem}}
-html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_link.is-v2{color:#7DB9FF}
-html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_menu.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be .navbar_link.is-v2::before{opacity:.75}
+/* ===== Version2 in the navbar (client tracker 29 Oct): bold bright blue with a drifting glow. The glow itself lives in the
+   site head code (<style id="givzey-version2-nav-glow">) so it can be tuned in Webflow; this only makes the label bold. ===== */
+.navbar_link.is-v2{font-weight:700;background:none}
