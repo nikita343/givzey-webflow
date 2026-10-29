@@ -190,3 +190,5 @@
 .gz-phone_back.w-embed,.gz-phone_cam.w-embed{display:block}
 .gz-phone_back.w-embed svg,.gz-phone_cam.w-embed svg{display:block}
 .gz-phone_mailnav .gz-phone_back{display:inline-flex}
+/* Designer canvas pads empty elements (.wf-empty); the island and home bar are empty on purpose */
+.gz-phone .wf-empty{padding:0!important;min-height:0!important}
