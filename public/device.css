@@ -1,0 +1,192 @@
+/* ===== Device styles: iPhone frames around the conversation mocks =====
+   Served as /device.css and linked from the "Device styles" embed component in Webflow, so the Designer canvas
+   renders the phones exactly like the live site. The frames are real Webflow elements (gz-phone > gz-phone_screen >
+   gz-phone_bar + the mock); nothing is built by JS any more. Edit copy in the Designer as usual.
+   Client tracker 26 Oct (phones), 29 Oct (native for handoff; VEO is brand blue). */
+.gz-phone{--pw:19.5rem;--pr:calc(var(--pw)*.165);--bez:.55rem;--ios-blue:#0a7cff;--ios-grey:#e9e9eb;
+  position:relative;z-index:1;flex:none;box-sizing:border-box;width:var(--pw);height:calc(var(--pw)*2.06);padding:var(--bez);
+  border-radius:var(--pr);background:#0c0c0e;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 0 0 1px #dcdce0,0 0 0 2.5px #9b9ba1,0 0 0 3px rgba(0,0,0,.18),
+    0 2.5rem 4.5rem -1.75rem rgba(3,11,44,.42),0 .75rem 1.5rem -.6rem rgba(3,11,44,.22)}
+/* action button + volume (left), side button (right) */
+.gz-phone::before,.gz-phone::after{content:"";position:absolute;width:3px;pointer-events:none}
+.gz-phone::before{left:-5px;top:17%;height:8.2rem;border-radius:2px 0 0 2px;
+  background:linear-gradient(#a3a3a8 0 1.35rem,transparent 1.35rem 2.35rem,#a3a3a8 2.35rem 4.85rem,transparent 4.85rem 5.6rem,#a3a3a8 5.6rem 8.2rem)}
+.gz-phone::after{right:-5px;top:25%;height:3.9rem;border-radius:0 2px 2px 0;background:#a3a3a8}
+.gz-phone_screen{position:relative;isolation:isolate;display:flex;flex-direction:column;height:100%;overflow:hidden;
+  border-radius:calc(var(--pr) - var(--bez));background:#fff;color:#000;text-align:left;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Geist,"Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
+.gz-phone_bar{position:relative;z-index:3;flex:none;display:flex;align-items:center;justify-content:space-between;height:2.85rem;padding:.25rem 1.3rem 0 1.85rem;color:#000}
+.gz-phone_time{font-size:.8125rem;font-weight:600;letter-spacing:-.01em;line-height:1}
+.gz-phone_island{position:absolute;top:.6rem;left:50%;width:31%;height:1.7rem;transform:translateX(-50%);border-radius:1rem;background:#000}
+.gz-phone_icons{width:3.55rem;height:auto;display:block}
+.gz-phone .gz-phone_app{flex:0 0 auto;min-height:0;width:auto!important;max-width:none!important;height:auto!important;margin:0!important;padding:0!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  color:#000;font-size:.8125rem;line-height:1.32;overflow:visible}
+.gz-phone .gz-phone_app::before,.gz-phone .gz-phone_app::after{display:none}
+
+/* ---- Messages ---- */
+.gz-phone_back,.gz-phone_cam{color:var(--ios-blue);line-height:0}
+.gz-phone_back svg{width:.62rem;height:1.05rem}
+.gz-phone_cam svg{width:1.4rem;height:auto}
+.gz-phone.is-sms :is(.mock-card_header,.product-chat_from,.sol-chat_head){position:relative;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;
+  gap:.22rem!important;margin:0!important;padding:.05rem 2.75rem .55rem!important;border:0!important;border-bottom:.5px solid rgba(60,60,67,.22)!important;border-radius:0!important;
+  background:rgba(247,247,249,.94)!important;text-align:center}
+.gz-phone.is-sms :is(.mock-card_header,.product-chat_from,.sol-chat_head)>.gz-phone_back{position:absolute;left:.7rem;top:.85rem}
+.gz-phone.is-sms :is(.mock-card_header,.product-chat_from,.sol-chat_head)>.gz-phone_cam{position:absolute;right:.85rem;top:.95rem}
+.gz-phone.is-sms :is(.mock-avatar,.product-chat_avatar,.sol-avatar){display:grid!important;place-items:center;width:2.65rem!important;height:2.65rem!important;min-width:0;margin:0!important;border-radius:50%!important;
+  background:linear-gradient(180deg,#a9aebb,#878b97)!important;color:#fff!important;font-size:1.15rem!important;font-weight:500!important;line-height:1!important}
+.gz-phone.is-sms .mock-card_header .mock-persona{width:2.65rem!important;height:2.65rem!important;margin:0!important;border-radius:50%!important;object-fit:cover}
+.gz-phone.is-sms :is(.mock-card_who,.product-chat_from-body,.sol-chat_who){display:flex!important;flex-direction:column;align-items:center;gap:0!important;min-width:0}
+.gz-phone.is-sms :is(.mock-name,.product-chat_from-name,.sol-chat_name){font-size:.6875rem!important;font-weight:400!important;line-height:1.2!important;color:#000!important;letter-spacing:0!important}
+.gz-phone.is-sms :is(.mock-name,.product-chat_from-name,.sol-chat_name)::after{content:"\203A";margin-left:.22em;color:#a3a3a8;font-size:1.1em}
+.gz-phone.is-sms :is(.mock-card_header .mock-meta,.product-chat_from-meta,.sol-chat_meta,.mock-channel,.sol-chip){display:none!important}
+.gz-phone_stamp,.gz-phone .mock-time{align-self:center!important;margin:.55rem 0 .3rem!important;padding:0!important;background:none!important;color:#8a8a8e!important;font-size:.625rem!important;line-height:1.3!important;text-align:center;font-weight:400!important}
+.gz-phone .mock-time::before{content:"Text Message";display:block;font-weight:500}
+.gz-phone_stamp b{display:block;font-weight:500}
+.gz-phone .mock-messages{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:.32rem!important;padding:0 .55rem .8rem!important;background:none!important}
+.gz-phone .sol-chat{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:.32rem!important}
+.gz-phone .sol-chat>.sol-bubble{margin-left:.9rem!important;margin-right:.9rem!important}
+/* bubbles */
+.gz-phone :is(.mock-bubble,.sol-bubble,.product-chat_body,.product-chat_video,.product-chat_bubble){position:relative;box-sizing:border-box;width:auto!important;max-width:77%!important;margin-top:0;margin-bottom:0;
+  padding:.4rem .7rem!important;border:0!important;border-radius:1.1rem!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  font-size:.8125rem!important;line-height:1.32!important;font-weight:400!important;letter-spacing:0!important;text-align:left}
+.gz-phone :is(.mock-bubble:not(.is-donor),.sol-bubble:not(.is-me),.product-chat_body,.product-chat_video){align-self:flex-start!important;margin-left:.35rem;background:var(--ios-grey)!important;color:#000!important}
+.gz-phone :is(.mock-bubble.is-donor,.sol-bubble.is-me,.product-chat_bubble){align-self:flex-end!important;margin-right:.35rem;background:var(--ios-blue)!important;color:#fff!important}
+.gz-phone :is(.mock-bubble,.sol-bubble,.product-chat_body,.product-chat_bubble) *{color:inherit}
+/* tails */
+.gz-phone :is(.mock-bubble,.sol-bubble,.product-chat_body,.product-chat_bubble)::before,
+.gz-phone :is(.mock-bubble,.sol-bubble,.product-chat_body,.product-chat_bubble)::after{content:"";position:absolute;bottom:0;z-index:-1;height:1.05rem;pointer-events:none}
+.gz-phone :is(.mock-bubble:not(.is-donor),.sol-bubble:not(.is-me),.product-chat_body)::before{left:-.4rem;width:1.05rem;background:var(--ios-grey);border-bottom-right-radius:.85rem}
+.gz-phone :is(.mock-bubble:not(.is-donor),.sol-bubble:not(.is-me),.product-chat_body)::after{left:-.62rem;width:.62rem;background:#fff;border-bottom-right-radius:.55rem}
+.gz-phone :is(.mock-bubble.is-donor,.sol-bubble.is-me,.product-chat_bubble)::before{right:-.4rem;width:1.05rem;background:var(--ios-blue);border-bottom-left-radius:.85rem}
+.gz-phone :is(.mock-bubble.is-donor,.sol-bubble.is-me,.product-chat_bubble)::after{right:-.62rem;width:.62rem;background:#fff;border-bottom-left-radius:.55rem}
+/* rich links inside a message */
+.gz-phone :is(.mock-linkcard,.mock-video){margin:.45rem -.7rem -.4rem!important;padding:.55rem .7rem!important;border:0!important;border-radius:0 0 1.1rem 1.1rem!important;background:#d9d9de!important;box-shadow:none!important}
+.gz-phone .mock-video{display:flex!important;align-items:center;gap:.55rem}
+.gz-phone .mock-video_thumb{flex:none;width:2.6rem!important;height:2.6rem!important;border-radius:.45rem!important}
+.gz-phone :is(.mock-linkcard_title,.product-chat_video-title){font-size:.75rem!important;font-weight:600!important;line-height:1.25!important}
+.gz-phone :is(.mock-linkcard .mock-meta,.mock-video_play,.product-chat_video-meta){font-size:.6875rem!important;color:#6c6c70!important}
+.gz-phone .product-chat_video{display:flex!important;align-items:center;gap:.55rem;margin-top:.1rem!important}
+.gz-phone .product-chat_video-body{min-width:0;white-space:normal}
+.gz-phone .product-chat_video-thumb{flex:none;width:2.6rem!important;height:2.6rem!important;border-radius:.45rem!important}
+/* video message (home VSO card) */
+.gz-phone .mock-video_thumb{position:relative;background:linear-gradient(140deg,#9a6ee0,#5a2fb2)!important}
+.gz-phone .mock-video_thumb::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-35%,-50%);border-style:solid;border-width:.42rem 0 .42rem .7rem;border-color:transparent transparent transparent #fff}
+.gz-phone .mock-video_play{display:block!important;margin-top:.1rem;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+.gz-phone .mock-video_play img{display:none}
+/* reply moved into the thread (VSO hero): just the blue bubble */
+.gz-phone .product-chat_reply.is-in-phone{position:relative;display:flex!important;flex-direction:column;align-items:stretch;margin:.32rem .55rem 0!important;padding:0!important;transform:none}
+.gz-phone .product-chat_reply-label{display:none!important}
+.gz-phone .product-chat_reply-text,.gz-phone .product-chat_bubble{white-space:normal!important}
+.gz-phone .product-chat_reply-text{font-size:inherit!important;line-height:inherit!important;color:#fff!important}
+.gz-phone.is-sms .product-chat_card{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:.32rem!important}
+.gz-phone.is-sms .product-chat_card>:is(.product-chat_body,.product-chat_video){margin-left:.9rem!important}
+/* typing dots, iOS grey */
+.gz-phone :is(.gz-typing,.sol-typing){background:var(--ios-grey)!important;border-radius:1.1rem!important}
+.gz-phone :is(.gz-typing i,.sol-typing span){background:#8e8e93!important}
+.gz-phone .product-chat_typing{background:var(--ios-blue)!important}
+
+/* ---- Mail ---- */
+.gz-phone_mailnav{flex:none;display:flex;align-items:center;justify-content:space-between;padding:.15rem .9rem .5rem .55rem;color:var(--ios-blue);font-size:.875rem;line-height:1}
+.gz-phone_mailnav .gz-phone_back{display:inline-flex;align-items:center;gap:.3rem;line-height:1}
+.gz-phone_mailnav>svg{width:2.4rem;height:auto}
+.gz-phone.is-mail .gz-phone_app{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:0!important;font-size:.75rem!important;line-height:1.45!important}
+.gz-phone.is-mail :is(.mock-email_header,.product-chat_from){display:flex!important;align-items:flex-start!important;gap:.55rem!important;margin:0!important;padding:.6rem .95rem .6rem!important;border:0!important;border-top:.5px solid rgba(60,60,67,.2)!important;border-radius:0!important;background:none!important}
+.gz-phone.is-mail .mock-email_header{flex-direction:column!important;gap:.15rem!important}
+.gz-phone.is-mail .mock-email_subject{font-size:1rem!important;font-weight:700!important;line-height:1.2!important;letter-spacing:-.01em!important;color:#000!important}
+.gz-phone.is-mail .mock-email_header .mock-meta{font-size:.6875rem!important;color:#6c6c70!important}
+.gz-phone.is-mail .mock-channel{display:none!important}
+.gz-phone.is-mail .product-chat_avatar{display:grid!important;place-items:center;flex:none;width:2rem!important;height:2rem!important;margin:0!important;border-radius:50%!important;
+  background:linear-gradient(180deg,#a9aebb,#878b97)!important;color:#fff!important;font-size:.85rem!important;font-weight:500!important}
+.gz-phone.is-mail .product-chat_from-name{font-size:.8125rem!important;font-weight:600!important;color:#000!important;line-height:1.25!important}
+.gz-phone.is-mail .product-chat_from-meta{font-size:.6875rem!important;color:#6c6c70!important;line-height:1.3!important}
+.gz-phone.is-mail .product-chat_subject{margin:0!important;padding:.15rem .95rem .35rem!important;font-size:1rem!important;font-weight:700!important;line-height:1.2!important;letter-spacing:-.01em!important;color:#000!important}
+.gz-phone.is-mail :is(.mock-email_body,.product-chat_body){max-width:none!important;align-self:stretch!important;margin:0!important;padding:.25rem .95rem .8rem!important;border-radius:0!important;background:none!important;color:#1c1c1e!important;font-size:.75rem!important;line-height:1.45!important}
+.gz-phone.is-mail :is(.mock-email_body,.product-chat_body)::before,.gz-phone.is-mail :is(.mock-email_body,.product-chat_body)::after{display:none}
+.gz-phone.is-mail .mock-email_body p{margin:0 0 .6rem!important;font-size:inherit!important;line-height:inherit!important}
+.gz-phone.is-mail .mock-email_button{display:inline-block;margin:0 0 .7rem!important;padding:.5rem .8rem!important;font-size:.7rem!important;border-radius:.5rem!important}
+.gz-phone.is-mail .mock-email_sign{font-size:.75rem!important}
+.gz-phone.is-mail .product-chat_video{max-width:none!important;align-self:stretch!important;margin:0 .95rem!important;padding:.55rem .65rem!important;border-radius:.75rem!important;background:#f2f2f7!important;color:#000!important}
+.gz-phone.is-mail .product-chat_video::before,.gz-phone.is-mail .product-chat_video::after{display:none}
+.gz-phone.is-mail .product-chat_signature{font-size:1.25rem!important}
+
+/* ---- callouts beside the device ---- */
+.gz-phone_callout{position:absolute!important;z-index:4}
+.home-product_visual.has-phone{align-items:flex-start!important}
+.home-product_visual.has-phone>.gz-phone{--pw:21rem;margin-top:3.5rem}
+.home-product_visual.has-phone>.mock-email_reply{right:1.5rem;bottom:2.25rem;display:flex;gap:.65rem;align-items:flex-start;width:15.5rem;margin:0;padding:.85rem 1rem;border:1px solid rgba(3,11,44,.06);
+  border-radius:1rem;background:#fff;box-shadow:0 1.5rem 3rem -1rem rgba(3,11,44,.3);font-size:.8125rem;line-height:1.4;color:#1b1a24}
+.home-product_visual.has-phone>.home-product_persona{display:none}
+.product-chat_stack.has-phone{display:block!important;position:absolute!important;top:5.75rem!important;bottom:auto!important;left:50%!important;right:auto!important;width:auto!important;max-width:none!important;margin:0!important;transform:translateX(-50%)}
+.product-chat_stack.has-phone>.product-chat_reply.gz-phone_callout{top:18.25rem;right:-8.5rem;width:16.5rem;margin:0!important}
+.product-chat_stack.has-phone>.product-chat_status.gz-phone_callout{top:27.5rem;left:-7.5rem;width:21rem;margin:0!important}
+.product-chat_stack.has-phone>.product-chat_status.gz-phone_callout .product-chat_status-body{white-space:normal;min-width:0}
+.product-chat_stack.has-phone>.product-chat_status.gz-phone_callout .product-chat_pill{white-space:nowrap}
+.sol-preview.has-phone{display:flex!important;flex-direction:column;align-items:center!important;justify-content:safe center!important;gap:1.5rem;overflow:hidden!important}
+.sol-preview.has-phone>.gz-phone{--pw:19rem}
+.sol-preview.has-phone>.sol-caption{position:relative;z-index:4;flex:none;width:max-content;max-width:calc(100% - 2.5rem);margin:0;padding:.6rem .95rem;border-radius:999px;
+  background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 .75rem 2rem -.75rem rgba(3,11,44,.28)}
+
+@media (max-width:991px){
+  .product-chat_stack.has-phone>.product-chat_reply.gz-phone_callout{right:-5rem;width:14rem}
+  .product-chat_stack.has-phone>.product-chat_status.gz-phone_callout{left:-4.5rem;width:18rem}
+}
+@media (max-width:767px){
+  .gz-phone{--pw:16.5rem}
+  .sol-preview.has-phone>.gz-phone{--pw:16rem}
+  .home-product_visual.has-phone>.gz-phone{--pw:17rem;margin-top:2.25rem}
+  .home-product_visual.has-phone>.mock-email_reply{right:.75rem;bottom:1rem;width:13rem;font-size:.75rem}
+  .product-hero_visual:has(.product-chat_stack.has-phone){aspect-ratio:auto!important;height:34rem!important}
+  .product-chat_stack.has-phone{top:3.75rem!important}
+  .product-chat_stack.has-phone>.product-chat_reply.gz-phone_callout{top:18.5rem;right:-2.5rem;width:13rem}
+  .product-chat_stack.has-phone>.product-chat_status.gz-phone_callout{top:25.5rem;left:-2.5rem;width:16.5rem}
+}
+
+/* ---- home VSO card: grey monogram instead of the silhouette contact photo (client 26 Oct) ---- */
+.gz-phone.is-sms .mock-card_header .mock-persona.is-replaced{display:none!important}
+
+/* ---- VEO hero: the touchpoints as notifications on the donor's lock screen (client 26 Oct) ---- */
+.product-hero_stage>.gz-phone.is-lock{position:absolute;z-index:2;top:5.75rem;left:50%;margin-left:calc(var(--pw)/-2)}
+.gz-phone.is-lock .gz-phone_screen{color:#fff;
+  background:radial-gradient(95% 55% at 18% 12%,rgba(171,230,255,.95) 0%,rgba(171,230,255,0) 62%),
+    radial-gradient(85% 60% at 88% 86%,#0a2a7a 0%,rgba(10,42,122,0) 70%),
+    linear-gradient(168deg,#7cc0ff 0%,#2f7cf0 46%,#0e4bc4 78%,#06246b 100%)}
+.gz-phone.is-lock .gz-phone_bar{color:#fff}
+.gz-phone.is-lock .gz-phone_time{visibility:hidden}
+.gz-phone_lockhead{flex:none;display:flex;flex-direction:column;align-items:center;padding:.35rem 0 1.15rem;color:#fff;text-shadow:0 1px 12px rgba(0,20,80,.2)}
+.gz-phone_date{font-size:.9rem;font-weight:600;letter-spacing:.005em;line-height:1.2;opacity:.92}
+.gz-phone_clock{font-family:"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;font-size:4.6rem;font-weight:600;line-height:1;letter-spacing:-.025em;opacity:.95}
+/* the stack: plain column of notifications, newest on top */
+.gz-phone.is-lock .product-hero_stack.gz-phone_app{position:relative!important;inset:auto!important;display:flex!important;flex-direction:column!important;gap:.45rem!important;
+  padding:0 .55rem!important;font-size:1rem!important;color:#000;transform:none!important}
+.gz-phone.is-lock .product-hero_card{position:relative!important;inset:auto!important;top:auto!important;left:auto!important;width:auto!important;max-width:none!important;
+  display:flex!important;align-items:flex-start!important;gap:.6rem!important;margin:0!important;padding:.62rem .72rem .66rem!important;transform:none!important;opacity:1;
+  border:0!important;border-radius:1.15rem!important;background:rgba(246,249,255,.76)!important;-webkit-backdrop-filter:blur(18px) saturate(1.7)!important;backdrop-filter:blur(18px) saturate(1.7)!important;
+  box-shadow:0 .4rem 1.25rem -.6rem rgba(0,20,80,.35)!important;color:#000!important;font-size:1rem!important}
+.gz-phone.is-lock .product-hero_card-icon{flex:none;display:grid!important;place-items:center;width:1.9rem!important;height:1.9rem!important;margin:0!important;padding:0!important;
+  border:0!important;border-radius:.5rem!important;color:#fff!important;box-shadow:none!important}
+.gz-phone.is-lock .product-hero_card-icon.is-text{background:linear-gradient(180deg,#65f27e,#0dc240)!important}
+.gz-phone.is-lock .product-hero_card-icon.is-email{background:linear-gradient(180deg,#3fb2ff,#0a6cf0)!important}
+.gz-phone.is-lock .product-hero_card-icon.is-gift{background:linear-gradient(180deg,#5aa2ff,#045ce8)!important}
+.gz-phone.is-lock .product-hero_card-svg{width:1.05rem!important;height:1.05rem!important;line-height:0}
+.gz-phone.is-lock .product-hero_card-svg svg{width:100%!important;height:100%!important}
+.gz-phone.is-lock .product-hero_card-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:.06rem}
+.gz-phone.is-lock .product-hero_card-top{display:flex!important;align-items:baseline;justify-content:space-between;gap:.5rem;margin:0!important}
+.gz-phone.is-lock .product-hero_card-label{font-size:.75rem!important;font-weight:600!important;line-height:1.25!important;letter-spacing:0!important;text-transform:none!important;color:#000!important}
+.gz-phone.is-lock .product-hero_card-time{flex:none;font-size:.6875rem!important;font-weight:400!important;line-height:1.25!important;letter-spacing:0!important;text-transform:none!important;color:rgba(60,60,67,.62)!important}
+.gz-phone.is-lock .product-hero_card-title{font-size:.75rem!important;font-weight:400!important;line-height:1.3!important;letter-spacing:0!important;color:#000!important;margin:0!important}
+.gz-phone.is-lock .product-hero_card-desc{font-size:.75rem!important;font-weight:400!important;line-height:1.3!important;letter-spacing:0!important;color:rgba(60,60,67,.75)!important;margin:0!important}
+.gz-phone_home{position:absolute;left:50%;bottom:.5rem;width:36%;height:.3rem;border-radius:1rem;background:rgba(255,255,255,.85);transform:translateX(-50%)}
+.product-hero_visual.has-lock .product-hero_label,.product-hero_visual.has-lock .product-hero_label-arrow{z-index:3}
+@media (max-width:767px){
+  .product-hero_visual.has-lock{aspect-ratio:auto!important;height:31rem!important}
+  .product-hero_stage>.gz-phone.is-lock{top:4.25rem}
+  .gz-phone_clock{font-size:3.9rem}
+}
+
+/* native chrome: the embed wrappers carry the classes */
+.gz-phone_bar.w-embed,.gz-phone_mailnav.w-embed{display:flex}
+.gz-phone_back.w-embed,.gz-phone_cam.w-embed{display:block}
+.gz-phone_back.w-embed svg,.gz-phone_cam.w-embed svg{display:block}
+.gz-phone_mailnav .gz-phone_back{display:inline-flex}
