@@ -1,6 +1,7 @@
 // Home: "One donor, a whole year of care." Pinned scroll story ported from Wes's donor-journey prototype
-// (client tracker 26 Oct). Copy and the notification cards live in Webflow (.section_dj); this module adds the
-// artwork (served next to givzey.js), the timeline controls, and drives the scenes from the scroll position.
+// (client tracker 26 Oct). Since 29 Oct everything is native Webflow (.section_dj: copy, cards, artwork images, season
+// and month controls) and styled by public/journey.css, so the Designer shows the section as the site does. This module
+// only drives the scenes from the scroll position; it still builds artwork/controls if they are ever missing.
 import { ASSET } from '../base.js';
 
 const IMG = p => ASSET(`journey2/${p}`);
@@ -14,6 +15,11 @@ const el = (tag, cls, attrs = {}) => { const n = document.createElement(tag); if
 const img = (src, cls, alt = '') => { const i = el('img', cls, { src: IMG(src), alt, decoding: 'async' }); return i; };
 
 function artwork(box) {
+  const art = box.querySelector('.dj-art');
+  if (art) {
+    const q = c => art.querySelector(c);
+    return { ink: q('.dj-ink'), wide: q('.dj-photo.is-wide'), phone: q('.dj-photo.is-phone'), mailbox: q('.dj-photo.is-mailbox'), group: q('.dj-photo.is-group') };
+  }
   box.textContent = '';
   const scene = (cls, ...imgs) => { const d = el('div', `dj-photo ${cls}`); imgs.forEach(i => d.appendChild(i)); box.appendChild(d); return d; };
   const ink = img('dj-ink-painted-sharper.webp', 'dj-ink'); box.appendChild(ink);
@@ -26,7 +32,7 @@ function artwork(box) {
 
 function lettering(sec) {
   sec.querySelectorAll('[data-dj-letter]').forEach(slot => {
-    if (slot.querySelector('img')) return;
+    if (slot.querySelector('img')) return;   // native image in place (29 Oct)
     slot.appendChild(img(`dj-note-${slot.getAttribute('data-dj-letter')}.svg`, 'dj-letter-img', slot.getAttribute('data-dj-alt') || ''));
   });
 }
@@ -43,8 +49,14 @@ export function initDonorJourney() {
 
   // controls are built here: Webflow has no native button/range for this
   const seasonsBox = sec.querySelector('.dj-seasons'), monthsBox = sec.querySelector('.dj-months');
-  SEASONS.forEach(([name, p]) => { const b = el('button', 'dj-season', { type: 'button' }); b.textContent = name; b.addEventListener('click', () => seek(p)); seasonsBox?.appendChild(b); });
-  const monthBtns = MONTHS.map((m, i) => { const b = el('button', 'dj-month', { type: 'button', 'aria-label': `Go to ${m}` }); b.textContent = m; b.addEventListener('click', () => seek(.16 + (i / 11) * .72)); monthsBox?.appendChild(b); return b; });
+  // native links with role=button (Webflow has no <button> outside forms); built here only if missing
+  const press = (b, fn) => { b.addEventListener('click', e => { e.preventDefault(); fn(); }); b.addEventListener('keydown', e => { if (e.key === ' ') { e.preventDefault(); fn(); } }); };
+  let seasonBtns = [...(seasonsBox?.querySelectorAll('.dj-season') || [])];
+  if (!seasonBtns.length) seasonBtns = SEASONS.map(([name, p]) => { const b = el('a', 'dj-season', { href: '#', role: 'button', 'data-p': p }); b.textContent = name; seasonsBox?.appendChild(b); return b; });
+  seasonBtns.forEach((b, i) => press(b, () => seek(Number(b.dataset.p) || SEASONS[i]?.[1] || 0)));
+  let monthBtns = [...(monthsBox?.querySelectorAll('.dj-month') || [])];
+  if (!monthBtns.length) monthBtns = MONTHS.map((m, i) => { const b = el('a', 'dj-month', { href: '#', role: 'button', 'data-m': i, 'aria-label': `Go to ${m}` }); b.textContent = m; monthsBox?.appendChild(b); return b; });
+  monthBtns.forEach((b, i) => press(b, () => seek(.16 + ((b.dataset.m ? Number(b.dataset.m) : i) / 11) * .72)));
   const scrub = el('input', 'dj-scrub', { type: 'range', min: '0', max: '1000', value: '0', 'aria-label': 'Journey progress', 'aria-valuetext': NAMES[0] });
   track?.appendChild(scrub);
 
