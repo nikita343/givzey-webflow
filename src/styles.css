@@ -1104,6 +1104,8 @@ html:not(.gz-ready) :is(.home-stats_number,.home-story_number,.v2r-num,.v2-stat_
 body:has(.section_res-filter) .navbar_component.w-variant-7fb13ce5-188f-785d-2ce7-1287e5a912be::before{background-color:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
 html.gz-nav-scrolled:not(.gz-nav-hidden) .section_res-filter{top:calc(var(--gz-nav-h,5rem) - 1px)}
 /* article images: wide ones fill the column (fixes.js marks them), small ones keep their natural size */
+.post-rich figure.gz-post-video-wrap{display:block;width:100%;max-width:100%;margin:2rem 0}
+.post-rich .gz-post-video{display:block;width:100%;height:auto;border-radius:1.25rem;background:#030B2C;aspect-ratio:auto 16/9;max-height:80vh;object-fit:contain}
 .post-rich figure.gz-fig-wide{display:block;width:100%;max-width:100%}
 .post-rich figure.gz-fig-wide>div,.post-rich figure.gz-fig-wide>figcaption{display:block}
 .post-rich figure.gz-fig-wide img{display:block;width:100%;height:auto}

@@ -4,6 +4,7 @@ export function initFixes() {
   topicLinks();
   moreLists();
   wideFigures();
+  postVideos();
   compareStack();
   // headings that break onto a second line on desktop with <br>: the break is hidden on phones (styles.css), so keep a
   // space in front of it or the two words run together ("waysthat")
@@ -88,6 +89,21 @@ function wideFigures() {
     const img = fig.querySelector('img'); if (!img) return;
     const set = () => fig.classList.toggle('gz-fig-wide', img.naturalWidth >= 600);
     img.complete ? set() : img.addEventListener('load', set, { once: true });
+  });
+}
+
+// Migrated posts: videos that were uploaded to Wix or HubSpot came across as a "Watch the video" link to the .mp4 file.
+// Swap each one for an inline player (CMS rich text can't hold a <video>). The link stays as the fallback if the file fails.
+function postVideos() {
+  document.querySelectorAll('.post-rich a[href*=".mp4"]').forEach(a => {
+    const p = a.closest('p'); if (!p || p.textContent.trim() !== a.textContent.trim()) return;
+    const v = document.createElement('video');
+    v.className = 'gz-post-video'; v.controls = true; v.preload = 'metadata'; v.playsInline = true;
+    v.src = a.href; v.setAttribute('aria-label', 'Video');
+    v.addEventListener('error', () => v.replaceWith(p), { once: true });
+    const fig = document.createElement('figure');
+    fig.className = 'gz-post-video-wrap'; fig.append(v);
+    p.replaceWith(fig);
   });
 }
 
