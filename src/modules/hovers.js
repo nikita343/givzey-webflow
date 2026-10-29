@@ -54,6 +54,7 @@ const GLOW = [
   ['.veo-cap_card:not(.is-text)', '4,92,232'],
   ['.veo-meet_card', '4,92,232'],
   ['.veo-meet_pyramid', '4,92,232'],
+  ['.veo-donut', '4,92,232'],
   ['.product-stats_feature', 'accent'],
   ['.product-stats_row', 'accent'],
   ['.product-cap_card', 'accent'],

@@ -1251,3 +1251,10 @@ html.gz-nav-scrolled:not(.gz-nav-hidden) .section_res-filter{top:calc(var(--gz-n
 /* ===== Version2 in the navbar (client tracker 29 Oct): bold bright blue with a drifting glow. The glow itself lives in the
    site head code (<style id="givzey-version2-nav-glow">) so it can be tuned in Webflow; this only makes the label bold. ===== */
 .navbar_link.is-v2{font-weight:700;background:none}
+
+/* ===== VEO coverage donut (veo-donut.js): a transparent native range input sits over each drawn Webflow slider ===== */
+.veo-donut_input{position:absolute;inset:-.5rem 0;width:100%;height:calc(100% + 1rem);margin:0;opacity:0;cursor:pointer;-webkit-appearance:none;appearance:none}
+.veo-donut_slider-thumb{transition:transform .2s ease,box-shadow .2s ease}
+.veo-donut_slider:hover .veo-donut_slider-thumb{transform:scale(1.1)}
+.veo-donut_slider:focus-within .veo-donut_slider-thumb{box-shadow:0 2px 8px rgba(4,40,110,.25),0 0 0 .3rem rgba(4,92,232,.22)}
+.veo-donut_slider-fill,.veo-donut_slider-thumb{will-change:auto}

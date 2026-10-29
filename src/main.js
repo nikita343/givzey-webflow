@@ -29,6 +29,7 @@ import { initGuidance } from './modules/guidance.js';
 import { initFixes } from './modules/fixes.js';
 import { initDonorJourney } from './modules/donor-journey.js';
 import { initPhones } from './modules/phones.js';
+import { initVeoDonut } from './modules/veo-donut.js';
 import { initConsent } from './modules/consent.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
@@ -132,7 +133,7 @@ async function boot() {
 
   // resources (hubs + every item page): no scroll reveals at all, content is simply there (Q.A. round 4);
   // hovers, forms, search and the final CTA ink (shown at once) still run
-  const mods = { initPhones, initHubspotForms, initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initVpgo, initVso, initGap, initV2, initAbout, initSolutions, initGuidance, initFixes, initHovers, initSecondary, initDonorJourney };
+  const mods = { initPhones, initVeoDonut, initHubspotForms, initNav, initReveals, initProductCards, initStats, initStory, initCta, initTestimonials, initProduct, initVpgo, initVso, initGap, initV2, initAbout, initSolutions, initGuidance, initFixes, initHovers, initSecondary, initDonorJourney };
   if (RESOURCES) {
     root.classList.add('gz-static');
     for (const k of Object.keys(mods)) if (!['initHubspotForms', 'initNav', 'initProduct', 'initGuidance', 'initFixes', 'initHovers'].includes(k)) delete mods[k];
