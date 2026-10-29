@@ -57,7 +57,7 @@ canvas.gz-ink-canvas{display:block;height:auto}
 .gz-word{will-change:opacity,filter}
 
 /* --- mock chat typing dots --- */
-.gz-typing{display:flex;gap:.3rem;align-items:center;padding:.85rem 1rem;border-radius:1.125rem 1.125rem 1.125rem .375rem;background:#FFF3DC;align-self:flex-start}
+.gz-typing{display:flex;gap:.3rem;align-items:center;padding:.85rem 1rem;border-radius:1.125rem 1.125rem 1.125rem .375rem;background:#E3EDFD;align-self:flex-start}
 .mock-bubble.is-purple~.gz-typing,.mock-card_header.is-purple~.mock-messages .gz-typing{background:#F1E4F6}
 .gz-typing i{width:.4rem;height:.4rem;border-radius:50%;background:rgba(27,26,36,.45);animation:gzDot 1s infinite ease-in-out}
 .gz-typing i:nth-child(2){animation-delay:.15s}.gz-typing i:nth-child(3){animation-delay:.3s}
@@ -197,8 +197,8 @@ a:hover>.gz-underline,a:focus-visible>.gz-underline{transform:scaleX(1);transfor
 .navbar_dropdown-arrow{transform:translateX(-6px);transition:opacity .25s ease,transform .35s cubic-bezier(.2,.8,.2,1)}
 .navbar_dropdown-item:hover .navbar_dropdown-arrow,.navbar_dropdown-item:focus-visible .navbar_dropdown-arrow{opacity:1;transform:none}
 /* product ink dots bloom and bleed light on hover */
-.navbar_dropdown-ink{--c:242,140,40;transition:transform .5s cubic-bezier(.2,.8,.2,1),box-shadow .5s ease}
-.navbar_dropdown-ink.is-vpgo{--c:46,158,94}.navbar_dropdown-ink.is-vso{--c:107,63,209}.navbar_dropdown-ink.is-gap{--c:88,165,251}
+.navbar_dropdown-ink{--c:4,92,232;transition:transform .5s cubic-bezier(.2,.8,.2,1),box-shadow .5s ease}
+.navbar_dropdown-ink.is-vpgo{--c:46,158,94}.navbar_dropdown-ink.is-vso{--c:107,63,209}.navbar_dropdown-ink.is-gap{--c:232,168,0}
 .navbar_dropdown-item:hover .navbar_dropdown-ink,.navbar_dropdown-item:focus-visible .navbar_dropdown-ink{transform:scale(1.1);box-shadow:0 0 22px 2px rgba(var(--c),.6),0 0 0 6px rgba(var(--c),.12)}
 .navbar_dropdown-feature{position:relative;overflow:hidden}
 .navbar_dropdown-feature .navbar_dropdown-cta{transition:letter-spacing .35s ease}
@@ -261,7 +261,7 @@ a:hover>.gz-underline,a:focus-visible>.gz-underline{transform:scaleX(1);transfor
 .product-hero_visual.is-live .product-hero_label-bar.is-3{animation-delay:-.8s}
 @keyframes gzEq{0%,100%{transform:scaleY(.55)}50%{transform:scaleY(1.2)}}
 .product-hero_label-arrow{transition:transform .7s cubic-bezier(.2,.8,.2,1),box-shadow .6s ease}
-.product-hero_visual:hover .product-hero_label-arrow{transform:rotate(-45deg);box-shadow:0 .75em 1.875em rgba(102,51,0,.15),0 0 0 .4em rgba(var(--gz-acc),.12)}
+.product-hero_visual:hover .product-hero_label-arrow{transform:rotate(-45deg);box-shadow:0 .75em 1.875em rgba(3,30,80,.12),0 0 0 .4em rgba(var(--gz-acc),.12)}
 
 /* pyramid: the diagram and its labels scale together (container units) */
 .veo-meet_pyramid{container-type:inline-size}
@@ -282,7 +282,7 @@ a:hover>.gz-underline,a:focus-visible>.gz-underline{transform:scaleX(1);transfor
 .product-stats_meter.is-js{background-image:none!important;display:flex;justify-content:space-between;align-items:flex-end}
 .gz-tick{display:block;flex:none;width:.1875rem;height:81.82%;border-radius:1px;background-color:rgba(3,11,44,.15);transition:height .55s cubic-bezier(.2,.8,.2,1),background-color .35s ease,box-shadow .35s ease}
 .gz-tick.is-edge{height:63.64%}
-.gz-tick.is-on{height:100%;background-color:#f28c28;box-shadow:0 0 10px rgba(242,140,40,.35)}
+.gz-tick.is-on{height:100%;background-color:#045CE8;box-shadow:0 0 10px rgba(4,92,232,.35)}
 @media (max-width:479px){ .gz-tick{width:.125rem} }
 
 /* capabilities */
@@ -314,13 +314,13 @@ a:hover>.gz-underline,a:focus-visible>.gz-underline{transform:scaleX(1);transfor
 .veo-proof_slide.is-active>.veo-proof_peek{opacity:0;visibility:hidden}
 .veo-proof_peek:hover{background-color:#fff}
 .veo-proof_peek-logo{transition:filter .5s ease,opacity .5s ease}
-.veo-proof_peek:hover .veo-proof_peek-logo{opacity:1;filter:drop-shadow(0 0 16px rgba(242,140,40,.35))}
+.veo-proof_peek:hover .veo-proof_peek-logo{opacity:1;filter:drop-shadow(0 0 16px rgba(4,92,232,.35))}
 .veo-proof_peek:focus-visible{outline:2px solid #045ce8;outline-offset:-4px}
 .veo-proof_slider.is-js .veo-proof_track{touch-action:pan-y;user-select:none}
 .veo-proof_arrow{transition:background-color .3s ease,box-shadow .45s ease}
-.veo-proof_arrow:hover{background-color:#fff;box-shadow:0 0 0 1px rgba(242,140,40,.35),0 10px 30px rgba(242,140,40,.18)}
+.veo-proof_arrow:hover{background-color:#fff;box-shadow:0 0 0 1px rgba(4,92,232,.35),0 10px 30px rgba(4,92,232,.18)}
 .veo-proof_link{transition:box-shadow .45s ease}
-.veo-proof_link:hover{box-shadow:0 12px 30px rgba(102,51,0,.15),0 0 0 1px rgba(242,140,40,.4),0 0 26px rgba(242,140,40,.28)}
+.veo-proof_link:hover{box-shadow:0 12px 30px rgba(3,30,80,.12),0 0 0 1px rgba(4,92,232,.4),0 0 26px rgba(4,92,232,.28)}
 .veo-proof_link-arrow{transition:transform .5s cubic-bezier(.2,.8,.2,1)}
 .veo-proof_link:hover .veo-proof_link-arrow{transform:translateX(.25rem)}
 @media (max-width:991px){
@@ -352,14 +352,14 @@ a:hover>.gz-underline,a:focus-visible>.gz-underline{transform:scaleX(1);transfor
 @media (max-width:767px){ .cta_content h2 br{display:none} }
 
 /* ================= product accents: VEO orange by default, VPGO green ================= */
-body{--gz-acc:242,140,40}
+body{--gz-acc:4,92,232}
 body:has(.product-hero_visual.is-vpgo){--gz-acc:46,158,94}
 body:has(.product-hero_visual.is-vso){--gz-acc:107,63,209}
-body:has(.product-hero_visual.is-gap){--gz-acc:30,99,233}
-body:has(.product-hero_visual.is-gap) .product-faq_item.is-open .product-faq_trigger{color:#123e8f}
-body:has(.product-hero_visual.is-gap) .product-faq_item.is-open .product-faq_icon{background-color:#1e63e9}
-body:has(.product-hero_visual.is-gap) .product-faq_item.is-open .product-faq_icon-bar{background-color:#fff}
-.product-hero_visual.is-gap:hover .product-hero_label-arrow{box-shadow:0 .75em 1.875em rgba(10,36,102,.24),0 0 0 .4em rgba(30,99,233,.16)}
+body:has(.product-hero_visual.is-gap:not(.is-sol)){--gz-acc:232,168,0}
+body:has(.product-hero_visual.is-gap:not(.is-sol)) .product-faq_item.is-open .product-faq_trigger{color:#7A5200}
+body:has(.product-hero_visual.is-gap:not(.is-sol)) .product-faq_item.is-open .product-faq_icon{background-color:#E8A800}
+body:has(.product-hero_visual.is-gap:not(.is-sol)) .product-faq_item.is-open .product-faq_icon-bar{background-color:#030B2C}
+.product-hero_visual.is-gap:not(.is-sol):hover .product-hero_label-arrow{box-shadow:0 .75em 1.875em rgba(102,70,0,.2),0 0 0 .4em rgba(232,168,0,.18)}
 body:has(.product-hero_visual.is-vso) .product-faq_item.is-open .product-faq_trigger{color:#3c1f80}
 body:has(.product-hero_visual.is-vso) .product-faq_item.is-open .product-faq_icon{background-color:#6b3fd1}
 body:has(.product-hero_visual.is-vso) .product-faq_item.is-open .product-faq_icon-bar{background-color:#fff}
@@ -668,7 +668,7 @@ html.gz-js .v2-belief{border-bottom-color:transparent}
 .home-testimonials_arrow,.veo-proof_arrow{position:relative;cursor:pointer;transition:background-color .35s ease,border-color .35s ease,box-shadow .5s cubic-bezier(.2,.7,.2,1)}
 .home-testimonials_arrow-icon,.veo-proof_arrow-icon{transition:transform .5s cubic-bezier(.2,.8,.2,1),filter .35s ease}
 .home-testimonials_arrow:hover,.home-testimonials_arrow:focus-visible{background-color:#045CE8;border-color:#045CE8;box-shadow:0 0 0 .375rem rgba(4,92,232,.1),0 .75rem 1.75rem rgba(4,92,232,.28)}
-.veo-proof_arrow:hover,.veo-proof_arrow:focus-visible{background-color:#F28C28;border-color:#F28C28;box-shadow:0 0 0 .375rem rgba(242,140,40,.12),0 .75rem 1.75rem rgba(242,140,40,.28)}
+.veo-proof_arrow:hover,.veo-proof_arrow:focus-visible{background-color:#045CE8;border-color:#045CE8;box-shadow:0 0 0 .375rem rgba(4,92,232,.12),0 .75rem 1.75rem rgba(4,92,232,.28)}
 .home-testimonials_arrow:hover .home-testimonials_arrow-icon,.home-testimonials_arrow:focus-visible .home-testimonials_arrow-icon,
 .veo-proof_arrow:hover .veo-proof_arrow-icon,.veo-proof_arrow:focus-visible .veo-proof_arrow-icon{transform:translateX(.1875rem);filter:brightness(0) invert(1)}
 .home-testimonials_arrow:active,.veo-proof_arrow:active{transform:scale(.94)}
@@ -766,7 +766,7 @@ html.gz-js .v2-belief{border-bottom-color:transparent}
 .veo-proof_slider.is-flip .veo-proof_slide.is-active>.veo-proof_peek{transform:scale(.96);transition:opacity .2s ease,transform .4s ease,visibility 0s linear .2s}
 .veo-proof_slider.is-flip .veo-proof_slide:not(.is-active){cursor:pointer}
 .veo-proof_slide.is-active .veo-proof_card::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;opacity:0;
-  background:conic-gradient(from var(--gz-a),transparent 0deg,transparent 250deg,rgba(242,140,40,.75) 330deg,#FFD7A8 352deg,transparent 360deg);
+  background:conic-gradient(from var(--gz-a),transparent 0deg,transparent 250deg,rgba(4,92,232,.75) 330deg,#ABE6FF 352deg,transparent 360deg);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
 .veo-proof_slider.is-flip .veo-proof_slide.is-active .veo-proof_card::after{animation:gzBorderRun 1.6s cubic-bezier(.45,.05,.25,1) .6s both}
 /* the turn itself is pure CSS (product.js proof()): widths, heights, corners and the glide all ease on one curve,
@@ -889,7 +889,7 @@ html:not(.gz-nav-scrolled) body:has(.v2r-hero) .navbar_component .navbar_logo-li
 .gap-cap_search>svg{flex:none;width:.8125rem;height:.8125rem}
 .gap-cap_search>div{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .gap-cap_filter{flex:none;background-color:#fff;border:1px solid rgba(3,11,44,.1);transition:background-color .35s ease,border-color .35s ease,color .35s ease}
-.gap-cap_filter.is-on{background-color:rgba(30,99,233,.09);border-color:rgba(30,99,233,.18);color:#1E63E9}
+.gap-cap_filter.is-on{background-color:rgba(232,168,0,.12);border-color:rgba(232,168,0,.3);color:#7A5200}
 .gap-cap_hub-row{border-radius:.75rem;transition:background-color .4s ease}
 .gap-cap_hub-row.is-match{background-color:#F2F6FE}
 @media screen and (max-width:479px){ .gap-cap_filter{padding:.375rem .5625rem} .gap-cap_search{padding:.4375rem .625rem} }

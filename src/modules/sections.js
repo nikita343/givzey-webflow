@@ -59,7 +59,7 @@ export function initStory() {
 export function initCta({ instant = false } = {}) {
   const box = document.querySelector('.cta_component');
   if (!box) return;
-  // the blue pair (home + GAP), or one product's single-colour trio (orange VEO, green VPGO, purple VSO): only the inks the active variant shows come alive
+  // the blue pair (home + GAP), or one product's single-colour trio (blue VEO, green VPGO, purple VSO): only the inks the active variant shows come alive
   const shown = img => getComputedStyle(img).display !== 'none' && getComputedStyle(img.parentElement).display !== 'none';
   const ORIGINS = { 'is-bl': [0, 0], 'is-tr': [1, 1], 'is-tl': [0, 1], 'is-br': [1, 0], 'is-wisp': [.3, .7] };
   const inks = [...box.querySelectorAll('.cta_ink, .cta_ink-orange, .cta_ink-green, .cta_ink-purple, .cta_ink-spectrum')].filter(shown).map((img, i) => {

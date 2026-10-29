@@ -43,17 +43,17 @@ function links() {
   });
 }
 
-// product pages carry their accent on the hero visual (VEO orange, VPGO green, VSO purple)
-const ACCENT = () => document.querySelector('.product-hero_visual.is-vpgo') ? '46,158,94' : document.querySelector('.product-hero_visual.is-vso') ? '107,63,209' : document.querySelector('.product-hero_visual.is-gap') ? '30,99,233' : '242,140,40';
+// product pages carry their accent on the hero visual (VEO blue, VPGO green, VSO purple, GAP yellow)
+const ACCENT = () => document.querySelector('.product-hero_visual.is-vpgo') ? '46,158,94' : document.querySelector('.product-hero_visual.is-vso') ? '107,63,209' : document.querySelector('.product-hero_visual.is-gap:not(.is-sol)') ? '232,168,0' : '4,92,232';
 const GLOW = [
   ['.home-product_visual', null],
   ['.home-stats_card', '88,165,251'],
   ['.home-testimonials_logo-card', '88,165,251'],
   ['.cta_component', '88,165,251'],
   ['.navbar_dropdown-feature', '171,230,255'],
-  ['.veo-cap_card:not(.is-text)', '242,140,40'],
-  ['.veo-meet_card', '242,140,40'],
-  ['.veo-meet_pyramid', '242,140,40'],
+  ['.veo-cap_card:not(.is-text)', '4,92,232'],
+  ['.veo-meet_card', '4,92,232'],
+  ['.veo-meet_pyramid', '4,92,232'],
   ['.product-stats_feature', 'accent'],
   ['.product-stats_row', 'accent'],
   ['.product-cap_card', 'accent'],
@@ -61,11 +61,11 @@ const GLOW = [
   ['.vpgo-story_quote', '171,230,190'],
   ['.vso-timeline_card', '107,63,209'],
   ['.product-band_glass', 'accent'],
-  ['.gap-life_card', '30,99,233'],
-  ['.gap-use_card', '30,99,233'],
-  ['.veo-trust_pillar', '242,140,40'],
-  ['.veo-proof_peek', '242,140,40'],
-  ['.v2-lab_card.is-veo', '242,140,40'],
+  ['.gap-life_card', '232,168,0'],
+  ['.gap-use_card', '232,168,0'],
+  ['.veo-trust_pillar', '4,92,232'],
+  ['.veo-proof_peek', '4,92,232'],
+  ['.v2-lab_card.is-veo', '4,92,232'],
   ['.v2-lab_card.is-vpgo', '46,158,94'],
   ['.v2-lab_card.is-vso', '107,63,209'],
   ['.v2-lab_card.is-mc', '88,165,251'],
@@ -75,7 +75,7 @@ function glowCards() {
   for (const [sel, rgb] of GLOW) document.querySelectorAll(sel).forEach(el => {
     el.classList.add('gz-glow');
     let c = rgb === 'accent' ? ACCENT() : rgb;
-    if (!c) { const ink = el.querySelector('.home-product_ink'); c = ink?.classList.contains('is-vpgo') ? '46,158,94' : ink?.classList.contains('is-vso') ? '107,63,209' : ink?.classList.contains('is-gap') ? '88,165,251' : '242,140,40'; }
+    if (!c) { const ink = el.querySelector('.home-product_ink'); c = ink?.classList.contains('is-vpgo') ? '46,158,94' : ink?.classList.contains('is-vso') ? '107,63,209' : ink?.classList.contains('is-gap') ? '232,168,0' : '4,92,232'; }
     el.style.setProperty('--glow', c);
     el.addEventListener('pointermove', e => { const [x, y] = local(e, el); el.style.setProperty('--mx', x + 'px'); el.style.setProperty('--my', y + 'px'); });
   });

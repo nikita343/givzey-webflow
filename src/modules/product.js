@@ -224,7 +224,7 @@ function trust() {
   if (bubble) tl.from(bubble, { opacity: 0, scale: .94, transformOrigin: '0% 100%', duration: .7, ease: 'back.out(1.6)' }, .25);
   if (msg) { const split = new SplitText(msg, { type: 'words' }); tl.from(split.words, { opacity: 0, filter: 'blur(6px)', duration: .45, ease: 'power2.out', stagger: .05, clearProps: 'filter' }, .55); }
   const ai = box.querySelectorAll('.veo-trust_ai, .veo-trust_highlight');
-  if (ai.length) tl.fromTo(ai, { textShadow: '0 0 0 rgba(242,140,40,0)' }, { textShadow: '0 0 14px rgba(242,140,40,.9)', duration: .5, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 1.2);
+  if (ai.length) tl.fromTo(ai, { textShadow: '0 0 0 rgba(4,92,232,0)' }, { textShadow: '0 0 14px rgba(4,92,232,.9)', duration: .5, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 1.2);
   const big = box.querySelector('.veo-trust_big'); if (big) { const c = countTo(big, { duration: 2.2, trigger: null }); if (c) tl.add(c.play(), .3); }
   const av = box.querySelectorAll('.veo-trust_avatar');
   if (av.length === 2) { tl.from(av[0], { x: -18, opacity: 0, duration: .9, ease: 'expo.out' }, .4); tl.from(av[1], { x: 18, opacity: 0, duration: .9, ease: 'expo.out' }, .4); }

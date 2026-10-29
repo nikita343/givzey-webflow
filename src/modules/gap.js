@@ -71,7 +71,7 @@ function capabilities() {
     if (cursor) tl.from(cursor, { x: 70, y: 40, opacity: 0, duration: .9, ease: 'power3.out' }, .9)
       .to(cursor, { scale: .82, duration: .12, yoyo: true, repeat: 1, transformOrigin: '20% 10%' }, 1.8)
       .to(use, { scale: .96, duration: .12, yoyo: true, repeat: 1 }, 1.8)
-      .to(main, { boxShadow: '0 1.5rem 3rem rgba(10,41,128,.22), 0 0 0 .35rem rgba(30,99,233,.18)', duration: .5, yoyo: true, repeat: 1 }, 1.9);
+      .to(main, { boxShadow: '0 1.5rem 3rem rgba(102,70,0,.18), 0 0 0 .35rem rgba(232,168,0,.22)', duration: .5, yoyo: true, repeat: 1 }, 1.9);
     return tl;
   });
 
