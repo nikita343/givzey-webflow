@@ -8,7 +8,7 @@ import { SplitText } from 'gsap/SplitText';
 import Lenis from 'lenis';
 import { REDUCED } from './base.js';
 import { shouldIntro, playLoader, revealMode } from './modules/loader.js';
-import { initHomeHero } from './modules/home-hero.js';
+import { initHomeHero, heroLook } from './modules/home-hero.js';
 import { LOGO } from './logo.js';
 import { headingBleed, fadeCopy, unrollTag, liveGradient, initReveals } from './modules/reveal.js';
 import { initProductCards } from './modules/product-cards.js';
@@ -89,6 +89,7 @@ async function boot() {
   document.querySelector('.section_home-journey')?.classList.add('is-pinned');
   addEventListener('load', () => ScrollTrigger.refresh());
   const hero = document.querySelector('.section_home-hero');
+  if (hero) root.classList.add('gz-look-' + heroLook());   // before the loader paints: ?hero=clouds starts on black
   // the loader plays from the top of the page (a reload would otherwise restore the scroll under it)
   const intro = shouldIntro() && !!hero;
   if (intro) { try { history.scrollRestoration = 'manual'; } catch (e) {} scrollTo(0, 0); }

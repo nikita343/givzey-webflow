@@ -1146,3 +1146,13 @@ html.gz-nav-scrolled:not(.gz-nav-hidden) .section_res-filter{top:calc(var(--gz-n
 .veo-donut_slider:hover .veo-donut_slider-thumb{transform:scale(1.1)}
 .veo-donut_slider:focus-within .veo-donut_slider-thumb{box-shadow:0 2px 8px rgba(4,40,110,.25),0 0 0 .3rem rgba(4,92,232,.22)}
 .veo-donut_slider-fill,.veo-donut_slider-thumb{will-change:auto}
+
+/* --- hero look 'clouds' (?hero=clouds, see HERO_LOOKS in home-hero.js): black page, pink smoke and ink.
+   Every navy surface around the canvas turns black so nothing blue shows before or after the scene draws. --- */
+html.gz-look-clouds .section_home-hero{background:#000!important;background-image:none!important}
+html.gz-look-clouds.gz-intro body::before,html.gz-look-clouds.gz-intro.gz-reveal-ink.gz-bleeding body::before,
+html.gz-look-clouds.gz-intro-fade.gz-reveal-burst:not(.gz-intro) body::before,html.gz-look-clouds.gz-intro-fade:not(.gz-intro) body::before{background:#000!important}
+html.gz-look-clouds .gz-hero-drip{background:radial-gradient(circle at 42% 38%,#ffe1ee,#ff7fb4 55%,#c51f63);box-shadow:0 0 calc(var(--s)*1.6) rgba(255,92,158,.5)}
+html.gz-look-clouds .gz-hero-drips{filter:none}
+html.gz-look-clouds .gz-hero-ring{border-color:rgba(255,179,211,.55)}
+html.gz-look-clouds .section_home-hero:not(.is-ink-live) .home-hero_content::before{background:radial-gradient(closest-side,rgba(0,0,0,.62),rgba(0,0,0,.38) 55%,rgba(0,0,0,0))}

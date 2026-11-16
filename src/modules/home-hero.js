@@ -56,6 +56,32 @@ export const HERO_FX = {
   huePeriod: 44                        // seconds for blue -> warm -> blue
 };
 
+// ---- alternative looks: any page can try one with ?hero=<name>; HERO_LOOK_DEFAULT is what everyone sees ----
+// 'clouds' (Nick 16 Nov, ref: the monopo hero in Awake-2025 / Section 2): a black page with pink smoke hanging at
+// the top of the hero and thinning out downwards into black, the same pink ink splashing through it (cursor trail,
+// falling drops, the loader burst). No hue cycle: the scene stays pink, and the DOM bits that follow --gz-hue
+// (headline gradient, falling drops) are turned to pink once with cssHue.
+export const HERO_LOOK_DEFAULT = 'navy';
+export const HERO_LOOKS = {
+  clouds: {
+    base: ['#0A0509', '#000000'],        // hero top / bottom: black, a breath of plum at the top
+    glow: '#2A0818',                     // soft light behind the copy
+    loader: '#000000',
+    inkDeep: '#C0185A', inkSky: '#FF5FA0', inkLight: '#FFD0E3',
+    dyeDiss: .5, trailInk: .38, dripInk: .62,   // pink splashes linger a little longer on black
+    hueMax: 0, cssHue: 112,              // 112deg turns the blue headline gradient + drops pink
+    clouds: 1,                           // 0 = no smoke
+    cloudLow: .42,                       // where the cloud band ends (0 = bottom of the hero, 1 = no clouds)
+    cloudDark: '#2B0719', cloudMid: '#A3245F', cloudLight: '#FFA6CB',
+    cloudSpeed: .02                      // drift speed of the clouds
+  }
+};
+export function heroLook() {
+  const m = /[?&]hero=([a-z]+)\b/.exec(location.search);
+  const k = m ? m[1] : HERO_LOOK_DEFAULT;
+  return HERO_LOOKS[k] ? k : 'navy';
+}
+
 const VERT = `precision highp float; attribute vec2 aPos; varying vec2 vUv,vL,vR,vT,vB; uniform vec2 texel;
   void main(){ vUv=aPos*.5+.5; vL=vUv-vec2(texel.x,0.); vR=vUv+vec2(texel.x,0.); vT=vUv+vec2(0.,texel.y); vB=vUv-vec2(0.,texel.y); gl_Position=vec4(aPos,0.,1.); }`;
 const HEAD = `precision highp float; precision highp sampler2D; varying vec2 vUv,vL,vR,vT,vB;`;
@@ -107,9 +133,27 @@ const FRAG = {
   // dye: r = ink density, g = density x tone (0 deep .. 1 sky), b = white (the logo, fades fast)
   display: HEAD + NOISE + `uniform sampler2D uDye; uniform float aspect,time,calmAmt,calmK,scrim,bleed,maxD,rimK; uniform vec2 bleedC;
     uniform vec3 base0,base1,glowC,loaderC,inkDeep,inkSky,inkLight; uniform vec4 calm; uniform mat3 hue;
+    uniform float cloudAmt,cloudLow,cloudT; uniform vec3 cloudDark,cloudMid,cloudLight;
     void main(){
       vec3 col=mix(base1,base0,smoothstep(.0,.75,vUv.y));
       vec2 g=(vUv-vec2(.5,.45))*vec2(aspect*.62,1.); col+=glowC*.16*exp(-dot(g,g)*3.);
+      // smoke (look 'clouds', ref: monopo): a band of rolling cloud hangs from the top edge and dissolves downwards
+      // into the black page. Domain-warped fbm drifting sideways; the forms are lit from above (density read a step
+      // higher), so the tops glow pink and the undersides sink into plum. Below cloudLow the page is plain black.
+      if(cloudAmt>0.){
+        vec2 p=vec2(vUv.x*aspect,vUv.y*1.2);
+        vec2 w=vec2(fbm(p*1.1+vec2(cloudT,2.1)),fbm(p*1.1+vec2(7.3,-cloudT*.6)));
+        vec2 q=p*vec2(1.1,2.)+w*1.9+vec2(cloudT*.8,-cloudT*.15);
+        float n=fbm(q), nUp=fbm(q+vec2(0.,.06));
+        float shade=clamp((n-nUp)*7.+.55,0.,1.);                                   // lit tops, dark undersides
+        float body=smoothstep(cloudLow,1.,vUv.y+(n-.5)*.42);                        // ragged lower edge
+        body=body*body*(3.-2.*body);
+        float dens=clamp(body*(.35+1.1*n),0.,1.);
+        vec3 cl=mix(cloudDark,cloudMid,smoothstep(.25,.75,dens));
+        cl=mix(cl,cloudLight,smoothstep(.55,.95,dens)*shade*.85);
+        col=mix(col,cl,clamp(dens*1.25,0.,1.)*cloudAmt);
+        col+=cloudMid*.14*pow(smoothstep(.55,1.,vUv.y),3.)*cloudAmt;               // light coming from above
+      }
       // loader: the dark cover bleeds open from the centre (the ink itself is never masked, so the logo ink shows at once)
       float rim=0.;
       if(bleed<1.){
@@ -144,11 +188,13 @@ export function hueMatrix(deg) {
   const b = [.213 - c * .213 - s * .787, .715 - c * .715 + s * .715, .072 + c * .928 + s * .072];
   return new Float32Array([r[0], g[0], b[0], r[1], g[1], b[1], r[2], g[2], b[2]]);   // column-major
 }
-export const hueAt = t => HERO_FX.hueMax * (.5 - .5 * Math.cos(t / HERO_FX.huePeriod * Math.PI * 2));
+export const hueAt = (t, F = HERO_FX) => F.hueMax * (.5 - .5 * Math.cos(t / F.huePeriod * Math.PI * 2));
 
 export function initHomeHero(hero, { intro = false, copySel = '.home-hero_heading-wrapper, .home-hero_text, .home-hero_button-wrapper', wrapSel = '.home-hero_ink-wrapper' } = {}) {
-  const F = HERO_FX;
+  const look = heroLook();
+  const F = look === 'navy' ? HERO_FX : { ...HERO_FX, ...HERO_LOOKS[look] };
   const root = document.documentElement;
+  root.classList.add('gz-look-' + look);
   const wrap = hero.querySelector(wrapSel) || hero;
   const canvas = document.createElement('canvas'); canvas.className = 'gz-hero-ink'; canvas.setAttribute('aria-hidden', 'true');
   wrap.appendChild(canvas);
@@ -280,7 +326,8 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
   // ---- state ----
   const S = { time: 0, calm: intro ? 0 : 1, bleed: intro ? 0 : 1, hue: 0 };
   const mode = revealMode();
-  const C = { base0: hex(F.base[0]), base1: hex(F.base[1]), glow: hex(F.glow), loader: hex(mode === 'ink' ? F.paper : F.loader), deep: hex(F.inkDeep), sky: hex(F.inkSky), light: hex(F.inkLight) };
+  const C = { base0: hex(F.base[0]), base1: hex(F.base[1]), glow: hex(F.glow), loader: hex(mode === 'ink' ? F.paper : F.loader), deep: hex(F.inkDeep), sky: hex(F.inkSky), light: hex(F.inkLight),
+    cDark: hex(F.cloudDark || '#000000'), cMid: hex(F.cloudMid || '#000000'), cLight: hex(F.cloudLight || '#000000') };
   let hueM = hueMatrix(0), cssHue = -1, bleedC = [.5, .5];   // bleedC: where the loader bleed opens from (the logo)
   function render() {
     const u = use('display');
@@ -290,12 +337,15 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
     gl.uniform3fv(u.base0, C.base0); gl.uniform3fv(u.base1, C.base1); gl.uniform3fv(u.glowC, C.glow); gl.uniform3fv(u.loaderC, C.loader);
     gl.uniform3fv(u.inkDeep, C.deep); gl.uniform3fv(u.inkSky, C.sky); gl.uniform3fv(u.inkLight, C.light);
     gl.uniform4f(u.calm, calmRect[0], calmRect[1], calmRect[2], calmRect[3]); gl.uniformMatrix3fv(u.hue, false, hueM);
+    gl.uniform1f(u.cloudAmt, F.clouds || 0); gl.uniform1f(u.cloudLow, F.cloudLow ?? .34); gl.uniform1f(u.cloudT, S.time * (F.cloudSpeed || 0));
+    gl.uniform3fv(u.cloudDark, C.cDark); gl.uniform3fv(u.cloudMid, C.cMid); gl.uniform3fv(u.cloudLight, C.cLight);
     blit(null);
   }
   function setHue(deg) {
     S.hue = deg; hueM = hueMatrix(deg);
     // the headline gradient + button follow the same hue (CSS hue-rotate uses this exact matrix); throttled
-    if (Math.abs(deg - cssHue) > .6) { cssHue = deg; root.style.setProperty('--gz-hue', deg.toFixed(1) + 'deg'); }
+    const css = F.cssHue ?? deg;
+    if (Math.abs(css - cssHue) > .6) { cssHue = css; root.style.setProperty('--gz-hue', css.toFixed(1) + 'deg'); }
   }
 
   // ---- pointer: smoothed follow, capsule trail, eddies shed beside the path (GivSplash Fluid) ----
@@ -498,7 +548,7 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
   const perf = { n: 0, sum: 0, level: 0 };
   function tick(dt, raw) {
     S.time += dt;
-    setHue(REDUCED ? 0 : hueAt(S.time));
+    setHue(REDUCED ? 0 : hueAt(S.time, F));
     if (introState) runIntro(Math.min(raw, .1));
     runPointer(dt); runAmbient(dt); runDrips();
     step(dt * F.simSpeed); render();
@@ -544,10 +594,10 @@ export function initHomeHero(hero, { intro = false, copySel = '.home-hero_headin
   if (REDUCED) staticFrame();
   else raf = requestAnimationFrame(frame);
 
-  if (/[?&]gzdebug\b/.test(location.search)) window.__gzHero = { S, F, ptr, hand, mode, get intro() { return !!introState; }, get calmRect() { return calmRect; }, get low() { return low; }, get level() { return perf.level; },
+  if (/[?&]gzdebug\b/.test(location.search)) window.__gzHero = { S, F, look, ptr, hand, mode, get intro() { return !!introState; }, get calmRect() { return calmRect; }, get low() { return low; }, get level() { return perf.level; },
     // QA: run the simulation forward synchronously (software GPUs can't hold real time)
     advance(sec) { const n = Math.round(sec * 30); for (let i = 0; i < n; i++) tick(1 / 30, 1 / 30); },
-    setTime(t) { S.time = t; setHue(hueAt(t)); render(); },
+    setTime(t) { S.time = t; setHue(hueAt(t, F)); render(); },
     // dye stats (WebGL2 only): max / mean density and how much of the field is visibly inked
     probe() { const t = dye.read; gl.bindFramebuffer(gl.FRAMEBUFFER, t.fb); const px = new Float32Array(t.w * t.h * 4);
       try { gl.readPixels(0, 0, t.w, t.h, gl.RGBA, gl.FLOAT, px); } catch (e) { return String(e); }
