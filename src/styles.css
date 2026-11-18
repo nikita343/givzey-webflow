@@ -627,6 +627,23 @@ html.gz-js .v2-belief{border-bottom-color:transparent}
 .hs-embed.is-pill .gz-form .hs-error-msgs,.hs-embed.is-pill .gz-form .gz-form_error{position:absolute;left:1.25rem;top:calc(100% + .375rem);margin:0}
 .hs-embed.is-pill .gz-form:has(.hs-error-msgs,.gz-form_error){border-color:var(--f-err)}
 .hs-embed.is-pill:not(.is-ready):not(.is-failed){min-height:3.375rem;border-radius:100vw;background:#F3F5F9}
+/* Book a demo + /demo landing (Figma "Demo and landing page", 18 Nov): the demo card's form at the design's scale —
+   larger fields and chips, required marks shown, no placeholders, a bigger submit label */
+.demo_form-card .gz-form fieldset{gap:1.4rem 1.125rem;margin:0 0 1.4rem!important}
+.demo_form-card .gz-form>.hs-form-field{margin-bottom:1.4rem}
+.demo_form-card .gz-form label:not(.hs-error-msg){margin-bottom:.5625rem;font-size:.98825rem;letter-spacing:-.005em}
+.demo_form-card .gz-form .hs-form-required{display:inline;margin-left:0;color:inherit}
+.demo_form-card .gz-form .hs-input:not([type=checkbox]):not([type=radio]):not([type=file]){height:3.67rem;padding:0 1.06rem;border-radius:.847rem}
+.demo_form-card .gz-form select.hs-input{padding-right:2.75rem!important}
+.demo_form-card .gz-form .hs-input::placeholder{color:transparent}
+.demo_form-card .gz-chips{gap:.5625rem}
+.demo_form-card .gz-chip{height:2.824rem;padding:0 1.13rem;font-size:.98825rem}
+.demo_form-card .gz-form .hs_submit{margin-top:0}
+.demo_form-card .gz-form .gz-form_submit{height:3.5rem;font-size:1.397rem;font-weight:400;letter-spacing:0}
+.demo_form-card .hs-embed:not(.is-ready):not(.is-failed){min-height:34rem}
+@media (max-width:767px){
+  .demo_form-card .gz-form .gz-form_submit{font-size:1.125rem}
+}
 /* dark: glassy inputs, white chips, blue button stays */
 .hs-embed.is-dark{--f-acc:#58A5FB;--f-err:#FF8A95}
 .hs-embed.is-dark .gz-form .hs-input:focus{border-color:#58A5FB;box-shadow:0 0 0 4px rgba(88,165,251,.18)}

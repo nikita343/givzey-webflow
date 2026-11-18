@@ -21,7 +21,7 @@ const SRC = 'https://js.hsforms.net/forms/embed/v2.js';
 
 // Site voice (sentence case). Values sent to HubSpot are untouched.
 const LABELS = {
-  firstname: 'First name', lastname: 'Last name', email: 'Work email', phone: 'Phone',
+  firstname: 'First name', lastname: 'Last name', email: 'Work email', phone: 'Phone number',
   company: 'Organization', jobtitle: 'Job title', vertical: 'Organization type',
   state_province: 'State or province', demo_product_choice: 'What would you like to see?',
   country: 'Country', message: 'Message'
